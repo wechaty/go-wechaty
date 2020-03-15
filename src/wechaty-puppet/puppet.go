@@ -1,7 +1,7 @@
 package wechaty_puppet
 
 import (
-	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+	"github.com/wechaty/go-wechaty/src/wechaty-puppet/schemas"
 )
 
 type Puppet interface {
