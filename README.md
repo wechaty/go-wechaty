@@ -35,11 +35,11 @@ See more at [Wiki:Voice Of Developer](https://github.com/Wechaty/wechaty/wiki/Vo
 
 ## Join Us
 
-Wechaty is used in many ChatBot projects by thousands of developers. If you want to talk with other developers, just scan the following QR Code in WeChat with secret code _wechaty_, join our **Wechaty Go Developers' Home**.
+Wechaty is used in many ChatBot projects by thousands of developers. If you want to talk with other developers, just scan the following QR Code in WeChat with secret code _go wechaty_, join our **Wechaty Go Developers' Home**.
 
 ![Wechaty Go Developers' Home](https://wechaty.github.io/wechaty/images/bot-qr-code.png)
 
-Scan now, because other Wechaty Go developers want to talk with you too! (secret code: _wechaty_)
+Scan now, because other Wechaty Go developers want to talk with you too! (secret code: _go wechaty_)
 
 ## The World's Shortest Go ChatBot: 6 lines of Code
 
