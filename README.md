@@ -4,6 +4,8 @@
 
 ## Connecting Chatbots
 
+[![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-brightgreen.svg)](https://github.com/Wechaty/wechaty)
+
 Wechaty is a RPA SDK for Wechat **Individual** Account that can help you create a chatbot in 6 lines of Go.
 
 ## WORK IN PROGRESS
