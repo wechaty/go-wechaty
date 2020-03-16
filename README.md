@@ -39,20 +39,25 @@ Wechaty is used in many ChatBot projects by thousands of developers. If you want
 
 Scan now, because other Wechaty Go developers want to talk with you too! (secret code: _wechaty_)
 
-## The World's Shortest Go ChatBot: 6 lines of Code
+## The World's Shortest Go ChatBot: 7 lines of Code
 
 ```go
 package main
 
-import "fmt"
-import "wechaty"
+import (
+	"fmt"
+
+	"github.com/wechaty/go-wechaty/src/wechaty"
+)
 
 func main() {
-  bot := Wechaty.instance()
-  .on('scan', func(qrcode, status string) { fmt.Printf('Scan QR Code to login: %s\nhttps://api.qrserver.com/v1/create-qr-code/?data=%s', status, encodeURIComponent(qrcode)) })
-  .on('login', func(user) { fmt.Printf('User %s logined', user) })
-  .on('message', func(message) { fmt.printf('Message: %s', message) })
-  .start()
+	_ = wechaty.NewWechaty().
+		OnScan(func(qrCode, status string) {
+			fmt.Printf("Scan QR Code to login: %s\nhttps://api.qrserver.com/v1/create-qr-code/?data=%s\n", status, qrCode)
+		}).
+		OnLogin(func(user string) { fmt.Printf("User %s logined\n", user) }).
+		OnMessage(func(message string) { fmt.Printf("Message: %s\n", message) }).
+		Start()
 }
 ```
 
@@ -144,7 +149,7 @@ If you are interested in the translation and want to look at how it works, it wi
     - [ ] Documentation
 1. [ ] Class Image
     - TS SLOC(60): <https://github.com/wechaty/wechaty/blob/master/src/user/image.ts>
-    - [ ] Code
+    - [X] Code
     - [ ] Unit Tests
     - [ ] Documentation
 1. [ ] Class Accessory
