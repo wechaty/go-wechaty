@@ -3,8 +3,8 @@ package schemas
 type ImageType uint8
 
 const (
-	Unknown   ImageType = 0
-	Thumbnail           = 1
-	HD                  = 2
-	Artwork             = 3
+	ImageTypeUnknown   ImageType = 0
+	ImageTypeThumbnail           = 1
+	ImageTypeHD                  = 2
+	ImageTypeArtwork             = 3
 )

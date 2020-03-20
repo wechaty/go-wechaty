@@ -21,15 +21,15 @@ func NewImages(id string, accessory wechaty.Accessory) *Images {
 
 // Thumbnail message thumbnail images
 func (img *Images) Thumbnail() wechatyPuppet.FileBox {
-	return img.Accessory.Puppet.MessageImage(img.ImageId, schemas.Thumbnail)
+	return img.Accessory.Puppet.MessageImage(img.ImageId, schemas.ImageTypeThumbnail)
 }
 
 // HD message hd images
 func (img *Images) HD() wechatyPuppet.FileBox {
-	return img.Accessory.Puppet.MessageImage(img.ImageId, schemas.HD)
+	return img.Accessory.Puppet.MessageImage(img.ImageId, schemas.ImageTypeHD)
 }
 
 // Artwork message artwork images
 func (img *Images) Artwork() wechatyPuppet.FileBox {
-	return img.Accessory.Puppet.MessageImage(img.ImageId, schemas.Artwork)
+	return img.Accessory.Puppet.MessageImage(img.ImageId, schemas.ImageTypeArtwork)
 }
