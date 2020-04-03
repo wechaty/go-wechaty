@@ -73,25 +73,14 @@ func (m *Message) Ready() bool {
 
 	m.Payload = m.GetPuppet().MessagePayload(m.Id)
 
-	if m.Payload == nil {
+	if len(m.Payload.Id) == 0 {
 		// todo:: should not panic, because not recover
 		panic("no payload")
 	}
 
-	var fromId, roomId, toId string
-	if p, ok := m.Payload.(schemas.MessagePayloadTo); ok {
-		fromId = p.FromId
-		roomId = p.RoomId
-		toId = p.ToId
-	} else if p, ok := m.Payload.(schemas.MessagePayloadRoom); ok {
-		fromId = p.FromId
-		roomId = p.RoomId
-		toId = p.ToId
-	}
-
-	m.GetWechaty().Room.Load(roomId).Ready(false)
-	m.GetWechaty().Contact.Load(roomId).Ready(false)
-	m.GetWechaty().Contact.Load(roomId).Ready(false)
+	m.GetWechaty().Room.Load(m.Payload.RoomId).Ready(false)
+	m.GetWechaty().Contact.Load(m.Payload.RoomId).Ready(false)
+	m.GetWechaty().Contact.Load(m.Payload.RoomId).Ready(false)
 
 	return false
 }
