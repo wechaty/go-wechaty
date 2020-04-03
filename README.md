@@ -1,5 +1,8 @@
 # go-wechaty
 
+![Go Version](https://img.shields.io/github/go-mod/go-version/wechaty/go-wechaty)
+[![Go](https://github.com/wechaty/go-wechaty/workflows/Go/badge.svg)](https://github.com/wechaty/go-wechaty/actions?query=workflow%3AGo)
+
 ![Go Wechaty](https://wechaty.github.io/go-wechaty/images/go-wechaty.png)
 
 ## Connecting Chatbots
@@ -49,7 +52,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/wechaty/go-wechaty/src/wechaty"
+	"github.com/wechaty/go-wechaty/wechaty"
 )
 
 func main() {
@@ -229,18 +232,45 @@ WIP...
 ## Install
 
 ```shell
+# go get wechaty
+
 go get github.com/wechaty/go-wechaty
 ```
 
+## Development
+
+```sh
+make install
+make test
+```
+
 ## See Also
+
+- [How to Write Go Code](https://golang.org/doc/code.html)
+- [Journey from OO language to Golang - Sergey Kibish @DevFest Switzerland 2018](https://www.youtube.com/watch?v=1ZjvhGfpwJ8)
+- [The Go Blog - Publishing Go Modules](https://blog.golang.org/publishing-go-modules)
+- [Effective Go](https://golang.org/doc/effective_go.html)
 
 ## History
 
 ### master
 
+### v0.1 (Apr 03 2020)
+
+1. Welcome our second Go Wechaty contributor:
+    - Bojie LI (李博杰) <https://github.com/SilkageNet> [#9](https://github.com/wechaty/go-wechaty/pull/9)
+1. Enable [GitHub Actions](https://github.com/wechaty/go-wechaty/actions?query=workflow%3AGo)
+    1. Enable linting: [golint](https://github.com/golang/lint)
+    1. Enable testing: [testing](https://golang.org/pkg/testing/)
+1. Add Makefile for easy developing
+1. Re-structure module directories: from `src/wechaty` to `wechaty`
+1. Rename example bot to `examples/ding-dong-bot.go`
+
 ### v0.0.1 (Mar 12, 2020)
 
-Project created.
+1. Project created.
+1. Welcome our first Go Wechaty contributor:
+    - Xiaoyu DING （丁小雨） <https://github.com/dingdayu> [#2](https://github.com/wechaty/go-wechaty/pull/2)
 
 ## Related Projects
 

@@ -3,8 +3,8 @@ package user
 import (
 	"fmt"
 
-	"github.com/wechaty/go-wechaty/src/wechaty"
-	"github.com/wechaty/go-wechaty/src/wechaty-puppet/schemas"
+	"github.com/wechaty/go-wechaty/wechaty"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
 type MessageUserQueryFilter struct {
