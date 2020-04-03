@@ -55,6 +55,6 @@ func (p *Puppet) messageQueryFilterFactory(query string) schemas.MessagePayloadF
 }
 
 // todo:: no finish
-func (p *Puppet) MessagePayload(messageId string) schemas.MessagePayload {
-	return nil
+func (p *Puppet) MessagePayload(messageId string) (payload schemas.MessagePayload) {
+	return payload
 }
