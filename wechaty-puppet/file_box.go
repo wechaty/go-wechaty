@@ -1,10 +1,11 @@
 package wechaty_puppet
 
+// FileBox
 type FileBox struct {
 }
 
 // ToJson todo:: no finish
-func (f *FileBox) ToJson() map[string]interface{} {
+func (f *FileBox) ToJSON() map[string]interface{} {
 	return nil
 }
 
@@ -13,7 +14,7 @@ func (f *FileBox) ToFile(path string) {
 	return
 }
 
-// ToFile todo:: no finish
+// FromQrCode todo:: no finish
 func (f *FileBox) FromQrCode(path string) {
 	return
 }
