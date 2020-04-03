@@ -229,20 +229,33 @@ WIP...
 ## Install
 
 ```shell
-go get github.com/wechaty/go-wechaty
+go get wechaty
+
+# go get github.com/wechaty/go-wechaty
 ```
 
 ## See Also
 
 - [Journey from OO language to Golang - Sergey Kibish @DevFest Switzerland 2018](https://www.youtube.com/watch?v=1ZjvhGfpwJ8)
+- [The Go Blog - Publishing Go Modules](https://blog.golang.org/publishing-go-modules)
 
 ## History
 
 ### master
 
+### v0.1 (Apr 03 2020)
+
+Welcome our second Go Wechaty contributor:
+
+- Bojie LI (李博杰) <https://github.com/SilkageNet>
+
 ### v0.0.1 (Mar 12, 2020)
 
 Project created.
+
+Welcome our first Go Wechaty contributor:
+
+- Xiaoyu DING （丁小雨） <https://github.com/dingdayu>
 
 ## Related Projects
 
