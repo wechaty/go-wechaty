@@ -35,11 +35,11 @@ See more at [Wiki:Voice Of Developer](https://github.com/Wechaty/wechaty/wiki/Vo
 
 ## Join Us
 
-Wechaty is used in many ChatBot projects by thousands of developers. If you want to talk with other developers, just scan the following QR Code in WeChat with secret code _wechaty_, join our **Wechaty Go Developers' Home**.
+Wechaty is used in many ChatBot projects by thousands of developers. If you want to talk with other developers, just scan the following QR Code in WeChat with secret code _go wechaty_, join our **Wechaty Go Developers' Home**.
 
 ![Wechaty Go Developers' Home](https://wechaty.github.io/wechaty/images/bot-qr-code.png)
 
-Scan now, because other Wechaty Go developers want to talk with you too! (secret code: _wechaty_)
+Scan now, because other Wechaty Go developers want to talk with you too! (secret code: _go wechaty_)
 
 ## The World's Shortest Go ChatBot: 7 lines of Code
 
@@ -113,7 +113,7 @@ It is a great example for demonstrating how do we translate the TypeScript to Go
 ### Image Class Source Code
 
 - TypeScript: <https://github.com/wechaty/wechaty/blob/master/src/user/image.ts>
-- Go: <https://github.com/wechaty/go-wechaty/blob/master/src/wechaty/user/image.py>
+- Go: <https://github.com/wechaty/go-wechaty/blob/master/src/wechaty/user/image.go>
 
 If you are interested in the translation and want to look at how it works, it will be a good start from reading and comparing those two `Image` class files in TypeScript and Go at the same time.
 

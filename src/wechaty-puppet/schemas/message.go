@@ -3,74 +3,73 @@ package schemas
 type MessageType uint8
 
 const (
-	MessageTypeUnknown MessageType = 0
-
-	MessageTypeAttachment  // Attach(6)
-	MessageTypeAudio       // Audio(1) Voice(34)
-	MessageTypeContact     // ShareCard(42)
-	MessageTypeChatHistory // ChatHistory(19)
-	MessageTypeEmoticon    // Sticker Emoticon(15) Emoticon(47)
-	MessageTypeImage       // Img(2) Image(3)
-	MessageTypeText        // Text(1)
-	MessageTypeLocation    // Location(48)
-	MessageTypeMiniProgram // MiniProgram(33)
-	MessageTypeTransfer    // Transfers(2000)
-	MessageTypeRedEnvelope // RedEnvelopes(2001)
-	MessageTypeRecalled    // Recalled(10002)
-	MessageTypeUrl         // Url(5)
-	MessageTypeVideo       // Video(4) Video(43)
+  MessageTypeUnknown     MessageType = 0
+  MessageTypeAttachment  MessageType = 1
+  MessageTypeAudio       MessageType = 2
+  MessageTypeContact     MessageType = 3
+  MessageTypeChatHistory MessageType = 4
+  MessageTypeEmoticon    MessageType = 5
+  MessageTypeImage       MessageType = 6
+  MessageTypeText        MessageType = 7
+  MessageTypeLocation    MessageType = 8
+  MessageTypeMiniProgram MessageType = 9
+  MessageTypeTransfer    MessageType = 10
+  MessageTypeRedEnvelope MessageType = 11
+  MessageTypeRecalled    MessageType = 12
+  MessageTypeUrl         MessageType = 13
+  MessageTypeVideo       MessageType = 14
 )
 
-type WechatAppMessageType uint8
+type WeChatAppMessageType int
 
 const (
-	WechatAppMessageTypeText                  WechatAppMessageType = 1
-	WechatAppMessageTypeImg                                        = 2
-	WechatAppMessageTypeAudio                                      = 3
-	WechatAppMessageTypeVideo                                      = 4
-	WechatAppMessageTypeUrl                                        = 5
-	WechatAppMessageTypeAttach                                     = 6
-	WechatAppMessageTypeOpen                                       = 7
-	WechatAppMessageTypeEmoji                                      = 8
-	WechatAppMessageTypeVoiceRemind                                = 9
-	WechatAppMessageTypeScanGood                                   = 10
-	WechatAppMessageTypeGood                                       = 13
-	WechatAppMessageTypeEmotion                                    = 15
-	WechatAppMessageTypeCardTicket                                 = 16
-	WechatAppMessageTypeRealtimeShareLocation                      = 17
-	WechatAppMessageTypeChatHistory                                = 19
-	WechatAppMessageTypeMiniProgram                                = 33
-	WechatAppMessageTypeTransfers                                  = 2000
-	WechatAppMessageTypeRedEnvelopes                               = 2001
-	WechatAppMessageTypeReaderType                                 = 100001
+  WeChatAppMessageTypeText                  WeChatAppMessageType = 1
+  WeChatAppMessageTypeImg                   WeChatAppMessageType = 2
+  WeChatAppMessageTypeAudio                 WeChatAppMessageType = 3
+  WeChatAppMessageTypeVideo                 WeChatAppMessageType = 4
+  WeChatAppMessageTypeUrl                   WeChatAppMessageType = 5
+  WeChatAppMessageTypeAttach                WeChatAppMessageType = 6
+  WeChatAppMessageTypeOpen                  WeChatAppMessageType = 7
+  WeChatAppMessageTypeEmoji                 WeChatAppMessageType = 8
+  WeChatAppMessageTypeVoiceRemind           WeChatAppMessageType = 9
+  WeChatAppMessageTypeScanGood              WeChatAppMessageType = 10
+  WeChatAppMessageTypeGood                  WeChatAppMessageType = 13
+  WeChatAppMessageTypeEmotion               WeChatAppMessageType = 15
+  WeChatAppMessageTypeCardTicket            WeChatAppMessageType = 16
+  WeChatAppMessageTypeRealtimeShareLocation WeChatAppMessageType = 17
+  WeChatAppMessageTypeChatHistory           WeChatAppMessageType = 19
+  WeChatAppMessageTypeMiniProgram           WeChatAppMessageType = 33
+  WeChatAppMessageTypeTransfers             WeChatAppMessageType = 2000
+  WeChatAppMessageTypeRedEnvelopes          WeChatAppMessageType = 2001
+  WeChatAppMessageTypeReaderType            WeChatAppMessageType = 100001
 )
 
-type WechatMessageType uint8
+type WeChatMessageType int
 
 const (
-	WechatMessageTypeText              = 1
-	WechatMessageTypeImage             = 3
-	WechatMessageTypeVoice             = 34
-	WechatMessageTypeVerifyMsg         = 37
-	WechatMessageTypePossibleFriendMsg = 40
-	WechatMessageTypeShareCard         = 42
-	WechatMessageTypeVideo             = 43
-	WechatMessageTypeEmoticon          = 47
-	WechatMessageTypeLocation          = 48
-	WechatMessageTypeApp               = 49
-	WechatMessageTypeVoipMsg           = 50
-	WechatMessageTypeStatusNotify      = 51
-	WechatMessageTypeVoipNotify        = 52
-	WechatMessageTypeVoipInvite        = 53
-	WechatMessageTypeMicroVideo        = 62
-	WechatMessageTypeTransfer          = 2000 // 转账
-	WechatMessageTypeRedEnvelope       = 2001 // 红包
-	WechatMessageTypeMiniProgram       = 2002 // 小程序
-	WechatMessageTypeGroupInvite       = 2003 // 群邀请
-	WechatMessageTypeFile              = 2004 // 文件消息
-	WechatMessageTypeSysNotice         = 9999
-	WechatMessageTypeSys               = 10000
-	WechatMessageTypeRecalled          = 10002 // NOTIFY 服务通知
+  WeChatMessageTypeText              WeChatMessageType = 1
+  WeChatMessageTypeImage             WeChatMessageType = 3
+  WeChatMessageTypeVoice             WeChatMessageType = 34
+  WeChatMessageTypeVerifyMsg         WeChatMessageType = 37
+  WeChatMessageTypePossibleFriendMsg WeChatMessageType = 40
+  WeChatMessageTypeShareCard         WeChatMessageType = 42
+  WeChatMessageTypeVideo             WeChatMessageType = 43
+  WeChatMessageTypeEmoticon          WeChatMessageType = 47
+  WeChatMessageTypeLocation          WeChatMessageType = 48
+  WeChatMessageTypeApp               WeChatMessageType = 49
+  WeChatMessageTypeVOIPMsg           WeChatMessageType = 50
+  WeChatMessageTypeStatusNotify      WeChatMessageType = 51
+  WeChatMessageTypeVOIPNotify        WeChatMessageType = 52
+  WeChatMessageTypeVOIPInvite        WeChatMessageType = 53
+  WeChatMessageTypeMicroVideo        WeChatMessageType = 62
+  WeChatMessageTypeTransfer          WeChatMessageType = 2000 // 转账
+  WeChatMessageTypeRedEnvelope       WeChatMessageType = 2001 // 红包
+  WeChatMessageTypeMiniProgram       WeChatMessageType = 2002 // 小程序
+  WeChatMessageTypeGroupInvite       WeChatMessageType = 2003 // 群邀请
+  WeChatMessageTypeFile              WeChatMessageType = 2004 // 文件消息
+  WeChatMessageTypeSysNotice         WeChatMessageType = 9999
+  WeChatMessageTypeSys               WeChatMessageType = 10000
+  WeChatMessageTypeRecalled          WeChatMessageType = 10002
 )
 
 type MessagePayloadBase struct {
@@ -87,23 +86,17 @@ type MessagePayloadBase struct {
 }
 
 type MessagePayloadRoom struct {
-	MessagePayloadBase
-
-	FromId string
-	RoomId string
-	ToId   string // if to is not set then room must be set
+  FromId string
+  RoomId string
+  ToId   string
 }
 
-type MessagePayloadTo struct {
-	MessagePayloadBase
+type MessagePayloadTo = MessagePayloadRoom
 
-	FromId string
-	RoomId string
-	ToId   string // if to is not set then room must be set
+type MessagePayload struct {
+  MessagePayloadBase
+  MessagePayloadRoom
 }
-
-// todo:: MessagePayload
-type MessagePayload interface{}
 
 type MessageUserQueryFilter struct {
 	FromId string
