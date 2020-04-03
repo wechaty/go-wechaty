@@ -234,6 +234,8 @@ go get github.com/wechaty/go-wechaty
 
 ## See Also
 
+- [Journey from OO language to Golang - Sergey Kibish @DevFest Switzerland 2018](https://www.youtube.com/watch?v=1ZjvhGfpwJ8)
+
 ## History
 
 ### master
