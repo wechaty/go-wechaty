@@ -14,7 +14,7 @@ type Images struct {
 // NewImages create image struct
 func NewImages(id string, accessory wechaty.Accessory) *Images {
 	if accessory.GetPuppet() == nil {
-		panic("Image class can not be instanciated without a puppet!")
+		panic("Image class can not be instantiated without a puppet!")
 	}
 	return &Images{accessory, id}
 }
