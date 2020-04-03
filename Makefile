@@ -29,8 +29,7 @@ install:
 
 .PHONY: gotest
 gotest:
-	go test ./src/wechaty
-	go test ./src/wechaty-puppet
+	go test $(go list ./... | grep -v /vendor/) -v -count=1 -coverpkg=./...
 
 .PHONY: test
 test: golint gotest
