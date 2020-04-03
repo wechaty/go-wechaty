@@ -4,7 +4,7 @@ package wechaty_puppet
 type FileBox struct {
 }
 
-// ToJson struct to map
+// ToJSON struct to map
 func (f *FileBox) ToJSON() map[string]interface{} {
 	return nil
 }
