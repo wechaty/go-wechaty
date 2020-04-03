@@ -25,7 +25,7 @@ import (
 	"github.com/wechaty/go-wechaty/wechaty/user"
 )
 
-// Wechaty
+// Wechaty ...
 type Wechaty struct {
 	Message user.Message
 	Image   user.Images
@@ -33,29 +33,30 @@ type Wechaty struct {
 	Contact user.Contact
 }
 
-// NewWechaty
+// NewWechaty ...
 // instance by golang.
 func NewWechaty() *Wechaty {
 	return &Wechaty{}
 }
 
+// OnScan ...
 func (w *Wechaty) OnScan(f func(qrCode, status string)) *Wechaty {
 	return w
 }
 
-// OnLogin
+// OnLogin ...
 // todo:: fake code. user should be struct
 func (w *Wechaty) OnLogin(func(user string)) *Wechaty {
 	return w
 }
 
-// OnMessage
+// OnMessage ...
 // todo:: fake code. message should be struct
 func (w *Wechaty) OnMessage(func(message string)) *Wechaty {
 	return w
 }
 
-// Start
+// Start ...
 func (w *Wechaty) Start() *Wechaty {
 	return w
 }

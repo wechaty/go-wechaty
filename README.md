@@ -239,6 +239,7 @@ go get github.com/wechaty/go-wechaty
 - [How to Write Go Code](https://golang.org/doc/code.html)
 - [Journey from OO language to Golang - Sergey Kibish @DevFest Switzerland 2018](https://www.youtube.com/watch?v=1ZjvhGfpwJ8)
 - [The Go Blog - Publishing Go Modules](https://blog.golang.org/publishing-go-modules)
+- [Effective Go](https://golang.org/doc/effective_go.html)
 
 ## History
 
