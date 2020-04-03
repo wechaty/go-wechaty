@@ -113,7 +113,7 @@ It is a great example for demonstrating how do we translate the TypeScript to Go
 ### Image Class Source Code
 
 - TypeScript: <https://github.com/wechaty/wechaty/blob/master/src/user/image.ts>
-- Go: <https://github.com/wechaty/go-wechaty/blob/master/src/wechaty/user/image.py>
+- Go: <https://github.com/wechaty/go-wechaty/blob/master/src/wechaty/user/image.go>
 
 If you are interested in the translation and want to look at how it works, it will be a good start from reading and comparing those two `Image` class files in TypeScript and Go at the same time.
 

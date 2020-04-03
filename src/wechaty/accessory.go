@@ -4,6 +4,10 @@ import (
 	wechatyPuppet "github.com/wechaty/go-wechaty/src/wechaty-puppet"
 )
 
-type Accessory struct {
-	Puppet wechatyPuppet.Puppet // wechat-puppet 的 Puppet 接口
+type Accessory interface {
+	SetPuppet(puppet wechatyPuppet.Puppet)
+	GetPuppet() *wechatyPuppet.Puppet
+
+	SetWechaty(wechaty Wechaty)
+	GetWechaty() *Wechaty
 }

@@ -1,7 +1,15 @@
 package wechaty
 
+import (
+	"github.com/wechaty/go-wechaty/src/wechaty/user"
+)
+
 // Wechaty
 type Wechaty struct {
+	Message user.Message
+	Image   user.Images
+	Room    user.Room
+	Contact user.Contact
 }
 
 // NewWechaty

@@ -73,12 +73,16 @@ const (
 )
 
 type MessagePayloadBase struct {
-  Id            string
-  MentionIdList []string
-  Filename      string
-  Text          string
-  Timestamp     string
-  Type          MessageType
+	Id string
+
+	// use message id to get rawPayload to get those informations when needed
+	// contactId     string        // Contact ShareCard
+	MentionIdList []string // Mentioned Contacts' Ids
+
+	FileName  string
+	Text      string
+	Timestamp int
+	Type      MessageType
 }
 
 type MessagePayloadRoom struct {
@@ -94,11 +98,13 @@ type MessagePayload struct {
   MessagePayloadRoom
 }
 
-type MessageQueryFilter struct {
-  FromId string
-  Id     string
-  RoomId string
-  Text   string
-  ToId   string
-  Type   MessageType
+type MessageUserQueryFilter struct {
+	FromId string
+	Id     string
+	RoomId string
+	Text   string // todo:: RegExp
+	ToId   string
+	Type   MessageType
 }
+
+type MessagePayloadFilterFunction func(payload MessagePayload) bool
