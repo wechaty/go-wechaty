@@ -6,17 +6,19 @@ import (
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
+// PuppetInterface puppet interface
 type PuppetInterface interface {
-	MessageImage(messageId string, imageType schemas.ImageType) FileBox
+	MessageImage(messageID string, imageType schemas.ImageType) FileBox
 }
 
+// Puppet puppet struce
 type Puppet struct {
 	PuppetInterface
 
 	CacheMessagePayload *lru.Cache
 }
 
-// MessageList
+// MessageList message list
 func (p *Puppet) MessageList() (ks []string) {
 	keys := p.CacheMessagePayload.Keys()
 	for _, v := range keys {
@@ -27,6 +29,7 @@ func (p *Puppet) MessageList() (ks []string) {
 	return
 }
 
+// MessageSearch search message
 func (p *Puppet) MessageSearch(query schemas.MessageUserQueryFilter) []string {
 	allMessageIDList := p.MessageList()
 	if len(allMessageIDList) <= 0 {
