@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/wechaty/go-wechaty/src/wechaty"
+	"github.com/wechaty/go-wechaty/wechaty"
 )
 
 func main() {

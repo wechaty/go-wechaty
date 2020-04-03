@@ -3,7 +3,7 @@ package wechaty_puppet
 import (
 	lru "github.com/hashicorp/golang-lru"
 
-	"github.com/wechaty/go-wechaty/src/wechaty-puppet/schemas"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
 type PuppetInterface interface {

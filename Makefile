@@ -20,11 +20,12 @@ lint: golint
 
 .PHONY: golint
 golint:
-	echo "go lint ... how to do this?"
+	~/go/bin/golint wechaty
+	~/go/bin/golint wechaty-puppet
 
 .PHONY: install
 install:
-	echo "go install ?"
+	go get -u golang.org/x/lint/golint
 
 .PHONY: gotest
 gotest:

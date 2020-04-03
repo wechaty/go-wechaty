@@ -49,7 +49,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/wechaty/go-wechaty/src/wechaty"
+	"github.com/wechaty/go-wechaty/wechaty"
 )
 
 func main() {
@@ -229,13 +229,14 @@ WIP...
 ## Install
 
 ```shell
-go get wechaty
+# go get wechaty
 
-# go get github.com/wechaty/go-wechaty
+go get github.com/wechaty/go-wechaty
 ```
 
 ## See Also
 
+- [How to Write Go Code](https://golang.org/doc/code.html)
 - [Journey from OO language to Golang - Sergey Kibish @DevFest Switzerland 2018](https://www.youtube.com/watch?v=1ZjvhGfpwJ8)
 - [The Go Blog - Publishing Go Modules](https://blog.golang.org/publishing-go-modules)
 

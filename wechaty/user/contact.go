@@ -1,9 +1,9 @@
 package user
 
-import "github.com/wechaty/go-wechaty/src/wechaty"
+import "github.com/wechaty/go-wechaty/wechaty"
 
 type Contact struct {
-  wechaty.Accessory
+	wechaty.Accessory
 
 	Id string
 }

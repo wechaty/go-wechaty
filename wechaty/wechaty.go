@@ -5,7 +5,7 @@
  *          Xiaoyu DING (丁小雨） <https://github.com/dingdayu>
  *          Bojie LI (李博杰) <https://github.com/SilkageNet>
  *
- * 2020-now @ Copyright Wechaty
+ * 2020-now @ Copyright Wechaty <https://github.com/wechaty>
  *
  * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 package wechaty
 
 import (
-	"github.com/wechaty/go-wechaty/src/wechaty/user"
+	"github.com/wechaty/go-wechaty/wechaty/user"
 )
 
 // Wechaty

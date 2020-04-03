@@ -1,7 +1,7 @@
 package wechaty
 
 import (
-	wechatyPuppet "github.com/wechaty/go-wechaty/src/wechaty-puppet"
+	wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
 )
 
 type Accessory interface {

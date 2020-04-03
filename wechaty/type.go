@@ -1,7 +1,7 @@
 package wechaty
 
 import (
-	"github.com/wechaty/go-wechaty/src/wechaty/user"
+	"github.com/wechaty/go-wechaty/wechaty/user"
 )
 
 type Sayable interface {
