@@ -36,4 +36,4 @@ jobs:
       run: make test
 
     - name: Build
-      run: go build -v .
+      run: go build -v examples -o ding-dong
