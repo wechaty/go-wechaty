@@ -1,4 +1,4 @@
-package wechaty_puppet
+package wechatypuppet
 
 // FileBox file struct
 type FileBox struct {

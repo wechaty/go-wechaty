@@ -1,4 +1,4 @@
-package wechaty_puppet
+package wechatypuppet
 
 import (
 	lru "github.com/hashicorp/golang-lru"
