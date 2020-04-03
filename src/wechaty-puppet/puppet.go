@@ -40,15 +40,9 @@ func (p *Puppet) MessageSearch(query schemas.MessageUserQueryFilter) []string {
 	}
 	// Filter todo:: messageQueryFilterFactory
 	var messageIdList []string
-	for _, v := range messagePayloadList {
-		if message, ok := v.(schemas.MessagePayloadRoom); ok {
-			if message.FromId == query.FromId || message.RoomId == query.RoomId || message.ToId == query.ToId {
-				messageIdList = append(messageIdList, message.Id)
-			}
-		} else if message, ok := v.(schemas.MessagePayloadTo); ok {
-			if message.FromId == query.FromId || message.RoomId == query.RoomId || message.ToId == query.ToId {
-				messageIdList = append(messageIdList, message.Id)
-			}
+	for _, message := range messagePayloadList {
+		if message.FromId == query.FromId || message.RoomId == query.RoomId || message.ToId == query.ToId {
+			messageIdList = append(messageIdList, message.Id)
 		}
 	}
 
