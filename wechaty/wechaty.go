@@ -3,7 +3,6 @@
  *
  * Authors: Huan LI (李卓桓) <https://github.com/huan>
  *          Xiaoyu DING (丁小雨） <https://github.com/dingdayu>
- *          Bojie LI (李博杰) <https://github.com/SilkageNet>
  *
  * 2020-now @ Copyright Wechaty <https://github.com/wechaty>
  *
@@ -19,6 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package wechaty
 
 import (

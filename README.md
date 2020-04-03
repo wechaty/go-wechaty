@@ -246,6 +246,7 @@ make test
 
 ## See Also
 
+- [Learn Go in 12 Minutes](https://www.youtube.com/watch?v=C8LgvuEBraI)
 - [How to Write Go Code](https://golang.org/doc/code.html)
 - [Journey from OO language to Golang - Sergey Kibish @DevFest Switzerland 2018](https://www.youtube.com/watch?v=1ZjvhGfpwJ8)
 - [The Go Blog - Publishing Go Modules](https://blog.golang.org/publishing-go-modules)
