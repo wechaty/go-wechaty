@@ -5,6 +5,7 @@
 #
 
 SOURCE_GLOB=$(wildcard bin/*.go src/**/*.go tests/**/*.go examples/*.go)
+VERSION=$(shell cat VERSION)
 
 .PHONY: all
 all : clean lint
@@ -26,8 +27,9 @@ install:
 	echo "go install ?"
 
 .PHONY: gotest
-pytest:
-	echo "go test ?"
+gotest:
+	go test ./src/wechaty
+	go test ./src/wechaty-puppet
 
 .PHONY: test
 test: golint gotest
