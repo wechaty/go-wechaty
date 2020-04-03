@@ -21,16 +21,8 @@
  */
 package wechaty
 
-import (
-	"github.com/wechaty/go-wechaty/wechaty/user"
-)
-
 // Wechaty ...
 type Wechaty struct {
-	Message user.Message
-	Image   user.Images
-	Room    user.Room
-	Contact user.Contact
 }
 
 // NewWechaty ...
