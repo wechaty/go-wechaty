@@ -1,4 +1,4 @@
-package wechaty_puppet
+package wechatypuppet
 
 import (
 	lru "github.com/hashicorp/golang-lru"
@@ -6,17 +6,19 @@ import (
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
+// PuppetInterface puppet interface
 type PuppetInterface interface {
-	MessageImage(messageId string, imageType schemas.ImageType) FileBox
+	MessageImage(messageID string, imageType schemas.ImageType) FileBox
 }
 
+// Puppet puppet struce
 type Puppet struct {
 	PuppetInterface
 
 	CacheMessagePayload *lru.Cache
 }
 
-// MessageList
+// MessageList message list
 func (p *Puppet) MessageList() (ks []string) {
 	keys := p.CacheMessagePayload.Keys()
 	for _, v := range keys {
@@ -27,26 +29,27 @@ func (p *Puppet) MessageList() (ks []string) {
 	return
 }
 
+// MessageSearch search message
 func (p *Puppet) MessageSearch(query schemas.MessageUserQueryFilter) []string {
-	allMessageIdList := p.MessageList()
-	if len(allMessageIdList) <= 0 {
-		return allMessageIdList
+	allMessageIDList := p.MessageList()
+	if len(allMessageIDList) <= 0 {
+		return allMessageIDList
 	}
 
 	// load
 	var messagePayloadList []schemas.MessagePayload
-	for _, v := range allMessageIdList {
+	for _, v := range allMessageIDList {
 		messagePayloadList = append(messagePayloadList, p.MessagePayload(v))
 	}
 	// Filter todo:: messageQueryFilterFactory
-	var messageIdList []string
+	var messageIDList []string
 	for _, message := range messagePayloadList {
 		if message.FromId == query.FromId || message.RoomId == query.RoomId || message.ToId == query.ToId {
-			messageIdList = append(messageIdList, message.Id)
+			messageIDList = append(messageIDList, message.Id)
 		}
 	}
 
-	return messageIdList
+	return messageIDList
 }
 
 // messageQueryFilterFactory 实现正则和直接匹配
@@ -54,7 +57,7 @@ func (p *Puppet) messageQueryFilterFactory(query string) schemas.MessagePayloadF
 	return nil
 }
 
-// todo:: no finish
-func (p *Puppet) MessagePayload(messageId string) (payload schemas.MessagePayload) {
+// MessagePayload message payload todo:: no finish
+func (p *Puppet) MessagePayload(messageID string) (payload schemas.MessagePayload) {
 	return payload
 }

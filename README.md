@@ -29,7 +29,7 @@ Please come back after 4 weeks...
 > &mdash; <cite>@Jarvis, Baidu Engineer</cite>
 >
 > "Wechaty让运营人员更多的时间思考如何进行活动策划、留存用户，商业变现" [link](http://mp.weixin.qq.com/s/dWHAj8XtiKG-1fIS5Og79g)  
-> &mdash; <cite>@lijiarui, CEO of BotOrange.</cite>
+> &mdash; <cite>@lijiarui, Founder & CEO of Juzi.BOT.</cite>
 >
 > "If you know js ... try Wechaty, it's easy to use."  
 > &mdash; <cite>@Urinx Uri Lee, Author of [WeixinBot(Python)](https://github.com/Urinx/WeixinBot)</cite>
@@ -246,6 +246,7 @@ make test
 
 ## See Also
 
+- [Learn Go in 12 Minutes](https://www.youtube.com/watch?v=C8LgvuEBraI)
 - [How to Write Go Code](https://golang.org/doc/code.html)
 - [Journey from OO language to Golang - Sergey Kibish @DevFest Switzerland 2018](https://www.youtube.com/watch?v=1ZjvhGfpwJ8)
 - [The Go Blog - Publishing Go Modules](https://blog.golang.org/publishing-go-modules)
