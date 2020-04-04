@@ -31,7 +31,7 @@ type Tag struct {
 }
 
 func NewTag(id string, accessory wechaty.Accessory) *Tag {
-	if accessory.Puppet == nil {
+	if accessory.GetPuppet() == nil {
 		panic("Tag class can not be instantiated without a puppet!")
 	}
 	return &Tag{accessory, id}

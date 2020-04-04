@@ -78,15 +78,13 @@ func (m *Message) Ready() bool {
 		panic("no payload")
 	}
 
-	m.GetWechaty().Room.Load(m.Payload.RoomId).Ready(false)
-	m.GetWechaty().Contact.Load(m.Payload.RoomId).Ready(false)
-	m.GetWechaty().Contact.Load(m.Payload.RoomId).Ready(false)
+	// todo::
 
 	return false
 }
 
 func (m *Message) IsReady() bool {
-	return m.Payload != nil
+	return len(m.Payload.Id) != 0
 }
 
 // Load load message
@@ -102,5 +100,5 @@ func (m *Message) Create(id string) Message {
 // ToString message to print string
 // todo:: no finish
 func (m *Message) ToString() string {
-	return fmt.Sprintf("%s", m.Payload)
+	return fmt.Sprintf("%v", m.Payload)
 }
