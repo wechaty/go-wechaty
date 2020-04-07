@@ -6,11 +6,13 @@ type PuppetOptions struct {
   token    string
 }
 
-type PuppetEventName int
+type PuppetEventName uint8
 
 const (
   PuppetEventNameUnknown PuppetEventName = iota
-  PuppetEventNameFriendShip
+  PuppetEventNameFriendShipConfirm
+  PuppetEventNameFriendShipReceive
+  PuppetEventNameFriendShipVerify
   PuppetEventNameLogin
   PuppetEventNameLogout
   PuppetEventNameMessage

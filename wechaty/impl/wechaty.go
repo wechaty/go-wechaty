@@ -74,9 +74,21 @@ func (w *Wechaty) OnError(f EventError) *Wechaty {
   return w
 }
 
-// OnFriendship ...
-func (w *Wechaty) OnFriendship(f EventFriendship) *Wechaty {
-  w.registerEvent(schemas.PuppetEventNameFriendShip, f)
+// OnFriendshipConfirm ...
+func (w *Wechaty) OnFriendshipConfirm(f EventFriendshipConfirm) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameFriendShipConfirm, f)
+  return w
+}
+
+// OnFriendshipVerify ...
+func (w *Wechaty) OnFriendshipVerify(f EventFriendshipVerify) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameFriendShipVerify, f)
+  return w
+}
+
+// OnFriendshipReceive ...
+func (w *Wechaty) OnFriendshipReceive(f EventFriendshipReceive) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameFriendShipReceive, f)
   return w
 }
 

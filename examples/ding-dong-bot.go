@@ -15,7 +15,7 @@ func main() {
     OnLogin(func(user string) {
       fmt.Printf("User %s logined\n", user)
     }).
-    OnMessage(func(message user.Message) {
+    OnMessage(func(message *user.Message) {
       fmt.Println(fmt.Printf("Message: %v\n", message))
     }).
     Start()

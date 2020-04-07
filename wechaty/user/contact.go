@@ -29,10 +29,21 @@ type Contact struct {
   Id string
 }
 
-func (r *Contact) Load(id string) Contact {
-  return Contact{}
+func NewContact(accessory wechaty.Accessory, id string) *Contact {
+  return &Contact{
+    Accessory: accessory,
+    Id:        id,
+  }
 }
 
 func (r *Contact) Ready(forceSync bool) bool {
   return true
+}
+
+func (r *Contact) isReady() bool {
+  return true
+}
+
+func (r *Contact) Sync() {
+  r.Ready(true)
 }

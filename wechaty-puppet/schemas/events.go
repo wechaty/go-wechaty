@@ -12,7 +12,7 @@ const (
 )
 
 type EventFriendshipPayload struct {
-  FriendshipId string
+  friendshipID string
 }
 
 type EventLoginPayload struct {
