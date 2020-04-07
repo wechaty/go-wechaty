@@ -1,14 +1,14 @@
 package wechaty
 
 import (
-	wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
+  wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
 )
 
 // Accessory accessory interface
 type Accessory interface {
-	SetPuppet(puppet wechatyPuppet.Puppet)
-	GetPuppet() *wechatyPuppet.Puppet
+  SetPuppet(puppet wechatyPuppet.Puppet)
+  GetPuppet() *wechatyPuppet.Puppet
 
-	SetWechaty(wechaty Wechaty)
-	GetWechaty() *Wechaty
+  SetWechaty(wechaty Wechaty)
+  GetWechaty() Wechaty
 }
