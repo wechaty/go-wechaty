@@ -2,6 +2,7 @@ package storage
 
 import (
   "encoding/json"
+  helper_functions "github.com/wechaty/go-wechaty/wechaty-puppet/helper-functions"
   "io/ioutil"
   "os"
   "path/filepath"
@@ -29,7 +30,7 @@ func (f *FileStorage) Save(payload map[string]interface{}) error {
 }
 
 func (f *FileStorage) Load() (map[string]interface{}, error) {
-  if !exists(f.absFileName) {
+  if !helper_functions.FileExists(f.absFileName) {
     return map[string]interface{}{}, nil
   }
   file, err := os.Open(f.absFileName)
@@ -62,15 +63,4 @@ func handleAbsFileName(absFileName string) (string, error) {
     absFileName = filepath.Join(dir, absFileName)
   }
   return absFileName, nil
-}
-
-func exists(path string) bool {
-  _, err := os.Stat(path) //os.Stat获取文件信息
-  if err != nil {
-    if os.IsExist(err) {
-      return true
-    }
-    return false
-  }
-  return true
 }

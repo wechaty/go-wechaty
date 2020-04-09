@@ -2,13 +2,14 @@ package wechatypuppet
 
 import (
   lru "github.com/hashicorp/golang-lru"
+  "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
 
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
 // puppetInterface puppet interface
 type puppetInterface interface {
-  MessageImage(messageID string, imageType schemas.ImageType) FileBox
+  MessageImage(messageID string, imageType schemas.ImageType) file_box.FileBox
   FriendshipPayloadReceive(friendshipID string) schemas.FriendshipPayloadReceive
   FriendshipPayloadConfirm(friendshipID string) schemas.FriendshipPayloadConfirm
   FriendshipPayloadVerify(friendshipID string) schemas.FriendshipPayloadVerify
