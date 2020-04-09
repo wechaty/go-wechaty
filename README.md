@@ -258,8 +258,9 @@ make test
 
 ### v0.1 (Apr 03 2020)
 
-1. Welcome our second Go Wechaty contributor:
+1. Welcome our second and third Go Wechaty contributors:
     - Bojie LI (李博杰) <https://github.com/SilkageNet> [#9](https://github.com/wechaty/go-wechaty/pull/9)
+    - Chaofei DING (丁超飞) <https://github.com/dchaofei> [#20](https://github.com/wechaty/go-wechaty/pull/20)
 1. Enable [GitHub Actions](https://github.com/wechaty/go-wechaty/actions?query=workflow%3AGo)
     1. Enable linting: [golint](https://github.com/golang/lint)
     1. Enable testing: [testing](https://golang.org/pkg/testing/)
