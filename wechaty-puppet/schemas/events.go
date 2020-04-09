@@ -1,5 +1,6 @@
 package schemas
 
+//go:generate stringer -type=ScanStatus
 type ScanStatus uint8
 
 const (
