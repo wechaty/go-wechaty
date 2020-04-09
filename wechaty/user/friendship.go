@@ -1,8 +1,8 @@
 package user
 
 import (
-  wechaty "github.com/wechaty/go-wechaty/wechaty"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+  "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type friendship interface {
@@ -10,11 +10,11 @@ type friendship interface {
 }
 
 type Friendship struct {
-  wechaty.Accessory
+  _interface.Accessory
   friendshipPayloadBase schemas.FriendshipPayloadBase
 }
 
-func NewFriendship(accessory wechaty.Accessory, friendshipPayloadBase schemas.FriendshipPayloadBase) *Friendship {
+func NewFriendship(accessory _interface.Accessory, friendshipPayloadBase schemas.FriendshipPayloadBase) *Friendship {
   return &Friendship{
     Accessory:             accessory,
     friendshipPayloadBase: friendshipPayloadBase,

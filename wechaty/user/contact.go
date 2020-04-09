@@ -21,15 +21,17 @@
 
 package user
 
-import "github.com/wechaty/go-wechaty/wechaty"
+import (
+  "github.com/wechaty/go-wechaty/wechaty/interface"
+)
 
 type Contact struct {
-  wechaty.Accessory
+  _interface.Accessory
 
   Id string
 }
 
-func NewContact(accessory wechaty.Accessory, id string) *Contact {
+func NewContact(accessory _interface.Accessory, id string) *Contact {
   return &Contact{
     Accessory: accessory,
     Id:        id,

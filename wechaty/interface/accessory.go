@@ -1,4 +1,4 @@
-package wechaty
+package _interface
 
 import (
   wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"

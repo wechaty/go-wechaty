@@ -2,18 +2,18 @@ package user
 
 import (
   "errors"
-  "github.com/wechaty/go-wechaty/wechaty"
   helper_functions "github.com/wechaty/go-wechaty/wechaty-puppet/helper-functions"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+  "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type FriendshipReceive struct {
-  wechaty.Accessory
+  _interface.Accessory
   payload *schemas.FriendshipPayloadReceive
   *Friendship
 }
 
-func NewFriendshipReceive(accessory wechaty.Accessory, payload *schemas.FriendshipPayloadReceive) *FriendshipReceive {
+func NewFriendshipReceive(accessory _interface.Accessory, payload *schemas.FriendshipPayloadReceive) *FriendshipReceive {
   return &FriendshipReceive{
     Accessory:  accessory,
     payload:    payload,

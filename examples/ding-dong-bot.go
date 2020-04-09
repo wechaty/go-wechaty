@@ -2,13 +2,13 @@ package main
 
 import (
   "fmt"
+  "github.com/wechaty/go-wechaty/wechaty"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-  "github.com/wechaty/go-wechaty/wechaty/impl"
   "github.com/wechaty/go-wechaty/wechaty/user"
 )
 
 func main() {
-  _ = impl.NewWechaty().
+  _ = wechaty.NewWechaty().
     OnScan(func(qrCode string, status schemas.ScanStatus, data string) {
       fmt.Printf("Scan QR Code to login: %v\nhttps://api.qrserver.com/v1/create-qr-code/?data=%s\n", status, qrCode)
     }).

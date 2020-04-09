@@ -1,18 +1,18 @@
 package user
 
 import (
-  "github.com/wechaty/go-wechaty/wechaty"
   "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+  "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type Images struct {
-	wechaty.Accessory
+  _interface.Accessory
 	ImageId string
 }
 
 // NewImages create image struct
-func NewImages(id string, accessory wechaty.Accessory) *Images {
+func NewImages(id string, accessory _interface.Accessory) *Images {
 	if accessory.GetPuppet() == nil {
 		panic("Image class can not be instantiated without a puppet!")
 	}

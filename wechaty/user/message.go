@@ -1,10 +1,10 @@
 package user
 
 import (
-	"fmt"
+  "fmt"
+  "github.com/wechaty/go-wechaty/wechaty/interface"
 
-	"github.com/wechaty/go-wechaty/wechaty"
-	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+  "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
 type MessageUserQueryFilter struct {
@@ -16,7 +16,7 @@ type MessageUserQueryFilter struct {
 }
 
 type Message struct {
-	wechaty.Accessory
+  _interface.Accessory
 
 	Type schemas.MessageType
 
