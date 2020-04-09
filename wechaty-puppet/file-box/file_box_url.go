@@ -32,5 +32,6 @@ func (fb *fileBoxUrl) toBytes() ([]byte, error) {
   if err != nil {
     return nil, err
   }
+  defer response.Body.Close()
   return ioutil.ReadAll(response.Body)
 }
