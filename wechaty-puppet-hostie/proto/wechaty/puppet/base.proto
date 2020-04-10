@@ -1,0 +1,26 @@
+syntax = "proto3";
+package wechaty.puppet;
+
+option go_package="github.com/wechaty/go-wechaty/wechaty-puppet-hostie/generate/wechaty/puppet";
+
+message StartRequest {}
+message StartResponse {}
+
+message StopRequest {}
+message StopResponse {}
+
+message VersionRequest {}
+message VersionResponse {
+  string version = 1;
+}
+
+message LogoutRequest {}
+message LogoutResponse {}
+
+message DingRequest {
+  string data = 1;
+}
+message DingResponse {
+  // Ding has no return value
+  // Puppet should emit a `ding` event when it receives a `ding()` call
+}

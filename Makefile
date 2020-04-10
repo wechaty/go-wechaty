@@ -34,6 +34,11 @@ gotest:
 .PHONY: test
 test: golint gotest
 
+# generate proto *.pb.go file
+.PHONY: genpb
+genpb:
+	@sh ./script/genpb.sh
+
 .PHONY: bot
 bot:
 	go run examples/ding-dong-bot.go

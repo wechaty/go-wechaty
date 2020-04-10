@@ -1,0 +1,147 @@
+/**
+ *
+ * Wechaty Puppet gRPC Protocol Buffers
+ *  https://github.com/chatie/grpc/
+ *  Huan LI <zixia@zixia.net>
+ *  Apr 2018
+ *  License: Apache-2.0
+ *
+ * Google Protocol Buffers
+ *  Style Guide - https://developers.google.com/protocol-buffers/docs/style
+ *
+ */
+syntax = "proto3";
+package wechaty;
+
+import public "puppet/base.proto";
+import public "puppet/contact.proto";
+import public "puppet/event.proto";
+import public "puppet/friendship.proto";
+import public "puppet/message.proto";
+import public "puppet/room.proto";
+import public "puppet/room_invitation.proto";
+import public "puppet/room_member.proto";
+import public "puppet/tag.proto";
+
+service Puppet {
+  /**
+   *
+   * Base
+   *
+   */
+  rpc Start (puppet.StartRequest)  returns (puppet.StartResponse) {}
+  rpc Stop (puppet.StopRequest)    returns (puppet.StopResponse) {}
+
+  rpc Logout (puppet.LogoutRequest)      returns (puppet.LogoutResponse) {}
+  rpc Ding (puppet.DingRequest)          returns (puppet.DingResponse) {}
+  rpc Version (puppet.VersionRequest)    returns (puppet.VersionResponse) {}
+
+  /**
+   *
+   * Event - Server Stream
+   *
+   */
+  rpc Event (puppet.EventRequest)  returns (stream puppet.EventResponse) {}
+
+  /**
+   *
+   * Contact Self
+   *
+   */
+  rpc ContactSelfQRCode (puppet.ContactSelfQRCodeRequest) returns (puppet.ContactSelfQRCodeResponse) {}
+  rpc ContactSelfName (puppet.ContactSelfNameRequest) returns (puppet.ContactSelfNameResponse) {}
+  rpc ContactSelfSignature (puppet.ContactSelfSignatureRequest) returns (puppet.ContactSelfSignatureResponse) {}
+
+  /**
+   *
+   * Contact
+   *
+   */
+  rpc ContactPayload (puppet.ContactPayloadRequest)  returns (puppet.ContactPayloadResponse) {}
+
+  rpc ContactAlias (puppet.ContactAliasRequest) returns (puppet.ContactAliasResponse) {}
+  rpc ContactAvatar (puppet.ContactAvatarRequest) returns (puppet.ContactAvatarResponse) {}
+
+  rpc ContactList (puppet.ContactListRequest)        returns (puppet.ContactListResponse) {}
+
+  /**
+   *
+   * Friendship
+   *
+   */
+  rpc FriendshipPayload (puppet.FriendshipPayloadRequest)  returns (puppet.FriendshipPayloadResponse) {}
+
+  rpc FriendshipSearchPhone (puppet.FriendshipSearchPhoneRequest) returns (puppet.FriendshipSearchPhoneResponse) {}
+  rpc FriendshipSearchWeixin (puppet.FriendshipSearchWeixinRequest) returns (puppet.FriendshipSearchWeixinResponse) {}
+
+  rpc FriendshipAdd (puppet.FriendshipAddRequest) returns (puppet.FriendshipAddResponse) {}
+  rpc FrendshipAccept (puppet.FriendshipAcceptRequest) returns (puppet.FriendshipAcceptResponse) {}
+
+  /**
+   *
+   * Message
+   *
+   */
+  rpc MessagePayload (puppet.MessagePayloadRequest)  returns (puppet.MessagePayloadResponse) {}
+
+  rpc MessageContact (puppet.MessageContactRequest) returns (puppet.MessageContactResponse) {}
+  rpc MessageFile (puppet.MessageFileRequest) returns (puppet.MessageFileResponse) {}
+  rpc MessageImage (puppet.MessageImageRequest) returns (puppet.MessageImageResponse) {}
+  rpc MessageMiniProgram (puppet.MessageMiniProgramRequest) returns (puppet.MessageMiniProgramResponse) {}
+  rpc MessageUrl (puppet.MessageUrlRequest) returns (puppet.MessageUrlResponse) {}
+
+  rpc MessageSendContact (puppet.MessageSendContactRequest) returns (puppet.MessageSendContactResponse) {}
+  rpc MessageSendFile (puppet.MessageSendFileRequest) returns (puppet.MessageSendFileResponse) {}
+  rpc MessageSendText (puppet.MessageSendTextRequest) returns (puppet.MessageSendTextResponse) {}
+  rpc MessageSendMiniProgram (puppet.MessageSendMiniProgramRequest) returns (puppet.MessageSendMiniProgramResponse) {}
+  rpc MessageSendUrl (puppet.MessageSendUrlRequest) returns (puppet.MessageSendUrlResponse) {}
+
+  rpc MessageRecall (puppet.MessageRecallRequest) returns (puppet.MessageRecallResponse) {}
+
+  /**
+   *
+   * Room
+   *
+   */
+  rpc RoomPayload (puppet.RoomPayloadRequest)  returns (puppet.RoomPayloadResponse) {}
+
+  rpc RoomList (puppet.RoomListRequest)        returns (puppet.RoomListResponse) {}
+
+  rpc RoomAdd (puppet.RoomAddRequest) returns (puppet.RoomAddResponse) {}
+  rpc RoomAvatar (puppet.RoomAvatarRequest) returns (puppet.RoomAvatarResponse) {}
+  rpc RoomCreate (puppet.RoomCreateRequest) returns (puppet.RoomCreateResponse) {}
+  rpc RoomDel (puppet.RoomDelRequest) returns (puppet.RoomDelResponse) {}
+  rpc RoomQuit (puppet.RoomQuitRequest) returns (puppet.RoomQuitResponse) {}
+
+  rpc RoomTopic (puppet.RoomTopicRequest) returns (puppet.RoomTopicResponse) {}
+  rpc RoomQRCode (puppet.RoomQRCodeRequest) returns (puppet.RoomQRCodeResponse) {}
+  rpc RoomAnnounce (puppet.RoomAnnounceRequest) returns (puppet.RoomAnnounceResponse) {}
+
+  /**
+   *
+   * Room Member
+   *
+   */
+  rpc RoomMemberPayload (puppet.RoomMemberPayloadRequest) returns (puppet.RoomMemberPayloadResponse) {}
+
+  rpc RoomMemberList (puppet.RoomMemberListRequest) returns (puppet.RoomMemberListResponse) {}
+
+  /**
+   *
+   * Room Invitation
+   *
+   */
+  rpc RoomInvitationPayload (puppet.RoomInvitationPayloadRequest)  returns (puppet.RoomInvitationPayloadResponse) {}
+  rpc RoomInvitationAccept (puppet.RoomInvitationAcceptRequest) returns (puppet.RoomInvitationAcceptResponse) {}
+
+  /**
+   *
+   * Tag
+   *
+   */
+  rpc TagContactAdd (puppet.TagContactAddRequest) returns (puppet.TagContactAddResponse) {}
+  rpc TagContactRemove (puppet.TagContactRemoveRequest) returns (puppet.TagContactRemoveResponse) {}
+  rpc TagContactDelete (puppet.TagContactDeleteRequest) returns (puppet.TagContactDeleteResponse) {}
+  rpc TagContactList (puppet.TagContactListRequest) returns (puppet.TagContactListResponse) {}
+
+}
