@@ -6,6 +6,7 @@ type PuppetOptions struct {
   token    string
 }
 
+//go:generate stringer -type=PuppetEventName
 type PuppetEventName uint8
 
 const (

@@ -12,11 +12,11 @@ func TestNewWechaty(t *testing.T) {
     name string
     want *Wechaty
   }{
-    {name: "new", want: NewWechaty()},
+    {name: "new", want: NewWechaty("")},
   }
   for _, tt := range tests {
     t.Run(tt.name, func(t *testing.T) {
-      if got := NewWechaty(); !reflect.DeepEqual(got, tt.want) {
+      if got := NewWechaty(""); !reflect.DeepEqual(got, tt.want) {
         t.Errorf("NewWechaty() = %v, want %v", got, tt.want)
       }
     })
@@ -24,26 +24,26 @@ func TestNewWechaty(t *testing.T) {
 }
 
 func TestWechaty_Emit(t *testing.T) {
-  wechaty := NewWechaty()
+  wechaty := NewWechaty("")
   got := ""
   expect := "test"
   wechaty.OnHeartbeat(func(data string) {
     got = data
   })
-  wechaty.Emit(schemas.PuppetEventNameHeartbeat, expect)
+  wechaty.emit(schemas.PuppetEventNameHeartbeat, expect)
   if got != expect {
     log.Fatalf("got %s expect %s", got, expect)
   }
 }
 
 func TestWechaty_On(t *testing.T) {
-  wechaty := NewWechaty()
+  wechaty := NewWechaty("")
   got := ""
   expect := "ding"
   wechaty.OnDong(func(data string) {
     got = data
   })
-  wechaty.Emit(schemas.PuppetEventNameDong, expect)
+  wechaty.emit(schemas.PuppetEventNameDong, expect)
   if got != expect {
     log.Fatalf("got %s expect %s", got, expect)
   }
