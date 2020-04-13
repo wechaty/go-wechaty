@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-  _ = wechaty.NewWechaty().
+  const token = ""
+  err := wechaty.NewWechaty(token).
     OnScan(func(qrCode string, status schemas.ScanStatus, data string) {
       fmt.Printf("Scan QR Code to login: %v\nhttps://api.qrserver.com/v1/create-qr-code/?data=%s\n", status, qrCode)
     }).
@@ -19,4 +20,5 @@ func main() {
       fmt.Println(fmt.Printf("Message: %v\n", message))
     }).
     Start()
+  panic(err)
 }
