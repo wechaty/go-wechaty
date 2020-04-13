@@ -1,5 +1,6 @@
 package schemas
 
+//go:generate stringer -type=FriendshipType
 type FriendshipType uint8
 
 const (
