@@ -38,7 +38,7 @@ type Wechaty struct {
 
 // NewWechaty ...
 // instance by golang.
-func NewWechaty(token string) *Wechaty {
+func NewWechaty() *Wechaty {
   return &Wechaty{
     eventMap: map[schemas.PuppetEventName]interface{}{},
   }
@@ -162,7 +162,8 @@ func (w *Wechaty) emit(name schemas.PuppetEventName, data ...interface{}) {
   }
 }
 
-func (w *Wechaty) setToken(token string) *Wechaty {
+// SetToken set token
+func (w *Wechaty) SetToken(token string) *Wechaty {
   w.token = token
   return w
 }
