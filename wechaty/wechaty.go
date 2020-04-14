@@ -25,6 +25,7 @@ package wechaty
 import (
   wechatypuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+  "os"
   "reflect"
 )
 
@@ -40,7 +41,6 @@ type Wechaty struct {
 func NewWechaty(token string) *Wechaty {
   return &Wechaty{
     eventMap: map[schemas.PuppetEventName]interface{}{},
-    token:    token,
   }
 }
 
@@ -162,10 +162,23 @@ func (w *Wechaty) emit(name schemas.PuppetEventName, data ...interface{}) {
   }
 }
 
+func (w *Wechaty) setToken(token string) *Wechaty {
+  w.token = token
+  return w
+}
+
+func (w *Wechaty) getToken() string {
+  if w.token != "" {
+    return w.token
+  }
+  const envToken = "WECHATY_PUPPET_TOKEN"
+  return os.Getenv(envToken)
+}
+
 // Start ...
 func (w *Wechaty) Start() error {
   eventParamsChan := make(chan schemas.EventParams)
-  puppet, err := wechatypuppet.NewPuppet(eventParamsChan, w.token)
+  puppet, err := wechatypuppet.NewPuppet(eventParamsChan, w.getToken())
   if err != nil {
     return err
   }
