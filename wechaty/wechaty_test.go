@@ -30,7 +30,7 @@ func TestWechaty_Emit(t *testing.T) {
   wechaty.OnHeartbeat(func(data string) {
     got = data
   })
-  wechaty.Emit(schemas.PuppetEventNameHeartbeat, expect)
+  wechaty.emit(schemas.PuppetEventNameHeartbeat, expect)
   if got != expect {
     log.Fatalf("got %s expect %s", got, expect)
   }
@@ -43,7 +43,7 @@ func TestWechaty_On(t *testing.T) {
   wechaty.OnDong(func(data string) {
     got = data
   })
-  wechaty.Emit(schemas.PuppetEventNameDong, expect)
+  wechaty.emit(schemas.PuppetEventNameDong, expect)
   if got != expect {
     log.Fatalf("got %s expect %s", got, expect)
   }

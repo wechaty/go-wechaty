@@ -23,14 +23,17 @@
 package wechaty
 
 import (
+  wechatypuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
   "github.com/wechaty/go-wechaty/wechaty-puppet/events"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+  "os"
   "reflect"
 )
 
 // Wechaty ...
 type Wechaty struct {
-  //eventMap map[schemas.PuppetEventName]interface{}
+  puppet   *wechatypuppet.Puppet
+  token    string
   events events.EventEmitter
 }
 
@@ -154,12 +157,36 @@ func (w *Wechaty) OnStop(f EventStop) *Wechaty {
   return w
 }
 
-// Emit ...
-func (w *Wechaty) Emit(name schemas.PuppetEventName, data ...interface{}) {
+func (w *Wechaty) emit(name schemas.PuppetEventName, data ...interface{}) {
   w.events.Emit(events.EventName(name), data...)
 }
 
-// Start ...
-func (w *Wechaty) Start() *Wechaty {
+// SetToken set token
+func (w *Wechaty) SetToken(token string) *Wechaty {
+  w.token = token
   return w
+}
+
+func (w *Wechaty) getToken() string {
+  if w.token != "" {
+    return w.token
+  }
+  const envToken = "WECHATY_PUPPET_TOKEN"
+  return os.Getenv(envToken)
+}
+
+// Start ...
+func (w *Wechaty) Start() error {
+  eventParamsChan := make(chan schemas.EventParams)
+  puppet, err := wechatypuppet.NewPuppet(eventParamsChan, w.getToken())
+  if err != nil {
+    return err
+  }
+  w.puppet = puppet
+  go func() {
+    for v := range eventParamsChan {
+      w.emit(v.EventName, v.Params...)
+    }
+  }()
+  return w.puppet.Start()
 }
