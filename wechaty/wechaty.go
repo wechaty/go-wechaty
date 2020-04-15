@@ -24,6 +24,7 @@ package wechaty
 
 import (
   wechatypuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
+  "github.com/wechaty/go-wechaty/wechaty-puppet/events"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
   "os"
   "reflect"
@@ -31,21 +32,27 @@ import (
 
 // Wechaty ...
 type Wechaty struct {
-  eventMap map[schemas.PuppetEventName]interface{}
   puppet   *wechatypuppet.Puppet
   token    string
+  events events.EventEmitter
 }
 
 // NewWechaty ...
 // instance by golang.
 func NewWechaty() *Wechaty {
   return &Wechaty{
-    eventMap: map[schemas.PuppetEventName]interface{}{},
+    events: events.New(),
   }
 }
 
-func (w *Wechaty) registerEvent(name schemas.PuppetEventName, event interface{}) {
-  w.eventMap[name] = event
+func (w *Wechaty) registerEvent(name schemas.PuppetEventName, f interface{}) {
+  w.events.On(events.EventName(name), func(data ...interface{}) {
+    values := make([]reflect.Value, 0, len(data))
+    for _, v := range data {
+      values = append(values, reflect.ValueOf(v))
+    }
+    _ = reflect.ValueOf(f).Call(values)
+  })
 }
 
 // OnScan ...
@@ -115,7 +122,7 @@ func (w *Wechaty) OnReady(f EventReady) *Wechaty {
 }
 
 // OnRoomInvite ...
-func (w *Wechaty) OnRoomInvite(f EventRoomInvite) *Wechaty {
+func (w *Wechaty) OnRoomInvite(f func(roomInvitation string)) *Wechaty {
   w.registerEvent(schemas.PuppetEventNameRoomInvite, f)
   return w
 }
@@ -150,16 +157,8 @@ func (w *Wechaty) OnStop(f EventStop) *Wechaty {
   return w
 }
 
-// Emit ...
 func (w *Wechaty) emit(name schemas.PuppetEventName, data ...interface{}) {
-  f, ok := w.eventMap[name]
-  if ok {
-    values := make([]reflect.Value, 0, len(data))
-    for _, v := range data {
-      values = append(values, reflect.ValueOf(v))
-    }
-    _ = reflect.ValueOf(f).Call(values)
-  }
+  w.events.Emit(events.EventName(name), data...)
 }
 
 // SetToken set token
