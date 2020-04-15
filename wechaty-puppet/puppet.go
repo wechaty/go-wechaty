@@ -18,15 +18,23 @@ type PuppetInterface interface {
   FriendshipPayloadVerify(friendshipID string) schemas.FriendshipPayloadVerify
   FriendshipAccept(friendshipID string)
   Start(emitChan chan<- schemas.EmitStruct) error
+  RoomInvitationPayload(roomInvitationID string) schemas.RoomInvitationPayload
+  RoomInvitationAccept(roomInvitationID string)
+  MessageSendText(conversationID string, text string) string
+  MessageSendContact(conversationID string, contactID string) string
+  MessageSendFile(conversationID string, fileBox file_box.FileBox) string
+  MessageSendUrl(conversationID string, urlLinkPayload *schemas.UrlLinkPayload) string
+  MessageSendMiniProgram(conversationID string, urlLinkPayload *schemas.MiniProgramPayload) string
 }
 
 // Puppet puppet struct
 type Puppet struct {
   PuppetInterface
 
-  cacheMessagePayload    *lru.Cache
-  cacheFriendshipPayload *lru.Cache
-  eventParamsChan        chan<- schemas.EventParams
+  cacheMessagePayload        *lru.Cache
+  cacheFriendshipPayload     *lru.Cache
+  cacheRoomInvitationPayload *lru.Cache
+  eventParamsChan            chan<- schemas.EventParams
 }
 
 // NewPuppet instance
@@ -39,11 +47,16 @@ func NewPuppet(eventParamsChan chan<- schemas.EventParams, token string) (*Puppe
   if err != nil {
     return nil, err
   }
+  cacheRoomInvitation, err := lru.New(1024)
+  if err != nil {
+    return nil, err
+  }
   return &Puppet{
-    PuppetInterface:        wechaty_puppet_mock.NewPuppetMock(token),
-    cacheMessagePayload:    cacheMessage,
-    cacheFriendshipPayload: cacheFriendship,
-    eventParamsChan:        eventParamsChan,
+    PuppetInterface:            wechaty_puppet_mock.NewPuppetMock(token),
+    cacheMessagePayload:        cacheMessage,
+    cacheFriendshipPayload:     cacheFriendship,
+    cacheRoomInvitationPayload: cacheRoomInvitation,
+    eventParamsChan:            eventParamsChan,
   }, nil
 }
 
@@ -121,6 +134,17 @@ func (p *Puppet) FriendshipPayloadVerify(friendshipID string) schemas.Friendship
   }
   payload := p.PuppetInterface.FriendshipPayloadVerify(friendshipID)
   p.cacheFriendshipPayload.Add(friendshipID, payload)
+  return payload
+}
+
+// RoomInvitationPayload ...
+func (p *Puppet) RoomInvitationPayload(roomInvitationID string) schemas.RoomInvitationPayload {
+  cachePayload, ok := p.cacheRoomInvitationPayload.Get(roomInvitationID)
+  if ok {
+    return cachePayload.(schemas.RoomInvitationPayload)
+  }
+  payload := p.PuppetInterface.RoomInvitationPayload(roomInvitationID)
+  p.cacheRoomInvitationPayload.Add(roomInvitationID, payload)
   return payload
 }
 
