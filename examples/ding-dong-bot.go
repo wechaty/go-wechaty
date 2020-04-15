@@ -3,7 +3,6 @@ package main
 import (
   "fmt"
   "github.com/wechaty/go-wechaty/wechaty"
-  "github.com/wechaty/go-wechaty/wechaty-puppet/errorx"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
   "github.com/wechaty/go-wechaty/wechaty/user"
   "log"
@@ -25,11 +24,9 @@ func main() {
       fmt.Println(fmt.Printf("Message: %v\n", message))
     })
 
-  var errChan = errorx.NewChanErr(1)
-
   var err = bot.Start()
   if err != nil {
-    errChan.Put(err)
+    panic(err)
   }
 
   var quitSig = make(chan os.Signal)
@@ -38,7 +35,5 @@ func main() {
   select {
   case <-quitSig:
     log.Fatal("exit.by.signal")
-  case threadErr := <-errChan.WaitErr():
-    log.Fatalf("exit.by.err: %+v", threadErr)
   }
 }
