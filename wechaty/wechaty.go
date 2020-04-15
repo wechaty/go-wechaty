@@ -23,28 +23,36 @@
 package wechaty
 
 import (
-  wechatypuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
+  "errors"
+  wp "github.com/wechaty/go-wechaty/wechaty-puppet"
   "github.com/wechaty/go-wechaty/wechaty-puppet/events"
+  mc "github.com/wechaty/go-wechaty/wechaty-puppet/memory-card"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-  "os"
+  "log"
   "reflect"
 )
 
 // Wechaty ...
 type Wechaty struct {
-  puppet   *wechatypuppet.Puppet
-  token    string
+  *Option
+
+  puppet wp.PuppetInterface
   events events.EventEmitter
 }
 
 // NewWechaty ...
 // instance by golang.
-func NewWechaty() *Wechaty {
-  return &Wechaty{
-    events: events.New(),
+func NewWechaty(optFns ...OptionFn) *Wechaty {
+  var wy = &Wechaty{events: events.New(), Option: &Option{}}
+
+  for _, fn := range optFns {
+    fn(wy.Option)
   }
+
+  return wy
 }
 
+// register event
 func (w *Wechaty) registerEvent(name schemas.PuppetEventName, f interface{}) {
   w.events.On(events.EventName(name), func(data ...interface{}) {
     values := make([]reflect.Value, 0, len(data))
@@ -161,32 +169,69 @@ func (w *Wechaty) emit(name schemas.PuppetEventName, data ...interface{}) {
   w.events.Emit(events.EventName(name), data...)
 }
 
-// SetToken set token
-func (w *Wechaty) SetToken(token string) *Wechaty {
-  w.token = token
-  return w
-}
-
-func (w *Wechaty) getToken() string {
-  if w.token != "" {
-    return w.token
+// init puppet
+func (w *Wechaty) initPuppet() error {
+  if w.puppet != nil {
+    log.Fatalln("Puppet already inited.")
+    return nil
   }
-  const envToken = "WECHATY_PUPPET_TOKEN"
-  return os.Getenv(envToken)
+  if w.memoryCard == nil {
+    return errors.New("memory card not init")
+  }
+
+  // TODO: set puppet memory
+
+  // TODO: 这种使用方式需要调整
+  //eventParamsChan := make(chan schemas.EventParams)
+  //puppet, err := wp.NewPuppet(eventParamsChan, "")
+  //if err != nil {
+  //  return err
+  //}
+  //w.puppet = puppet
+  //go func() {
+  //  for v := range eventParamsChan {
+  //    w.emit(v.EventName, v.Params...)
+  //  }
+  //}()
+
+  return nil
 }
 
 // Start ...
 func (w *Wechaty) Start() error {
-  eventParamsChan := make(chan schemas.EventParams)
-  puppet, err := wechatypuppet.NewPuppet(eventParamsChan, w.getToken())
+
+  var err error
+
+  // TODO: check wechaty on, impl state events
+
+  if w.memoryCard == nil {
+    w.memoryCard, err = mc.NewMemoryCard(w.name)
+    if err != nil {
+      log.Println("memory card new err: ", err)
+      return err
+    }
+  }
+
+  err = w.memoryCard.Load()
   if err != nil {
+    log.Println("memory card load err: ", err)
     return err
   }
-  w.puppet = puppet
-  go func() {
-    for v := range eventParamsChan {
-      w.emit(v.EventName, v.Params...)
-    }
-  }()
-  return w.puppet.Start()
+
+  err = w.initPuppet()
+  if err != nil {
+    log.Println("memory card load err: ", err)
+    return err
+  }
+
+  // TODO: 建议不要通过该方式传递，在new的时候传入即可
+  err = w.puppet.Start(nil)
+  if err != nil {
+    log.Println("puppet start err: ", err)
+    return err
+  }
+
+  // TODO: io start
+
+  return nil
 }

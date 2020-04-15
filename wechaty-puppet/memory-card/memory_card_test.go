@@ -188,5 +188,5 @@ func newMemoryCard(t *testing.T) *MemoryCard {
   if err != nil {
     t.Fatalf(err.Error())
   }
-  return NewMemoryCard(storage)
+  return NewMemoryCard1(storage)
 }

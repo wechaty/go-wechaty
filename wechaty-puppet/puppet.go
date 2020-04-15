@@ -3,12 +3,15 @@ package wechatypuppet
 import (
   "fmt"
   lru "github.com/hashicorp/golang-lru"
-  wechaty_puppet_mock "github.com/wechaty/go-wechaty/wechaty-puppet-mock"
+  wpm "github.com/wechaty/go-wechaty/wechaty-puppet-mock"
   "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
-  "log"
-
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+  "log"
 )
+
+type Option struct {
+  token string
+}
 
 // PuppetInterface puppet interface
 type PuppetInterface interface {
@@ -40,7 +43,7 @@ func NewPuppet(eventParamsChan chan<- schemas.EventParams, token string) (*Puppe
     return nil, err
   }
   return &Puppet{
-    PuppetInterface:        wechaty_puppet_mock.NewPuppetMock(token),
+    PuppetInterface:        wpm.NewPuppetMock(token),
     cacheMessagePayload:    cacheMessage,
     cacheFriendshipPayload: cacheFriendship,
     eventParamsChan:        eventParamsChan,

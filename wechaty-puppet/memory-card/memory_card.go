@@ -6,12 +6,29 @@ import (
   "sync"
 )
 
+type IMemoryCard interface {
+  GetInt64(key string) int64
+  GetString(key string) string
+  SetInt64(key string, value int64)
+  Clear()
+  Delete(key string)
+  Has(key string) bool
+  Load() error
+  Save() error
+  Destroy() error
+}
+
+// TODO: 将storage的实现放内部，外部只需传wechaty name
+func NewMemoryCard(name string) (IMemoryCard, error) {
+  return &MemoryCard{}, nil
+}
+
 type MemoryCard struct {
   payload *sync.Map
   storage storage2.IStorage
 }
 
-func NewMemoryCard(storage storage2.IStorage) *MemoryCard {
+func NewMemoryCard1(storage storage2.IStorage) *MemoryCard {
   return &MemoryCard{
     payload: &sync.Map{},
     storage: storage,
