@@ -5,6 +5,7 @@ import (
   mc "github.com/wechaty/go-wechaty/wechaty-puppet/memory-card"
 )
 
+// Wechaty option
 type Option struct {
   // wechaty name
   name string
@@ -18,6 +19,7 @@ type Option struct {
   memoryCard mc.IMemoryCard
 }
 
+// Option func
 type OptionFn func(opts *Option)
 
 // with name

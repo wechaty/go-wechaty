@@ -9,6 +9,7 @@ import (
   "log"
 )
 
+// Puppet option
 type Option struct {
   token string
 }

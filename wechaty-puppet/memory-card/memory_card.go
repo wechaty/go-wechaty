@@ -6,6 +6,7 @@ import (
   "sync"
 )
 
+// memory card interface
 type IMemoryCard interface {
   GetInt64(key string) int64
   GetString(key string) string
@@ -30,6 +31,7 @@ func NewMemoryCard(name string) (IMemoryCard, error) {
   return memoryCard, nil
 }
 
+// memory card
 type MemoryCard struct {
   payload *sync.Map
   storage storage2.IStorage
