@@ -17,6 +17,8 @@ type IMemoryCard interface {
   Load() error
   Save() error
   Destroy() error
+  SetString(key string, value string)
+  Set(key string, value interface{})
 }
 
 // TODO: 我将这个地方调整为 把storage的初始化放内部，原实现者可根据情况调整一下
@@ -61,14 +63,14 @@ func (mc *MemoryCard) get(key string) interface{} {
 }
 
 func (mc *MemoryCard) SetInt64(key string, value int64) {
-  mc.set(key, value)
+  mc.Set(key, value)
 }
 
 func (mc *MemoryCard) SetString(key string, value string) {
-  mc.set(key, value)
+  mc.Set(key, value)
 }
 
-func (mc *MemoryCard) set(key string, value interface{}) {
+func (mc *MemoryCard) Set(key string, value interface{}) {
   mc.payload.Store(key, value)
 }
 
@@ -91,7 +93,7 @@ func (mc *MemoryCard) Load() error {
     return err
   }
   for k, v := range raw {
-    mc.set(k, v)
+    mc.Set(k, v)
   }
   return nil
 }
