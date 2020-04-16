@@ -2,6 +2,7 @@ package memory_card
 
 import (
   "encoding/json"
+  "fmt"
   storage2 "github.com/wechaty/go-wechaty/wechaty-puppet/memory-card/storage"
   "sync"
 )
@@ -18,21 +19,19 @@ type IMemoryCard interface {
   Destroy() error
 }
 
-// TODO: 将storage的实现放内部，外部只需传wechaty name
+// TODO: 我将这个地方调整为 把storage的初始化放内部，原实现者可根据情况调整一下
 func NewMemoryCard(name string) (IMemoryCard, error) {
-  return &MemoryCard{}, nil
+  var storage, err = storage2.NewFileStorage(fmt.Sprintf("data/%s", name))
+  if err != nil {
+    return nil, err
+  }
+  var memoryCard = &MemoryCard{payload: &sync.Map{}, storage: storage}
+  return memoryCard, nil
 }
 
 type MemoryCard struct {
   payload *sync.Map
   storage storage2.IStorage
-}
-
-func NewMemoryCard1(storage storage2.IStorage) *MemoryCard {
-  return &MemoryCard{
-    payload: &sync.Map{},
-    storage: storage,
-  }
 }
 
 func (mc *MemoryCard) GetInt64(key string) int64 {
