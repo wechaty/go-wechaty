@@ -3,7 +3,6 @@ package memory_card
 import (
   "crypto/md5"
   "fmt"
-  storage2 "github.com/wechaty/go-wechaty/wechaty-puppet/memory-card/storage"
   "io"
   "math/rand"
   "testing"
@@ -20,7 +19,7 @@ func TestMemoryCard_GetInt(t *testing.T) {
     }
   })
 
-  t.Run("set string return 0", func(t *testing.T) {
+  t.Run("Set string return 0", func(t *testing.T) {
     key := "set_string_return_0"
     mc.SetString(key, "string")
     got := mc.GetInt64(key)
@@ -49,7 +48,7 @@ func TestMemoryCard_GetString(t *testing.T) {
     }
   })
 
-  t.Run("set int return empty string", func(t *testing.T) {
+  t.Run("Set int return empty string", func(t *testing.T) {
     key := "set_int_return_empty_string"
     mc.SetInt64(key, 1)
     got := mc.GetString(key)
@@ -157,7 +156,7 @@ func TestMemoryCard_SaveAndLoad(t *testing.T) {
   }
   mc1 := newMemoryCard(t)
   for _, v := range table {
-    mc1.set(v.key, v.value)
+    mc1.Set(v.key, v.value)
   }
   err := mc1.Save()
   if err != nil {
@@ -183,10 +182,10 @@ func randString() string {
   return fmt.Sprintf("%x", h.Sum(nil))
 }
 
-func newMemoryCard(t *testing.T) *MemoryCard {
-  storage, err := storage2.NewFileStorage("testdata/file")
+func newMemoryCard(t *testing.T) IMemoryCard {
+  mc, err := NewMemoryCard("test")
   if err != nil {
     t.Fatalf(err.Error())
   }
-  return NewMemoryCard(storage)
+  return mc
 }
