@@ -2,7 +2,6 @@ package memory_card
 
 import (
   "encoding/json"
-  "fmt"
   storage2 "github.com/wechaty/go-wechaty/wechaty-puppet/memory-card/storage"
   "sync"
 )
@@ -23,7 +22,7 @@ type IMemoryCard interface {
 
 // TODO: 我将这个地方调整为 把storage的初始化放内部，原实现者可根据情况调整一下
 func NewMemoryCard(name string) (IMemoryCard, error) {
-  var storage, err = storage2.NewFileStorage(fmt.Sprintf("data/%s", name))
+  var storage, err = storage2.NewFileStorage(name)
   if err != nil {
     return nil, err
   }
