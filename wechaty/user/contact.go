@@ -21,18 +21,31 @@
 
 package user
 
-import "github.com/wechaty/go-wechaty/wechaty"
+import (
+  "github.com/wechaty/go-wechaty/wechaty/interface"
+)
 
 type Contact struct {
-	wechaty.Accessory
+  _interface.Accessory
 
-	Id string
+  Id string
 }
 
-func (r *Contact) Load(id string) Contact {
-	return Contact{}
+func NewContact(accessory _interface.Accessory, id string) *Contact {
+  return &Contact{
+    Accessory: accessory,
+    Id:        id,
+  }
 }
 
 func (r *Contact) Ready(forceSync bool) bool {
-	return true
+  return true
+}
+
+func (r *Contact) isReady() bool {
+  return true
+}
+
+func (r *Contact) Sync() {
+  r.Ready(true)
 }

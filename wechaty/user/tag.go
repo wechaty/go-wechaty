@@ -22,15 +22,15 @@
  package user
 
 import (
-	"github.com/wechaty/go-wechaty/wechaty"
+  "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type Tag struct {
-	wechaty.Accessory
+  _interface.Accessory
 	TagId string
 }
 
-func NewTag(id string, accessory wechaty.Accessory) *Tag {
+func NewTag(id string, accessory _interface.Accessory) *Tag {
 	if accessory.GetPuppet() == nil {
 		panic("Tag class can not be instantiated without a puppet!")
 	}

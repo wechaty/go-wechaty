@@ -22,34 +22,171 @@
 // Package wechaty ...
 package wechaty
 
+import (
+  wechatypuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
+  "github.com/wechaty/go-wechaty/wechaty-puppet/events"
+  "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+  "os"
+  "reflect"
+)
+
 // Wechaty ...
 type Wechaty struct {
+  puppet   *wechatypuppet.Puppet
+  token    string
+  events events.EventEmitter
 }
 
 // NewWechaty ...
 // instance by golang.
 func NewWechaty() *Wechaty {
-	return &Wechaty{}
+  return &Wechaty{
+    events: events.New(),
+  }
+}
+
+func (w *Wechaty) registerEvent(name schemas.PuppetEventName, f interface{}) {
+  w.events.On(events.EventName(name), func(data ...interface{}) {
+    values := make([]reflect.Value, 0, len(data))
+    for _, v := range data {
+      values = append(values, reflect.ValueOf(v))
+    }
+    _ = reflect.ValueOf(f).Call(values)
+  })
 }
 
 // OnScan ...
-func (w *Wechaty) OnScan(f func(qrCode, status string)) *Wechaty {
-	return w
+func (w *Wechaty) OnScan(f EventScan) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameScan, f)
+  return w
 }
 
 // OnLogin ...
-// todo:: fake code. user should be struct
-func (w *Wechaty) OnLogin(func(user string)) *Wechaty {
-	return w
+func (w *Wechaty) OnLogin(f EventLogin) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameLogin, f)
+  return w
 }
 
 // OnMessage ...
-// todo:: fake code. message should be struct
-func (w *Wechaty) OnMessage(func(message string)) *Wechaty {
-	return w
+func (w *Wechaty) OnMessage(f EventMessage) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameMessage, f)
+  return w
+}
+
+// OnDong ...
+func (w *Wechaty) OnDong(f EventDong) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameDong, f)
+  return w
+}
+
+// OnError ...
+func (w *Wechaty) OnError(f EventError) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameError, f)
+  return w
+}
+
+// OnFriendshipConfirm ...
+func (w *Wechaty) OnFriendshipConfirm(f EventFriendshipConfirm) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameFriendShipConfirm, f)
+  return w
+}
+
+// OnFriendshipVerify ...
+func (w *Wechaty) OnFriendshipVerify(f EventFriendshipVerify) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameFriendShipVerify, f)
+  return w
+}
+
+// OnFriendshipReceive ...
+func (w *Wechaty) OnFriendshipReceive(f EventFriendshipReceive) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameFriendShipReceive, f)
+  return w
+}
+
+// OnHeartbeat ...
+func (w *Wechaty) OnHeartbeat(f EventHeartbeat) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameHeartbeat, f)
+  return w
+}
+
+// OnLogout ...
+func (w *Wechaty) OnLogout(f EventLogout) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameLogout, f)
+  return w
+}
+
+// OnReady ...
+func (w *Wechaty) OnReady(f EventReady) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameReady, f)
+  return w
+}
+
+// OnRoomInvite ...
+func (w *Wechaty) OnRoomInvite(f func(roomInvitation string)) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameRoomInvite, f)
+  return w
+}
+
+// OnRoomJoin ...
+func (w *Wechaty) OnRoomJoin(f EventRoomJoin) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameRoomJoin, f)
+  return w
+}
+
+// OnRoomLeave ...
+func (w *Wechaty) OnRoomLeave(f EventRoomLeave) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameRoomLeave, f)
+  return w
+}
+
+// OnRoomTopic ...
+func (w *Wechaty) OnRoomTopic(f EventRoomTopic) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameRoomTopic, f)
+  return w
+}
+
+// OnStart ...
+func (w *Wechaty) OnStart(f EventStart) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameStart, f)
+  return w
+}
+
+// OnStop ...
+func (w *Wechaty) OnStop(f EventStop) *Wechaty {
+  w.registerEvent(schemas.PuppetEventNameStop, f)
+  return w
+}
+
+func (w *Wechaty) emit(name schemas.PuppetEventName, data ...interface{}) {
+  w.events.Emit(events.EventName(name), data...)
+}
+
+// SetToken set token
+func (w *Wechaty) SetToken(token string) *Wechaty {
+  w.token = token
+  return w
+}
+
+func (w *Wechaty) getToken() string {
+  if w.token != "" {
+    return w.token
+  }
+  const envToken = "WECHATY_PUPPET_TOKEN"
+  return os.Getenv(envToken)
 }
 
 // Start ...
-func (w *Wechaty) Start() *Wechaty {
-	return w
+func (w *Wechaty) Start() error {
+  eventParamsChan := make(chan schemas.EventParams)
+  puppet, err := wechatypuppet.NewPuppet(eventParamsChan, w.getToken())
+  if err != nil {
+    return err
+  }
+  w.puppet = puppet
+  go func() {
+    for v := range eventParamsChan {
+      w.emit(v.EventName, v.Params...)
+    }
+  }()
+  return w.puppet.Start()
 }
