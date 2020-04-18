@@ -10,12 +10,8 @@ type PuppetMock struct {
   option *option2.Option
 }
 
-func NewPuppetMock(optFns ...option2.OptionFn) *PuppetMock {
-  pm := &PuppetMock{option: &option2.Option{}}
-
-  for _, fn := range optFns {
-    fn(pm.option)
-  }
+func NewPuppetMock(option *option2.Option) *PuppetMock {
+  pm := &PuppetMock{option: option}
   return pm
 }
 
@@ -51,15 +47,7 @@ func (p *PuppetMock) MessageImage(messageID string, imageType schemas.ImageType)
   panic("implement me")
 }
 
-func (p *PuppetMock) FriendshipPayloadReceive(friendshipID string) schemas.FriendshipPayloadReceive {
-  panic("implement me")
-}
-
-func (p *PuppetMock) FriendshipPayloadConfirm(friendshipID string) schemas.FriendshipPayloadConfirm {
-  panic("implement me")
-}
-
-func (p *PuppetMock) FriendshipPayloadVerify(friendshipID string) schemas.FriendshipPayloadVerify {
+func (p *PuppetMock) FriendshipPayload(friendshipID string) schemas.FriendshipPayload {
   panic("implement me")
 }
 
@@ -70,14 +58,11 @@ func (p *PuppetMock) FriendshipAccept(friendshipID string) {
 func (p *PuppetMock) Start() error {
   go func() {
     // emit scan
-    p.option.EmitChan <- schemas.EmitStruct{
-      EventName: schemas.PuppetEventNameScan,
-      Payload: schemas.EventScanPayload{
-        BaseEventPayload: schemas.BaseEventPayload{},
-        Status:           schemas.ScanStatusWaiting,
-        QrCode:           "https://not-exist.com",
-      },
-    }
+    p.option.Emit(schemas.PuppetEventNameScan, &schemas.EventScanPayload{
+      BaseEventPayload: schemas.BaseEventPayload{},
+      Status:           schemas.ScanStatusWaiting,
+      QrCode:           "https://not-exist.com",
+    })
   }()
-  select {}
+  return nil
 }

@@ -33,3 +33,28 @@ const (
   PuppetEventNameStop
   PuppetEventNameStart
 )
+
+var eventNames = []PuppetEventName{
+  PuppetEventNameFriendShip,
+  PuppetEventNameLogin,
+  PuppetEventNameLogout,
+  PuppetEventNameMessage,
+  PuppetEventNameRoomInvite,
+  PuppetEventNameRoomJoin,
+  PuppetEventNameRoomLeave,
+  PuppetEventNameRoomTopic,
+  PuppetEventNameScan,
+
+  PuppetEventNameDong,
+  PuppetEventNameError,
+  PuppetEventNameHeartbeat,
+  PuppetEventNameReady,
+  PuppetEventNameReset,
+
+  PuppetEventNameStop,
+  PuppetEventNameStart,
+}
+
+func GetEventNames() []PuppetEventName {
+  return eventNames
+}

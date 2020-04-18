@@ -52,7 +52,7 @@ type FriendshipPayloadVerify struct {
   Type FriendshipType // FriendshipTypeVerify
 }
 
-type FriendShipPayload struct {
+type FriendshipPayload struct {
   FriendshipPayloadReceive
 }
 
