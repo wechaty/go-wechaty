@@ -39,6 +39,8 @@ jobs:
         sed -i "s/github.com\/wechaty\/go-wechaty\///g" c.out
         ./test-reporter format-coverage -t gocov
         ./test-reporter upload-coverage
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
 
     - name: Build
       run: go build -o ding-dong -v ./examples/ding-dong-bot.go
