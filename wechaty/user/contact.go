@@ -22,13 +22,16 @@
 package user
 
 import (
+  "fmt"
+  "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
   "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type Contact struct {
   _interface.Accessory
 
-  Id string
+  Id      string
+  payload schemas.ContactPayload
 }
 
 func NewContact(accessory _interface.Accessory, id string) *Contact {
@@ -38,8 +41,8 @@ func NewContact(accessory _interface.Accessory, id string) *Contact {
   }
 }
 
-func (r *Contact) Ready(forceSync bool) bool {
-  return true
+func (r *Contact) Ready(forceSync bool) {
+  return
 }
 
 func (r *Contact) isReady() bool {
@@ -48,4 +51,20 @@ func (r *Contact) isReady() bool {
 
 func (r *Contact) Sync() {
   r.Ready(true)
+}
+
+func (r *Contact) String() string {
+  return fmt.Sprintf("Contact<%s>", r.identity())
+}
+
+func (r *Contact) identity() string {
+  identity := "loading..."
+  if r.payload.Alias != "" {
+    identity = r.payload.Alias
+  } else if r.payload.Name != "" {
+    identity = r.payload.Name
+  } else if r.Id != "" {
+    identity = r.Id
+  }
+  return identity
 }

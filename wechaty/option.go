@@ -6,7 +6,7 @@ import (
   "github.com/wechaty/go-wechaty/wechaty-puppet/option"
 )
 
-// Wechaty option
+// Option wechaty option
 type Option struct {
   // wechaty name
   name string
@@ -20,38 +20,38 @@ type Option struct {
   memoryCard mc.IMemoryCard
 }
 
-// Option func
+// OptionFn func
 type OptionFn func(opts *Option)
 
-// with name
+// WithName with name
 func WithName(name string) OptionFn {
   return func(opt *Option) {
     opt.name = name
   }
 }
 
-// with puppet impl
+// WithPuppet with puppet impl
 func WithPuppet(puppet wp.PuppetInterface) OptionFn {
   return func(opt *Option) {
     opt.puppet = puppet
   }
 }
 
-// with puppet option
+// WithPuppetOption with puppet option
 func WithPuppetOption(puppetOption *option.Option) OptionFn {
   return func(opt *Option) {
     opt.puppetOption = puppetOption
   }
 }
 
-// with io token
+// WithIOToken with io token
 func WithIOToken(ioToken string) OptionFn {
   return func(opt *Option) {
     opt.ioToken = ioToken
   }
 }
 
-// with memory card
+// WithMemoryCard with memory card
 func WithMemoryCard(memoryCard mc.IMemoryCard) OptionFn {
   return func(opt *Option) {
     opt.memoryCard = memoryCard
