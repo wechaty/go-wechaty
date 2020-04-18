@@ -221,7 +221,6 @@ func (p *PuppetHostie) discoverHostieIP() (s string, err error) {
       if err != nil {
         errChan <- err
       }
-      log.Println(string(message))
       resultMap := make(map[string]string)
       err = json.Unmarshal(message, &resultMap)
       if err != nil {
