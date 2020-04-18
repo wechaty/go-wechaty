@@ -29,7 +29,7 @@ install:
 
 .PHONY: gotest
 gotest:
-	go test -coverprofile=coverage.out `go list ./... | grep -v /vendor/` -v -count=1 -coverpkg=./...
+	go test `go list ./... | grep -v /vendor/` -v -count=1 -coverpkg=./...
 
 .PHONY: test
 test: golint gotest

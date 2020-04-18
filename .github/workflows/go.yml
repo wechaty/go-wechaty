@@ -35,7 +35,7 @@ jobs:
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./test-reporter
         chmod +x ./test-reporter
         ./test-reporter before-build
-        make test
+        go test -coverprofile c.out .
         ./test-reporter format-coverage -t gocov --prefix wechaty
         ./test-reporter upload-coverage
 
