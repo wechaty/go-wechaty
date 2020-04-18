@@ -183,7 +183,7 @@ func randString() string {
 }
 
 func newMemoryCard(t *testing.T) IMemoryCard {
-  mc, err := NewMemoryCard("test")
+  mc, err := NewMemoryCard("testdata/test")
   if err != nil {
     t.Fatalf(err.Error())
   }
