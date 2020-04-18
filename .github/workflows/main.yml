@@ -24,6 +24,8 @@ jobs:
 
     - name: Go Formatter
       uses: sladyn98/auto-go-format@v0.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
     - name: Go-linter
       uses: Jerome1337/golint-action@v1.0.0
