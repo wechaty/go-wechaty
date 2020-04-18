@@ -36,6 +36,7 @@ jobs:
         chmod +x ./test-reporter
         ./test-reporter before-build
         go test -coverprofile c.out `go list ./... | grep -v /vendor/` -v -count=1 -coverpkg=./...
+        sed -i "s/github.com\/wechaty\/go-wechaty\///g" c.out
         ./test-reporter format-coverage -t gocov --prefix wechaty
         ./test-reporter upload-coverage
 
