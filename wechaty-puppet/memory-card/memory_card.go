@@ -6,16 +6,35 @@ import (
   "sync"
 )
 
+// memory card interface
+type IMemoryCard interface {
+  GetInt64(key string) int64
+  GetString(key string) string
+  SetInt64(key string, value int64)
+  Clear()
+  Delete(key string)
+  Has(key string) bool
+  Load() error
+  Save() error
+  Destroy() error
+  SetString(key string, value string)
+  Set(key string, value interface{})
+}
+
+// TODO: 我将这个地方调整为 把storage的初始化放内部，原实现者可根据情况调整一下
+func NewMemoryCard(name string) (IMemoryCard, error) {
+  var storage, err = storage2.NewFileStorage(name)
+  if err != nil {
+    return nil, err
+  }
+  var memoryCard = &MemoryCard{payload: &sync.Map{}, storage: storage}
+  return memoryCard, nil
+}
+
+// memory card
 type MemoryCard struct {
   payload *sync.Map
   storage storage2.IStorage
-}
-
-func NewMemoryCard(storage storage2.IStorage) *MemoryCard {
-  return &MemoryCard{
-    payload: &sync.Map{},
-    storage: storage,
-  }
 }
 
 func (mc *MemoryCard) GetInt64(key string) int64 {
@@ -45,14 +64,14 @@ func (mc *MemoryCard) get(key string) interface{} {
 }
 
 func (mc *MemoryCard) SetInt64(key string, value int64) {
-  mc.set(key, value)
+  mc.Set(key, value)
 }
 
 func (mc *MemoryCard) SetString(key string, value string) {
-  mc.set(key, value)
+  mc.Set(key, value)
 }
 
-func (mc *MemoryCard) set(key string, value interface{}) {
+func (mc *MemoryCard) Set(key string, value interface{}) {
   mc.payload.Store(key, value)
 }
 
@@ -75,7 +94,7 @@ func (mc *MemoryCard) Load() error {
     return err
   }
   for k, v := range raw {
-    mc.set(k, v)
+    mc.Set(k, v)
   }
   return nil
 }
