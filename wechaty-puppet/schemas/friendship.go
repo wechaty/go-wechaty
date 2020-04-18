@@ -52,6 +52,10 @@ type FriendshipPayloadVerify struct {
   Type FriendshipType // FriendshipTypeVerify
 }
 
+type FriendShipPayload struct {
+  FriendshipPayloadReceive
+}
+
 type FriendshipSearchCondition struct {
   Phone  string
   WeiXin string

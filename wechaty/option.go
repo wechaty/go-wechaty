@@ -3,6 +3,7 @@ package wechaty
 import (
   wp "github.com/wechaty/go-wechaty/wechaty-puppet"
   mc "github.com/wechaty/go-wechaty/wechaty-puppet/memory-card"
+  "github.com/wechaty/go-wechaty/wechaty-puppet/option"
 )
 
 // Wechaty option
@@ -12,7 +13,7 @@ type Option struct {
   // puppet instance
   puppet wp.PuppetInterface
   // puppet option
-  puppetOption *wp.Option
+  puppetOption *option.Option
   // io token
   ioToken string
   // memory card
@@ -37,7 +38,7 @@ func WithPuppet(puppet wp.PuppetInterface) OptionFn {
 }
 
 // with puppet option
-func WithPuppetOption(puppetOption *wp.Option) OptionFn {
+func WithPuppetOption(puppetOption *option.Option) OptionFn {
   return func(opt *Option) {
     opt.puppetOption = puppetOption
   }

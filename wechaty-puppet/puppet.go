@@ -5,14 +5,10 @@ import (
   lru "github.com/hashicorp/golang-lru"
   wpm "github.com/wechaty/go-wechaty/wechaty-puppet-mock"
   "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+  "github.com/wechaty/go-wechaty/wechaty-puppet/option"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
   "log"
 )
-
-// Puppet option
-type Option struct {
-  token string
-}
 
 // PuppetInterface puppet interface
 type PuppetInterface interface {
@@ -21,7 +17,7 @@ type PuppetInterface interface {
   FriendshipPayloadConfirm(friendshipID string) schemas.FriendshipPayloadConfirm
   FriendshipPayloadVerify(friendshipID string) schemas.FriendshipPayloadVerify
   FriendshipAccept(friendshipID string)
-  Start(emitChan chan<- schemas.EmitStruct) error
+  Start() error
 }
 
 // Puppet puppet struct
@@ -44,7 +40,7 @@ func NewPuppet(eventParamsChan chan<- schemas.EventParams, token string) (*Puppe
     return nil, err
   }
   return &Puppet{
-    PuppetInterface:        wpm.NewPuppetMock(token),
+    PuppetInterface:        wpm.NewPuppetMock(option.WithToken(token)),
     cacheMessagePayload:    cacheMessage,
     cacheFriendshipPayload: cacheFriendship,
     eventParamsChan:        eventParamsChan,
@@ -133,7 +129,7 @@ func (p *Puppet) Start() error {
   emitChan := make(chan schemas.EmitStruct)
   errChan := make(chan error)
   go func() {
-    errChan <- p.PuppetInterface.Start(emitChan)
+    errChan <- p.PuppetInterface.Start()
   }()
   go func() {
     for v := range emitChan {

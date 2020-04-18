@@ -2,15 +2,21 @@ package wechaty_puppet_mock
 
 import (
   file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+  option2 "github.com/wechaty/go-wechaty/wechaty-puppet/option"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
 type PuppetMock struct {
-  token string
+  option *option2.Option
 }
 
-func NewPuppetMock(token string) *PuppetMock {
-  return &PuppetMock{token: token}
+func NewPuppetMock(optFns ...option2.OptionFn) *PuppetMock {
+  pm := &PuppetMock{option: &option2.Option{}}
+
+  for _, fn := range optFns {
+    fn(pm.option)
+  }
+  return pm
 }
 
 func (p *PuppetMock) MessageImage(messageID string, imageType schemas.ImageType) file_box.FileBox {
@@ -33,10 +39,10 @@ func (p *PuppetMock) FriendshipAccept(friendshipID string) {
   panic("implement me")
 }
 
-func (p *PuppetMock) Start(emitChan chan<- schemas.EmitStruct) error {
+func (p *PuppetMock) Start() error {
   go func() {
     // emit scan
-    emitChan <- schemas.EmitStruct{
+    p.option.EmitChan <- schemas.EmitStruct{
       EventName: schemas.PuppetEventNameScan,
       Payload: schemas.EventScanPayload{
         BaseEventPayload: schemas.BaseEventPayload{},

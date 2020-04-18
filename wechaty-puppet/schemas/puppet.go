@@ -14,6 +14,7 @@ const (
   PuppetEventNameFriendShipConfirm
   PuppetEventNameFriendShipReceive
   PuppetEventNameFriendShipVerify
+  PuppetEventNameFriendShip
   PuppetEventNameLogin
   PuppetEventNameLogout
   PuppetEventNameMessage

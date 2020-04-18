@@ -224,8 +224,7 @@ func (w *Wechaty) Start() error {
     return err
   }
 
-  // TODO: 建议不要通过该方式传递，在new的时候传入即可
-  err = w.puppet.Start(nil)
+  err = w.puppet.Start()
   if err != nil {
     log.Println("puppet start err: ", err)
     return err
