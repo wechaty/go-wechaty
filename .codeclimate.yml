@@ -31,3 +31,5 @@ plugins:
     enabled: true
   govet:
     enabled: true
+exclude_patterns:
+  - examples
