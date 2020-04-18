@@ -7,7 +7,6 @@ on:
     branches: [ master ]
 
 jobs:
-
   build:
     name: Test
     runs-on: ubuntu-latest
@@ -24,11 +23,6 @@ jobs:
 
     - name: Get dependencies
       run: go vet ./...
-
-    - name: Go Linty
-      uses: ArangoGutierrez/GoLinty-Action@go-1.13rc1-alpine
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install dependencies
       run: make install
