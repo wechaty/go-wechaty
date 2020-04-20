@@ -19,40 +19,9 @@ import (
 // ErrNoEndpoint err no endpoint
 var ErrNoEndpoint = errors.New("no endpoint")
 
-var pbEventType2PuppetEventName = map[pbwechaty.EventType]schemas.PuppetEventName{
-  pbwechaty.EventType_EVENT_TYPE_DONG:        schemas.PuppetEventNameDong,
-  pbwechaty.EventType_EVENT_TYPE_ERROR:       schemas.PuppetEventNameError,
-  pbwechaty.EventType_EVENT_TYPE_HEARTBEAT:   schemas.PuppetEventNameHeartbeat,
-  pbwechaty.EventType_EVENT_TYPE_FRIENDSHIP:  schemas.PuppetEventNameFriendShip,
-  pbwechaty.EventType_EVENT_TYPE_LOGIN:       schemas.PuppetEventNameLogin,
-  pbwechaty.EventType_EVENT_TYPE_LOGOUT:      schemas.PuppetEventNameLogout,
-  pbwechaty.EventType_EVENT_TYPE_MESSAGE:     schemas.PuppetEventNameMessage,
-  pbwechaty.EventType_EVENT_TYPE_READY:       schemas.PuppetEventNameReady,
-  pbwechaty.EventType_EVENT_TYPE_ROOM_INVITE: schemas.PuppetEventNameRoomInvite,
-  pbwechaty.EventType_EVENT_TYPE_ROOM_JOIN:   schemas.PuppetEventNameRoomJoin,
-  pbwechaty.EventType_EVENT_TYPE_ROOM_LEAVE:  schemas.PuppetEventNameRoomLeave,
-  pbwechaty.EventType_EVENT_TYPE_ROOM_TOPIC:  schemas.PuppetEventNameRoomTopic,
-  pbwechaty.EventType_EVENT_TYPE_SCAN:        schemas.PuppetEventNameScan,
-  pbwechaty.EventType_EVENT_TYPE_RESET:       schemas.PuppetEventNameReset,
-  pbwechaty.EventType_EVENT_TYPE_UNSPECIFIED: schemas.PuppetEventNameUnknown,
-}
+var pbEventType2PuppetEventName = schemas.PbEventType2PuppetEventName()
 
-var pbEventType2GeneratePayloadFunc = map[pbwechaty.EventType]func() interface{}{
-  pbwechaty.EventType_EVENT_TYPE_DONG:        func() interface{} { return &schemas.EventDongPayload{} },
-  pbwechaty.EventType_EVENT_TYPE_ERROR:       func() interface{} { return &schemas.EventErrorPayload{} },
-  pbwechaty.EventType_EVENT_TYPE_HEARTBEAT:   func() interface{} { return &schemas.EventHeartbeatPayload{} },
-  pbwechaty.EventType_EVENT_TYPE_FRIENDSHIP:  func() interface{} { return &schemas.EventFriendshipPayload{} },
-  pbwechaty.EventType_EVENT_TYPE_LOGIN:       func() interface{} { return &schemas.EventLoginPayload{} },
-  pbwechaty.EventType_EVENT_TYPE_LOGOUT:      func() interface{} { return &schemas.EventLogoutPayload{} },
-  pbwechaty.EventType_EVENT_TYPE_MESSAGE:     func() interface{} { return &schemas.EventMessagePayload{} },
-  pbwechaty.EventType_EVENT_TYPE_READY:       func() interface{} { return &schemas.EventReadyPayload{} },
-  pbwechaty.EventType_EVENT_TYPE_ROOM_INVITE: func() interface{} { return &schemas.EventRoomInvitePayload{} },
-  pbwechaty.EventType_EVENT_TYPE_ROOM_JOIN:   func() interface{} { return &schemas.EventRoomJoinPayload{} },
-  pbwechaty.EventType_EVENT_TYPE_ROOM_LEAVE:  func() interface{} { return &schemas.EventRoomLeavePayload{} },
-  pbwechaty.EventType_EVENT_TYPE_ROOM_TOPIC:  func() interface{} { return &schemas.EventRoomTopicPayload{} },
-  pbwechaty.EventType_EVENT_TYPE_SCAN:        func() interface{} { return &schemas.EventScanPayload{} },
-  pbwechaty.EventType_EVENT_TYPE_RESET:       func() interface{} { return &schemas.EventResetPayload{} },
-}
+var pbEventType2GeneratePayloadFunc = schemas.PbEventType2GeneratePayloadFunc()
 
 // PuppetHostie struct
 type PuppetHostie struct {
