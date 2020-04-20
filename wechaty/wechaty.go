@@ -28,6 +28,7 @@ import (
   "github.com/wechaty/go-wechaty/wechaty-puppet/events"
   mc "github.com/wechaty/go-wechaty/wechaty-puppet/memory-card"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+  "github.com/wechaty/go-wechaty/wechaty/user"
   "log"
   "reflect"
 )
@@ -36,7 +37,7 @@ import (
 type Wechaty struct {
   *Option
 
-  puppet wp.PuppetInterface
+  puppet *wp.Puppet
   events events.EventEmitter
 }
 
@@ -54,7 +55,7 @@ func NewWechaty(optFns ...OptionFn) *Wechaty {
 
 // register event
 func (w *Wechaty) registerEvent(name schemas.PuppetEventName, f interface{}) {
-  w.events.On(events.EventName(name), func(data ...interface{}) {
+  w.events.On(name, func(data ...interface{}) {
     values := make([]reflect.Value, 0, len(data))
     for _, v := range data {
       values = append(values, reflect.ValueOf(v))
@@ -166,7 +167,7 @@ func (w *Wechaty) OnStop(f EventStop) *Wechaty {
 }
 
 func (w *Wechaty) emit(name schemas.PuppetEventName, data ...interface{}) {
-  w.events.Emit(events.EventName(name), data...)
+  w.events.Emit(name, data...)
 }
 
 // init puppet
@@ -181,18 +182,14 @@ func (w *Wechaty) initPuppet() error {
 
   // TODO: set puppet memory
 
-  // TODO: 这种使用方式需要调整
-  //eventParamsChan := make(chan schemas.EventParams)
-  //puppet, err := wp.NewPuppet(eventParamsChan, "")
-  //if err != nil {
-  //  return err
-  //}
-  //w.puppet = puppet
-  //go func() {
-  //  for v := range eventParamsChan {
-  //    w.emit(v.EventName, v.Params...)
-  //  }
-  //}()
+  // TODO temp
+  puppet, err := wp.NewPuppet(w.Option.puppetOption)
+  if err != nil {
+    return err
+  }
+  w.puppet = puppet
+
+  w.initPuppetEventBridge()
 
   return nil
 }
@@ -224,8 +221,7 @@ func (w *Wechaty) Start() error {
     return err
   }
 
-  // TODO: 建议不要通过该方式传递，在new的时候传入即可
-  err = w.puppet.Start(nil)
+  err = w.puppet.Start()
   if err != nil {
     log.Println("puppet start err: ", err)
     return err
@@ -234,4 +230,47 @@ func (w *Wechaty) Start() error {
   // TODO: io start
 
   return nil
+}
+
+func (w *Wechaty) initPuppetEventBridge() {
+  // TODO temporary
+  for _, name := range schemas.GetEventNames() {
+    name := name
+    switch name {
+    case schemas.PuppetEventNameDong:
+      w.puppet.Option.On(name, func(i ...interface{}) {
+        w.emit(name, i[0].(*schemas.EventDongPayload).Data)
+      })
+    case schemas.PuppetEventNameError:
+      w.puppet.Option.On(name, func(i ...interface{}) {
+        w.emit(name, i[0].(*schemas.EventErrorPayload).Data)
+      })
+    case schemas.PuppetEventNameHeartbeat:
+      w.puppet.Option.On(name, func(i ...interface{}) {
+        w.emit(name, i[0].(*schemas.EventHeartbeatPayload).Data)
+      })
+    case schemas.PuppetEventNameLogin:
+      w.puppet.Option.On(name, func(i ...interface{}) {
+        w.emit(name, "todo")
+      })
+    case schemas.PuppetEventNameLogout:
+      w.puppet.Option.On(name, func(i ...interface{}) {
+        w.emit(name, "todo")
+      })
+    case schemas.PuppetEventNameScan:
+      w.puppet.Option.On(name, func(i ...interface{}) {
+        payload := i[0].(*schemas.EventScanPayload)
+        w.emit(name, payload.QrCode, payload.Status, payload.Data)
+      })
+    case schemas.PuppetEventNameMessage:
+      w.puppet.Option.On(name, func(i ...interface{}) {
+        messageID := i[0].(*schemas.EventMessagePayload).MessageId
+        w.emit(name, &user.Message{
+          Id: messageID,
+        })
+      })
+    default:
+
+    }
+  }
 }
