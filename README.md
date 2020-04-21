@@ -251,6 +251,10 @@ make test
 - [Journey from OO language to Golang - Sergey Kibish @DevFest Switzerland 2018](https://www.youtube.com/watch?v=1ZjvhGfpwJ8)
 - [The Go Blog - Publishing Go Modules](https://blog.golang.org/publishing-go-modules)
 - [Effective Go](https://golang.org/doc/effective_go.html)
+
+### Golang for Node.js Developer
+
+- [Golang for Node.js Developers - Examples of Golang examples compared to Node.js for learning](https://github.com/miguelmota/golang-for-nodejs-developers)
 - [Learning Go as a Node.js Developer](https://nemethgergely.com/learning-go-as-a-nodejs-developer/)
 - [Golang Tutorial for Node.js Developers](https://blog.risingstack.com/golang-tutorial-for-nodejs-developers-getting-started/)
 
