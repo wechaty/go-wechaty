@@ -3,7 +3,7 @@ package main
 import (
   "fmt"
   "github.com/wechaty/go-wechaty/wechaty"
-  "github.com/wechaty/go-wechaty/wechaty-puppet/option"
+  wp "github.com/wechaty/go-wechaty/wechaty-puppet"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
   "github.com/wechaty/go-wechaty/wechaty/user"
   "log"
@@ -12,8 +12,8 @@ import (
 )
 
 func main() {
-  var bot = wechaty.NewWechaty(wechaty.WithPuppetOption(&option.Option{
-    Token:        "",
+  var bot = wechaty.NewWechaty(wechaty.WithPuppetOption(&wp.Option{
+    Token: "",
   }))
 
   bot.

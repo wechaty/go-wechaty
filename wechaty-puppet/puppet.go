@@ -4,7 +4,6 @@ import (
   lru "github.com/hashicorp/golang-lru"
   "github.com/wechaty/go-wechaty/wechaty-puppet/events"
   "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
-  "github.com/wechaty/go-wechaty/wechaty-puppet/option"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
@@ -34,7 +33,7 @@ type IPuppetAbstract interface {
 
 // Puppet puppet abstract struct
 type Puppet struct {
-  *option.Option
+  *Option
 
   id string
   // puppet implementation puppet_hostie or puppet_mock
@@ -46,7 +45,7 @@ type Puppet struct {
 }
 
 // NewPuppet instance
-func NewPuppet(option *option.Option) (*Puppet, error) {
+func NewPuppet(option *Option) (*Puppet, error) {
   cacheMessage, err := lru.New(1024)
   if err != nil {
     return nil, err

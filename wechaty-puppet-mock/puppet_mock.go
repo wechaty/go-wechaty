@@ -3,7 +3,6 @@ package wechaty_puppet_mock
 import (
   wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
   file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
-  option2 "github.com/wechaty/go-wechaty/wechaty-puppet/option"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
@@ -13,7 +12,7 @@ type PuppetMock struct {
   *wechatyPuppet.Puppet
 }
 
-func NewPuppetMock(option *option2.Option) (*PuppetMock, error) {
+func NewPuppetMock(option *wechatyPuppet.Option) (*PuppetMock, error) {
   puppetAbstract, err := wechatyPuppet.NewPuppet(option)
   if err != nil {
     return nil, err

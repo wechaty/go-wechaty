@@ -10,7 +10,6 @@ import (
   pbwechaty "github.com/wechaty/go-grpc/wechaty"
   wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
   file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
-  option2 "github.com/wechaty/go-wechaty/wechaty-puppet/option"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
   "google.golang.org/grpc"
   "io"
@@ -35,7 +34,7 @@ type PuppetHostie struct {
 }
 
 // NewPuppetHostie new PuppetHostie struct
-func NewPuppetHostie(o *option2.Option) (*PuppetHostie, error) {
+func NewPuppetHostie(o *wechatyPuppet.Option) (*PuppetHostie, error) {
   puppetAbstract, err := wechatyPuppet.NewPuppet(o)
   if err != nil {
     return nil, err
