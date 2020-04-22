@@ -38,6 +38,7 @@ type Puppet struct {
 
   id string
   // puppet implementation puppet_hostie or puppet_mock
+  events.EventEmitter
   puppetImplementation       IPuppetAbstract
   cacheMessagePayload        *lru.Cache
   cacheFriendshipPayload     *lru.Cache
@@ -58,11 +59,9 @@ func NewPuppet(option *option.Option) (*Puppet, error) {
   if err != nil {
     return nil, err
   }
-  if option.EventEmitter == nil {
-    option.EventEmitter = events.New()
-  }
   return &Puppet{
     Option:                     option,
+    EventEmitter:               events.New(),
     cacheMessagePayload:        cacheMessage,
     cacheFriendshipPayload:     cacheFriendship,
     cacheRoomInvitationPayload: cacheRoomInvitation,
