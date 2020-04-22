@@ -10,16 +10,56 @@ import (
 // iPuppet puppet concrete interface
 type iPuppet interface {
   MessageImage(messageID string, imageType schemas.ImageType) (*file_box.FileBox, error)
-  FriendshipRawPayload(friendshipID string) (*schemas.FriendshipPayload, error)
-  FriendshipAccept(friendshipID string) error
-  Start() error
-  RoomInvitationPayload(roomInvitationID string) (*schemas.RoomInvitationPayload, error)
-  RoomInvitationAccept(roomInvitationID string) error
+  Start() (err error)
+  Stop()
+  Logout() error
+  Ding(data string)
+  SetContactAlias(contactID string, alias string) error
+  GetContactAlias(contactID string) (string, error)
+  ContactList() ([]string, error)
+  ContactQRCode(contactID string) (string, error)
+  SetContactAvatar(contactID string, fileBox *file_box.FileBox) error
+  GetContactAvatar(contactID string) (*file_box.FileBox, error)
+  ContactRawPayload(contactID string) (*schemas.ContactPayload, error)
+  SetContactSelfName(name string) error
+  ContactSelfQRCode() (string, error)
+  SetContactSelfSignature(signature string) error
+  MessageMiniProgram(messageID string) (*schemas.MiniProgramPayload, error)
+  MessageContact(messageID string) (string, error)
+  MessageSendMiniProgram(conversationID string, miniProgramPayload *schemas.MiniProgramPayload) (string, error)
+  MessageRecall(messageID string) (bool, error)
+  MessageFile(id string) (*file_box.FileBox, error)
+  MessageRawPayload(id string) (*schemas.MessagePayload, error)
   MessageSendText(conversationID string, text string) (string, error)
-  MessageSendContact(conversationID string, contactID string) (string, error)
   MessageSendFile(conversationID string, fileBox *file_box.FileBox) (string, error)
+  MessageSendContact(conversationID string, contactID string) (string, error)
   MessageSendURL(conversationID string, urlLinkPayload *schemas.UrlLinkPayload) (string, error)
-  MessageSendMiniProgram(conversationID string, urlLinkPayload *schemas.MiniProgramPayload) (string, error)
+  MessageURL(messageID string) (*schemas.UrlLinkPayload, error)
+  RoomRawPayload(id string) (*schemas.RoomPayload, error)
+  RoomList() ([]string, error)
+  RoomDel(roomID, contactID string) error
+  RoomAvatar(roomID string) (*file_box.FileBox, error)
+  RoomAdd(roomID, contactID string) error
+  SetRoomTopic(roomID string, topic string) error
+  GetRoomTopic(roomID string) (string, error)
+  RoomCreate(contactIDList []string, topic string) (string, error)
+  RoomQuit(roomID string) error
+  RoomQRCode(roomID string) (string, error)
+  RoomMemberList(roomID string) ([]string, error)
+  RoomMemberRawPayload(roomID string, contactID string) (*schemas.RoomMemberPayload, error)
+  SetRoomAnnounce(roomID, text string) error
+  GetRoomAnnounce(roomID string) (string, error)
+  RoomInvitationAccept(roomInvitationID string) error
+  RoomInvitationRawPayload(id string) (*schemas.RoomInvitationPayload, error)
+  FriendshipSearchPhone(phone string) (string, error)
+  FriendshipSearchWeixin(weixin string) (string, error)
+  FriendshipRawPayload(id string) (*schemas.FriendshipPayload, error)
+  FriendshipAdd(contactID, hello string) (err error)
+  FriendshipAccept(friendshipID string) (err error)
+  TagContactAdd(id, contactID string) (err error)
+  TagContactRemove(id, contactID string) (err error)
+  TagContactDelete(id string) (err error)
+  TagContactList(contactID string) ([]string, error)
 }
 
 // IPuppetAbstract puppet abstract class interface

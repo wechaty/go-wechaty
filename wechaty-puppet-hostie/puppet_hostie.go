@@ -401,9 +401,9 @@ func (p *PuppetHostie) GetContactAvatar(contactID string) (*file_box.FileBox, er
   return file_box.NewFileBoxFromJSONString(response.Filebox.Value)
 }
 
-// ContactPayload ...
-func (p *PuppetHostie) ContactPayload(contactID string) (*schemas.ContactPayload, error) {
-  log.Printf("PuppetHostie ContactPayload(%s)\n", contactID)
+// ContactRawPayload ...
+func (p *PuppetHostie) ContactRawPayload(contactID string) (*schemas.ContactPayload, error) {
+  log.Printf("PuppetHostie ContactRawPayload(%s)\n", contactID)
   response, err := p.grpcClient.ContactPayload(context.Background(), &pbwechaty.ContactPayloadRequest{
     Id: contactID,
   })
@@ -615,9 +615,9 @@ func (p *PuppetHostie) MessageURL(messageID string) (*schemas.UrlLinkPayload, er
   return payload, nil
 }
 
-// RoomPayload ...
-func (p *PuppetHostie) RoomPayload(id string) (*schemas.RoomPayload, error) {
-  log.Printf("PuppetHostie RoomPayload(%s)\n", id)
+// RoomRawPayload ...
+func (p *PuppetHostie) RoomRawPayload(id string) (*schemas.RoomPayload, error) {
+  log.Printf("PuppetHostie RoomRawPayload(%s)\n", id)
   response, err := p.grpcClient.RoomPayload(context.Background(), &pbwechaty.RoomPayloadRequest{
     Id: id,
   })
@@ -758,9 +758,9 @@ func (p *PuppetHostie) RoomMemberList(roomID string) ([]string, error) {
   return response.MemberIds, nil
 }
 
-// RoomMemberPayload ...
-func (p *PuppetHostie) RoomMemberPayload(roomID string, contactID string) (*schemas.RoomMemberPayload, error) {
-  log.Printf("PuppetHostie RoomMemberPayload(%s, %s)\n", roomID, contactID)
+// RoomMemberRawPayload ...
+func (p *PuppetHostie) RoomMemberRawPayload(roomID string, contactID string) (*schemas.RoomMemberPayload, error) {
+  log.Printf("PuppetHostie RoomMemberRawPayload(%s, %s)\n", roomID, contactID)
   response, err := p.grpcClient.RoomMemberPayload(context.Background(), &pbwechaty.RoomMemberPayloadRequest{
     Id:       roomID,
     MemberId: contactID,
@@ -814,9 +814,9 @@ func (p *PuppetHostie) RoomInvitationAccept(roomInvitationID string) error {
   return nil
 }
 
-// RoomInvitationPayload ...
-func (p *PuppetHostie) RoomInvitationPayload(id string) (*schemas.RoomInvitationPayload, error) {
-  log.Printf("PuppetHostie RoomInvitationPayload(%s)\n", id)
+// RoomInvitationRawPayload ...
+func (p *PuppetHostie) RoomInvitationRawPayload(id string) (*schemas.RoomInvitationPayload, error) {
+  log.Printf("PuppetHostie RoomInvitationRawPayload(%s)\n", id)
   response, err := p.grpcClient.RoomInvitationPayload(context.Background(), &pbwechaty.RoomInvitationPayloadRequest{
     Id: id,
   })

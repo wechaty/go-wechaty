@@ -48,7 +48,7 @@ func (p PuppetMock) FriendshipAccept(friendshipID string) error {
   panic("implement me")
 }
 
-func (p PuppetMock) RoomInvitationPayload(roomInvitationID string) (*schemas.RoomInvitationPayload, error) {
+func (p PuppetMock) RoomInvitationRawPayload(roomInvitationID string) (*schemas.RoomInvitationPayload, error) {
   panic("implement me")
 }
 
@@ -73,5 +73,165 @@ func (p PuppetMock) MessageSendURL(conversationID string, urlLinkPayload *schema
 }
 
 func (p PuppetMock) MessageSendMiniProgram(conversationID string, urlLinkPayload *schemas.MiniProgramPayload) (string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) Stop() {
+  panic("implement me")
+}
+
+func (p *PuppetMock) Logout() error {
+  panic("implement me")
+}
+
+func (p *PuppetMock) Ding(data string) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) SetContactAlias(contactID string, alias string) error {
+  panic("implement me")
+}
+
+func (p *PuppetMock) GetContactAlias(contactID string) (string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) ContactList() ([]string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) ContactQRCode(contactID string) (string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) SetContactAvatar(contactID string, fileBox *file_box.FileBox) error {
+  panic("implement me")
+}
+
+func (p *PuppetMock) GetContactAvatar(contactID string) (*file_box.FileBox, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) ContactRawPayload(contactID string) (*schemas.ContactPayload, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) SetContactSelfName(name string) error {
+  panic("implement me")
+}
+
+func (p *PuppetMock) ContactSelfQRCode() (string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) SetContactSelfSignature(signature string) error {
+  panic("implement me")
+}
+
+func (p *PuppetMock) MessageMiniProgram(messageID string) (*schemas.MiniProgramPayload, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) MessageContact(messageID string) (string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) MessageRecall(messageID string) (bool, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) MessageFile(id string) (*file_box.FileBox, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) MessageRawPayload(id string) (*schemas.MessagePayload, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) MessageURL(messageID string) (*schemas.UrlLinkPayload, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) RoomRawPayload(id string) (*schemas.RoomPayload, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) RoomList() ([]string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) RoomDel(roomID, contactID string) error {
+  panic("implement me")
+}
+
+func (p *PuppetMock) RoomAvatar(roomID string) (*file_box.FileBox, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) RoomAdd(roomID, contactID string) error {
+  panic("implement me")
+}
+
+func (p *PuppetMock) SetRoomTopic(roomID string, topic string) error {
+  panic("implement me")
+}
+
+func (p *PuppetMock) GetRoomTopic(roomID string) (string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) RoomCreate(contactIDList []string, topic string) (string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) RoomQuit(roomID string) error {
+  panic("implement me")
+}
+
+func (p *PuppetMock) RoomQRCode(roomID string) (string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) RoomMemberList(roomID string) ([]string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) RoomMemberRawPayload(roomID string, contactID string) (*schemas.RoomMemberPayload, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) SetRoomAnnounce(roomID, text string) error {
+  panic("implement me")
+}
+
+func (p *PuppetMock) GetRoomAnnounce(roomID string) (string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) FriendshipSearchPhone(phone string) (string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) FriendshipSearchWeixin(weixin string) (string, error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) FriendshipAdd(contactID, hello string) (err error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) TagContactAdd(id, contactID string) (err error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) TagContactRemove(id, contactID string) (err error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) TagContactDelete(id string) (err error) {
+  panic("implement me")
+}
+
+func (p *PuppetMock) TagContactList(contactID string) ([]string, error) {
   panic("implement me")
 }

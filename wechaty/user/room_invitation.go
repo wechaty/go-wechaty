@@ -69,6 +69,6 @@ func (ri *RoomInvitation) Date() time.Time {
 }
 
 func (ri *RoomInvitation) getPayload() *schemas.RoomInvitationPayload {
-  payload, _ := ri.GetPuppet().RoomInvitationPayload(ri.id)
+  payload, _ := ri.GetPuppet().RoomInvitationRawPayload(ri.id)
   return payload
 }
