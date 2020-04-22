@@ -11,7 +11,7 @@ type Option struct {
   // wechaty name
   name string
   // puppet instance
-  puppet wp.PuppetInterface
+  puppet wp.IPuppetAbstract
   // puppet option
   puppetOption *option.Option
   // io token
@@ -31,7 +31,7 @@ func WithName(name string) OptionFn {
 }
 
 // WithPuppet with puppet impl
-func WithPuppet(puppet wp.PuppetInterface) OptionFn {
+func WithPuppet(puppet wp.IPuppetAbstract) OptionFn {
   return func(opt *Option) {
     opt.puppet = puppet
   }

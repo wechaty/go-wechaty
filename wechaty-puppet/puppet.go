@@ -2,22 +2,16 @@ package wechatypuppet
 
 import (
   lru "github.com/hashicorp/golang-lru"
-  wph "github.com/wechaty/go-wechaty/wechaty-puppet-hostie"
   "github.com/wechaty/go-wechaty/wechaty-puppet/events"
   "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
   "github.com/wechaty/go-wechaty/wechaty-puppet/option"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
-// Option Puppet option
-type Option struct {
-  token string
-}
-
-// PuppetInterface puppet interface
-type PuppetInterface interface {
+// iPuppet puppet concrete interface
+type iPuppet interface {
   MessageImage(messageID string, imageType schemas.ImageType) (*file_box.FileBox, error)
-  FriendshipPayload(friendshipID string) (*schemas.FriendshipPayload, error)
+  FriendshipRawPayload(friendshipID string) (*schemas.FriendshipPayload, error)
   FriendshipAccept(friendshipID string) error
   Start() error
   RoomInvitationPayload(roomInvitationID string) (*schemas.RoomInvitationPayload, error)
@@ -29,11 +23,22 @@ type PuppetInterface interface {
   MessageSendMiniProgram(conversationID string, urlLinkPayload *schemas.MiniProgramPayload) (string, error)
 }
 
-// Puppet puppet struct
+// IPuppetAbstract puppet abstract class interface
+type IPuppetAbstract interface {
+  MessageSearch(query schemas.MessageUserQueryFilter) []string
+  MessagePayload(messageID string) (payload schemas.MessagePayload)
+  FriendshipPayload(friendshipID string) (*schemas.FriendshipPayload, error)
+  iPuppet
+  events.EventEmitter
+}
+
+// Puppet puppet abstract struct
 type Puppet struct {
   *option.Option
-  PuppetInterface
 
+  id string
+  // puppet implementation puppet_hostie or puppet_mock
+  puppetImplementation       IPuppetAbstract
   cacheMessagePayload        *lru.Cache
   cacheFriendshipPayload     *lru.Cache
   cacheRoomInvitationPayload *lru.Cache
@@ -58,7 +63,6 @@ func NewPuppet(option *option.Option) (*Puppet, error) {
   }
   return &Puppet{
     Option:                     option,
-    PuppetInterface:            wph.NewPuppetHostie(option),
     cacheMessagePayload:        cacheMessage,
     cacheFriendshipPayload:     cacheFriendship,
     cacheRoomInvitationPayload: cacheRoomInvitation,
@@ -115,10 +119,25 @@ func (p *Puppet) FriendshipPayload(friendshipID string) (*schemas.FriendshipPayl
   if ok {
     return cachePayload.(*schemas.FriendshipPayload), nil
   }
-  payload, err := p.PuppetInterface.FriendshipPayload(friendshipID)
+  payload, err := p.puppetImplementation.FriendshipRawPayload(friendshipID)
   if err != nil {
     return nil, err
   }
   p.cacheFriendshipPayload.Add(friendshipID, payload)
   return payload, nil
+}
+
+// SetPuppetImplementation set puppet implementation
+func (p *Puppet) SetPuppetImplementation(i IPuppetAbstract) {
+  p.puppetImplementation = i
+}
+
+// SetID set login id
+func (p *Puppet) SetID(id string) {
+  p.id = id
+}
+
+// SelfID self id
+func (p *Puppet) SelfID() string {
+  return p.id
 }

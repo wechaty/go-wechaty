@@ -8,6 +8,7 @@ import (
   "github.com/golang/protobuf/ptypes/wrappers"
   "github.com/gorilla/websocket"
   pbwechaty "github.com/wechaty/go-grpc/wechaty"
+  wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
   file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
   option2 "github.com/wechaty/go-wechaty/wechaty-puppet/option"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
@@ -23,20 +24,27 @@ var pbEventType2PuppetEventName = schemas.PbEventType2PuppetEventName()
 
 var pbEventType2GeneratePayloadFunc = schemas.PbEventType2GeneratePayloadFunc()
 
+var _ wechatyPuppet.IPuppetAbstract = &PuppetHostie{}
+
 // PuppetHostie struct
 type PuppetHostie struct {
-  option      *option2.Option
+  *wechatyPuppet.Puppet
   grpcConn    *grpc.ClientConn
   grpcClient  pbwechaty.PuppetClient
   eventStream pbwechaty.Puppet_EventClient
-  id          string
 }
 
 // NewPuppetHostie new PuppetHostie struct
-func NewPuppetHostie(o *option2.Option) *PuppetHostie {
-  return &PuppetHostie{
-    option: o,
+func NewPuppetHostie(o *option2.Option) (*PuppetHostie, error) {
+  puppetAbstract, err := wechatyPuppet.NewPuppet(o)
+  if err != nil {
+    return nil, err
   }
+  puppetHostie := &PuppetHostie{
+    Puppet: puppetAbstract,
+  }
+  puppetAbstract.SetPuppetImplementation(puppetHostie)
+  return puppetHostie, nil
 }
 
 // MessageImage ...
@@ -85,11 +93,11 @@ func (p *PuppetHostie) Stop() {
     }
   }()
   if p.logonoff() {
-    p.option.Emit(schemas.EventLogoutPayload{
-      ContactId: p.id,
+    p.Emit(schemas.EventLogoutPayload{
+      ContactId: p.SelfID(),
       Data:      "PuppetHostie Stop()",
     })
-    p.id = ""
+    p.SetID("")
   }
 
   if err = p.stopGrpcStream(); err != nil {
@@ -132,11 +140,11 @@ func (p *PuppetHostie) stopGrpcStream() error {
 }
 
 func (p *PuppetHostie) logonoff() bool {
-  return p.id != ""
+  return p.SelfID() != ""
 }
 
 func (p *PuppetHostie) startGrpcClient() error {
-  endpoint := p.option.Endpoint
+  endpoint := p.Endpoint
   if endpoint == "" {
     ip, err := p.discoverHostieIP()
     if err != nil {
@@ -162,7 +170,7 @@ func (p *PuppetHostie) discoverHostieIP() (s string, err error) {
       err = fmt.Errorf("discoverHostieIP() err:%w", err)
     }
   }()
-  if p.option.Token == "" {
+  if p.Token == "" {
     return "", errors.New("wechaty-puppet-hostie: token not found. See: <https://github.com/wechaty/wechaty-puppet-hostie#1-wechaty_puppet_hostie_token>")
   }
   const chatieEndpoint = "wss://api.chatie.io/v0/websocket/token/%s"
@@ -170,7 +178,7 @@ func (p *PuppetHostie) discoverHostieIP() (s string, err error) {
 
   dialer := websocket.Dialer{}
   dialer.Subprotocols = append(dialer.Subprotocols, protocol)
-  conn, _, err := dialer.Dial(fmt.Sprintf(chatieEndpoint, p.option.Token), nil)
+  conn, _, err := dialer.Dial(fmt.Sprintf(chatieEndpoint, p.Token), nil)
   if err != nil {
     return "", err
   }
@@ -234,7 +242,7 @@ func (p *PuppetHostie) startGrpcStream() (err error) {
       if err != nil {
         log.Printf("PuppetHostie startGrpcStream() eventStream err %s", err)
         reason := "startGrpcStream() eventStream err: " + err.Error()
-        p.option.Emit(schemas.PuppetEventNameReset, schemas.EventResetPayload{Data: reason})
+        p.Emit(schemas.PuppetEventNameReset, schemas.EventResetPayload{Data: reason})
         break
       }
       go p.onGrpcStreamEvent(reply)
@@ -247,7 +255,7 @@ func (p *PuppetHostie) onGrpcStreamEvent(event *pbwechaty.EventResponse) {
   log.Printf("PuppetHostie onGrpcStreamEvent({type:%s payload:%s})", event.Type, event.Payload)
 
   if event.Type != pbwechaty.EventType_EVENT_TYPE_HEARTBEAT {
-    p.option.Emit(schemas.PuppetEventNameHeartbeat, &schemas.EventHeartbeatPayload{
+    p.Emit(schemas.PuppetEventNameHeartbeat, &schemas.EventHeartbeatPayload{
       Data: fmt.Sprintf("onGrpcStreamEvent(%s)", event.Type),
     })
   }
@@ -268,11 +276,11 @@ func (p *PuppetHostie) onGrpcStreamEvent(event *pbwechaty.EventResponse) {
     // the `reset` event should be dealed not send out
     return
   case pbwechaty.EventType_EVENT_TYPE_LOGIN:
-    p.id = payload.(*schemas.EventLoginPayload).ContactId
+    p.SetID(payload.(*schemas.EventLoginPayload).ContactId)
   case pbwechaty.EventType_EVENT_TYPE_LOGOUT:
-    p.id = ""
+    p.SetID("")
   }
-  p.option.Emit(eventName, payload)
+  p.Emit(eventName, payload)
 }
 
 func (p *PuppetHostie) unMarshal(data string, v interface{}) {
@@ -292,10 +300,10 @@ func (p *PuppetHostie) Logout() error {
   if err != nil {
     return fmt.Errorf("PuppetHostie Logout() err: %w", err)
   }
-  go p.option.Emit(schemas.PuppetEventNameLogout, schemas.EventLogoutPayload{
-    ContactId: p.id,
+  go p.Emit(schemas.PuppetEventNameLogout, schemas.EventLogoutPayload{
+    ContactId: p.SelfID(),
   })
-  p.id = ""
+  p.SetID("")
   return nil
 }
 
@@ -353,7 +361,7 @@ func (p *PuppetHostie) ContactList() ([]string, error) {
 // ContactQRCode ...
 func (p *PuppetHostie) ContactQRCode(contactID string) (string, error) {
   log.Printf("PuppetHostie ContactQRCode(%s)\n", contactID)
-  if contactID != p.id {
+  if contactID != p.SelfID() {
     return "", errors.New("can not set avatar for others")
   }
   response, err := p.grpcClient.ContactSelfQRCode(context.Background(), &pbwechaty.ContactSelfQRCodeRequest{})
@@ -511,8 +519,8 @@ func (p *PuppetHostie) MessageFile(id string) (*file_box.FileBox, error) {
   return file_box.NewFileBoxFromJSONString(response.Filebox)
 }
 
-// MessagePayload ...
-func (p *PuppetHostie) MessagePayload(id string) (*schemas.MessagePayload, error) {
+// MessageRawPayload ...
+func (p *PuppetHostie) MessageRawPayload(id string) (*schemas.MessagePayload, error) {
   log.Printf("PuppetHostie MessagePayload(%s)\n", id)
   response, err := p.grpcClient.MessagePayload(context.Background(), &pbwechaty.MessagePayloadRequest{
     Id: id,
@@ -853,9 +861,9 @@ func (p *PuppetHostie) FriendshipSearchWeixin(weixin string) (string, error) {
   return response.ContactId.Value, nil
 }
 
-// FriendshipPayload ...
-func (p *PuppetHostie) FriendshipPayload(id string) (*schemas.FriendshipPayload, error) {
-  log.Printf("PuppetHostie FriendshipPayload(%s)\n", id)
+// FriendshipRawPayload ...
+func (p *PuppetHostie) FriendshipRawPayload(id string) (*schemas.FriendshipPayload, error) {
+  log.Printf("PuppetHostie FriendshipRawPayload(%s)\n", id)
   response, err := p.grpcClient.FriendshipPayload(context.Background(), &pbwechaty.FriendshipPayloadRequest{
     Id: id,
   })
