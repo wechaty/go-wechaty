@@ -1,0 +1,70 @@
+package schemas
+
+// 群联系人
+type GRPCContactPayload struct {
+	Alias           string
+	BigHeadImgUrl   string
+	ChatRoomOwner   string
+	ChatroomVersion int
+	City            string
+	ContactFlag     int
+	ContactType     string
+	EncryptUsername string
+	ExtInfo         string
+	ExtInfoExt      string
+	HeadImgUrl      string
+	LabelLists      string
+	MsgType         int
+	NickName        string
+	Province        string
+	PYInitial       string
+	PYQuanPin       string
+	Remark          string
+	RemarkName      string
+	RemarkPYInitial string
+	RemarkPYQuanPin string
+	Seq             string
+	Sex             int
+	Signature       string
+	SmallHeadImgUrl string
+	Type7           string
+	Uin             int
+	UserName        string
+	VerifyFlag      int
+	wechatUserName  string
+}
+
+// 联系人
+type GRPCRoomPayload struct {
+	ContactType     int
+	ExtInfoExt      string
+	Sex             int
+	EncryptUsername string
+	wechatUserName  string
+	PYQuanPin       string
+	Remark          string
+	LabelLists      string
+	ChatroomVersion int
+	ExtInfo         string
+	ChatRoomOwner   string
+	VerifyFlag      int
+	ContactFlag     int
+	Ticket          string
+	UserName        string
+	src             int
+	HeadImgUrl      string
+	RemarkPYInitial string
+	MsgType         int
+	City            string
+	NickName        string
+	Province        string
+	Alias           string
+	Signature       string
+	RemarkName      string
+	RemarkPYQuanPin string
+	Uin             int
+	SmallHeadImgUrl string
+	PYInitial       string
+	Seq             string
+	BigHeadImgUrl   string
+}

@@ -1,0 +1,109 @@
+syntax = "proto2";
+
+package PadPlusServer;
+
+enum ApiType {
+    GET_QRCODE = 0;
+    RECONNECT = 1;
+    LOGOUT = 2;
+    INIT = 3;
+    STOP = 4;
+    CLOSE = 5;
+    HEARTBEAT = 6;
+
+    GET_CONTACT = 10;
+    SEARCH_CONTACT = 11;
+    ADD_CONTACT = 12;
+    ACCEPT_CONTACT = 13;
+    SYNC_CONTACT = 14;
+    CONTACT_ALIAS = 15;
+    ADD_CHATROOM_CONTACT = 16;
+    GET_CONTACT_SELF_INFO = 17;
+    SET_CONTACT_SELF_INFO = 18;
+    GET_CONTACT_SELF_QRCODE = 19;
+
+    GET_ROOM_MEMBER = 30;
+    ROOM_OPERATION = 31;
+    CREATE_ROOM = 32;
+    SET_ROOM_ANNOUNCEMENT = 33;
+    GET_ROOM_ANNOUNCEMENT = 34;
+    GET_ROOM_QRCODE = 35;
+    ACCEPT_ROOM_INVITATION = 36;
+
+    SEND_MESSAGE = 50;
+    SEND_FILE = 51;
+    REVOKE_MESSAGE = 52;
+    GET_MESSAGE_MEDIA = 53;
+
+    GET_ALL_TAG = 70;
+    CREATE_TAG = 71;
+    ADD_TAG = 72;
+    MODIFY_TAG = 73;
+    DELETE_TAG = 74;
+}
+
+message RequestObject {
+    optional string uin = 1;
+    optional string requestId = 10;
+    required string token = 20;
+    required ApiType apiType = 30;
+    optional string params = 40;
+    optional string traceId = 50;
+}
+
+message ResponseObject {
+    required string result = 10;
+}
+
+message InitConfig {
+    required string token = 10;
+}
+
+enum ResponseType {
+    REQUEST_RESPONSE = 0;
+    DISCONNECT = 1;
+    INVALID_TOKEN = 2;
+
+    LOGIN_QRCODE = 10;
+    QRCODE_SCAN = 11;
+    ACCOUNT_LOGIN = 12;
+    ACCOUNT_LOGOUT = 13;
+    QRCODE_LOGIN = 14;
+    AUTO_LOGIN = 15;
+    CONTACT_SELF_INFO_GET = 17;
+    CONTACT_SELF_INFO_SET = 18;
+    CONTACT_SELF_QRCODE_GET = 19;
+
+    CONTACT_LIST = 20;
+    CONTACT_MODIFY = 21;
+    CONTACT_DELETE = 22;
+    ROOM_MEMBER_LIST = 23;
+    ROOM_MEMBER_MODIFY = 24;
+    CONTACT_SEARCH = 25;
+    CONTACT_ADD = 26;
+    ROOM_QRCODE = 27;
+
+    MESSAGE_RECEIVE = 30;
+    STATUS_NOTIFY = 31;
+    MESSAGE_MEDIA_SRC = 32;
+    MESSAGE_REVOKE = 33;
+
+    TAG_LIST = 40;
+    TAG_CREATE = 41;
+    TAG_ADD = 42;
+    TAG_MODIFY = 43;
+    TAG_DELETE = 44;
+}
+
+message StreamResponse {
+    optional string uin = 1;
+    optional string requestId = 10;
+    required string data = 20;
+    required ResponseType responseType = 30;
+    optional string traceId = 40;
+}
+
+service PadPlusServer {
+    rpc Request (RequestObject) returns (ResponseObject) {}
+    rpc Init (InitConfig) returns (stream StreamResponse) {}
+}
