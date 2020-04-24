@@ -2,11 +2,17 @@ package wechaty_puppet_mock
 
 import (
   file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+  option2 "github.com/wechaty/go-wechaty/wechaty-puppet/option"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
 type PuppetMock struct {
-  token string
+  option *option2.Option
+}
+
+func NewPuppetMock(option *option2.Option) *PuppetMock {
+  pm := &PuppetMock{option: option}
+  return pm
 }
 
 func (p *PuppetMock) RoomInvitationPayload(roomInvitationID string) schemas.RoomInvitationPayload {
@@ -37,23 +43,11 @@ func (p *PuppetMock) MessageSendMiniProgram(conversationID string, urlLinkPayloa
   panic("implement me")
 }
 
-func NewPuppetMock(token string) *PuppetMock {
-  return &PuppetMock{token: token}
-}
-
 func (p *PuppetMock) MessageImage(messageID string, imageType schemas.ImageType) file_box.FileBox {
   panic("implement me")
 }
 
-func (p *PuppetMock) FriendshipPayloadReceive(friendshipID string) schemas.FriendshipPayloadReceive {
-  panic("implement me")
-}
-
-func (p *PuppetMock) FriendshipPayloadConfirm(friendshipID string) schemas.FriendshipPayloadConfirm {
-  panic("implement me")
-}
-
-func (p *PuppetMock) FriendshipPayloadVerify(friendshipID string) schemas.FriendshipPayloadVerify {
+func (p *PuppetMock) FriendshipPayload(friendshipID string) schemas.FriendshipPayload {
   panic("implement me")
 }
 
@@ -61,17 +55,14 @@ func (p *PuppetMock) FriendshipAccept(friendshipID string) {
   panic("implement me")
 }
 
-func (p *PuppetMock) Start(emitChan chan<- schemas.EmitStruct) error {
+func (p *PuppetMock) Start() error {
   go func() {
     // emit scan
-    emitChan <- schemas.EmitStruct{
-      EventName: schemas.PuppetEventNameScan,
-      Payload: schemas.EventScanPayload{
-        BaseEventPayload: schemas.BaseEventPayload{},
-        Status:           schemas.ScanStatusWaiting,
-        QrCode:           "https://not-exist.com",
-      },
-    }
+    p.option.Emit(schemas.PuppetEventNameScan, &schemas.EventScanPayload{
+      BaseEventPayload: schemas.BaseEventPayload{},
+      Status:           schemas.ScanStatusWaiting,
+      QrCode:           "https://not-exist.com",
+    })
   }()
-  select {}
+  return nil
 }

@@ -3,6 +3,7 @@ package main
 import (
   "fmt"
   "github.com/wechaty/go-wechaty/wechaty"
+  "github.com/wechaty/go-wechaty/wechaty-puppet/option"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
   "github.com/wechaty/go-wechaty/wechaty/user"
   "log"
@@ -11,7 +12,9 @@ import (
 )
 
 func main() {
-  var bot = wechaty.NewWechaty()
+  var bot = wechaty.NewWechaty(wechaty.WithPuppetOption(&option.Option{
+    Token:        "",
+  }))
 
   bot.
     OnScan(func(qrCode string, status schemas.ScanStatus, data string) {
