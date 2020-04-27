@@ -286,6 +286,12 @@ make test
 - [Python Wechaty](https://github.com/wechaty/python-wechaty) - Python WeChat Bot SDK for Individual Account.
 - [Java Wechaty](https://github.com/wechaty/java-wechaty) - Java WeChat Bot SDK for Individual Account.
 
+## Maintainers
+
+1. [@dingdayu](https://github.com/dingdayu) - Xiaoyu DING (丁小雨) 
+1. [@SilkageNet](https://github.com/SilkageNet) - Bojie LI (李博杰)
+1. [@dchaofei](https://github.com/dchaofei) - Chaofei DING (丁超飞)
+
 ## Author
 
 [Huan LI](https://github.com/huan) ([李卓桓](http://linkedin.com/in/zixia)) zixia@zixia.net
