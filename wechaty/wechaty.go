@@ -297,9 +297,6 @@ func (w *Wechaty) initPuppetEventBridge() {
 					panic(err)
 				}
 				w.emit(name, message)
-				if room := message.Room(); room != nil {
-					w.emit(name, message)
-				}
 			})
 		default:
 

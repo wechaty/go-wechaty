@@ -69,4 +69,5 @@ func onMessage(message *user.Message) {
 		log.Println(err)
 		return
 	}
+	log.Printf("REPLY: %s\n", fileBox)
 }
