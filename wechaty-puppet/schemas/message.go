@@ -1,5 +1,6 @@
 package schemas
 
+//go:generate stringer -type=MessageType
 type MessageType uint8
 
 const (
