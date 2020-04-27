@@ -25,6 +25,7 @@ package wechaty
 import (
   "errors"
   wp "github.com/wechaty/go-wechaty/wechaty-puppet"
+  puppethostie "github.com/wechaty/go-wechaty/wechaty-puppet-hostie"
   "github.com/wechaty/go-wechaty/wechaty-puppet/events"
   mc "github.com/wechaty/go-wechaty/wechaty-puppet/memory-card"
   "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
@@ -37,7 +38,7 @@ import (
 type Wechaty struct {
   *Option
 
-  puppet *wp.Puppet
+  puppet wp.IPuppetAbstract
   events events.EventEmitter
 }
 
@@ -182,12 +183,15 @@ func (w *Wechaty) initPuppet() error {
 
   // TODO: set puppet memory
 
-  // TODO temp
-  puppet, err := wp.NewPuppet(w.Option.puppetOption)
-  if err != nil {
-    return err
+  if w.Option.puppet == nil {
+    puppet, err := puppethostie.NewPuppetHostie(w.puppetOption)
+    if err != nil {
+      return err
+    }
+    w.puppet = puppet
+  } else {
+    w.puppet = w.Option.puppet
   }
-  w.puppet = puppet
 
   w.initPuppetEventBridge()
 
@@ -238,32 +242,32 @@ func (w *Wechaty) initPuppetEventBridge() {
     name := name
     switch name {
     case schemas.PuppetEventNameDong:
-      w.puppet.Option.On(name, func(i ...interface{}) {
+      w.puppet.On(name, func(i ...interface{}) {
         w.emit(name, i[0].(*schemas.EventDongPayload).Data)
       })
     case schemas.PuppetEventNameError:
-      w.puppet.Option.On(name, func(i ...interface{}) {
+      w.puppet.On(name, func(i ...interface{}) {
         w.emit(name, i[0].(*schemas.EventErrorPayload).Data)
       })
     case schemas.PuppetEventNameHeartbeat:
-      w.puppet.Option.On(name, func(i ...interface{}) {
+      w.puppet.On(name, func(i ...interface{}) {
         w.emit(name, i[0].(*schemas.EventHeartbeatPayload).Data)
       })
     case schemas.PuppetEventNameLogin:
-      w.puppet.Option.On(name, func(i ...interface{}) {
+      w.puppet.On(name, func(i ...interface{}) {
         w.emit(name, "todo")
       })
     case schemas.PuppetEventNameLogout:
-      w.puppet.Option.On(name, func(i ...interface{}) {
+      w.puppet.On(name, func(i ...interface{}) {
         w.emit(name, "todo")
       })
     case schemas.PuppetEventNameScan:
-      w.puppet.Option.On(name, func(i ...interface{}) {
+      w.puppet.On(name, func(i ...interface{}) {
         payload := i[0].(*schemas.EventScanPayload)
         w.emit(name, payload.QrCode, payload.Status, payload.Data)
       })
     case schemas.PuppetEventNameMessage:
-      w.puppet.Option.On(name, func(i ...interface{}) {
+      w.puppet.On(name, func(i ...interface{}) {
         messageID := i[0].(*schemas.EventMessagePayload).MessageId
         w.emit(name, &user.Message{
           Id: messageID,

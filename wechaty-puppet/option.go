@@ -1,7 +1,6 @@
-package option
+package wechatypuppet
 
 import (
-  "github.com/wechaty/go-wechaty/wechaty-puppet/events"
   "time"
 )
 
@@ -10,7 +9,6 @@ type Option struct {
   Endpoint string
   Timeout  time.Duration
   Token    string
-  events.EventEmitter
 }
 
 // OptionFn func
@@ -34,11 +32,5 @@ func WithTimeout(duration time.Duration) OptionFn {
 func WithToken(token string) OptionFn {
   return func(opts *Option) {
     opts.Token = token
-  }
-}
-
-func WithEventEmitter(eventEmitter events.EventEmitter) OptionFn {
-  return func(opts *Option) {
-    opts.EventEmitter = eventEmitter
   }
 }

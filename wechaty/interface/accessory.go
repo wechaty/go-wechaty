@@ -6,8 +6,8 @@ import (
 
 // Accessory accessory interface
 type Accessory interface {
-  SetPuppet(puppet wechatyPuppet.Puppet)
-  GetPuppet() *wechatyPuppet.Puppet
+  SetPuppet(puppet wechatyPuppet.IPuppetAbstract)
+  GetPuppet() wechatyPuppet.IPuppetAbstract
 
   SetWechaty(wechaty Wechaty)
   GetWechaty() Wechaty
