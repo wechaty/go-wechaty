@@ -22,49 +22,69 @@
 package user
 
 import (
-  "fmt"
-  "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-  "github.com/wechaty/go-wechaty/wechaty/interface"
+	"fmt"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+	"github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type Contact struct {
-  _interface.Accessory
+	_interface.Accessory
 
-  Id      string
-  payload schemas.ContactPayload
+	Id      string
+	payload *schemas.ContactPayload
 }
 
-func NewContact(accessory _interface.Accessory, id string) *Contact {
-  return &Contact{
-    Accessory: accessory,
-    Id:        id,
-  }
+func NewContact(id string, accessory _interface.Accessory) *Contact {
+	return &Contact{
+		Accessory: accessory,
+		Id:        id,
+	}
 }
 
-func (r *Contact) Ready(forceSync bool) {
-  return
+func (r *Contact) Ready(forceSync bool) (err error) {
+	if !forceSync && r.IsReady() {
+		return nil
+	}
+
+	if forceSync {
+		r.GetPuppet().ContactPayloadDirty(r.Id)
+	}
+
+	r.payload, err = r.GetPuppet().ContactPayload(r.Id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (r *Contact) isReady() bool {
-  return true
+func (r *Contact) IsReady() bool {
+	return r.payload != nil
 }
 
-func (r *Contact) Sync() {
-  r.Ready(true)
+func (r *Contact) Sync() error {
+	return r.Ready(true)
 }
 
 func (r *Contact) String() string {
-  return fmt.Sprintf("Contact<%s>", r.identity())
+	return fmt.Sprintf("Contact<%s>", r.identity())
 }
 
 func (r *Contact) identity() string {
-  identity := "loading..."
-  if r.payload.Alias != "" {
-    identity = r.payload.Alias
-  } else if r.payload.Name != "" {
-    identity = r.payload.Name
-  } else if r.Id != "" {
-    identity = r.Id
-  }
-  return identity
+	identity := "loading..."
+	if r.payload.Alias != "" {
+		identity = r.payload.Alias
+	} else if r.payload.Name != "" {
+		identity = r.payload.Name
+	} else if r.Id != "" {
+		identity = r.Id
+	}
+	return identity
+}
+
+func (r *Contact) ID() string {
+	return r.Id
+}
+
+func (r *Contact) Name() string {
+	return r.payload.Name
 }
