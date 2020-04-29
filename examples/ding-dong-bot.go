@@ -22,7 +22,9 @@ func main() {
 		fmt.Printf("Scan QR Code to login: %v\nhttps://api.qrserver.com/v1/create-qr-code/?data=%s\n", status, qrCode)
 	}).OnLogin(func(user *user.ContactSelf) {
 		fmt.Printf("User %s logined\n", user.Name())
-	}).OnMessage(onMessage)
+	}).OnMessage(onMessage).OnLogout(func(user *user.ContactSelf, reason string) {
+		fmt.Printf("User %s logouted: %s\n", user, reason)
+	})
 
 	var err = bot.Start()
 	if err != nil {
