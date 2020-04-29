@@ -899,7 +899,7 @@ func (p *PuppetHostie) FriendshipAdd(contactID, hello string) (err error) {
 // FriendshipAccept ...
 func (p *PuppetHostie) FriendshipAccept(friendshipID string) (err error) {
 	log.Printf("PuppetHostie FriendshipAccept(%s)\n", friendshipID)
-	_, err = p.grpcClient.FrendshipAccept(context.Background(), &pbwechaty.FriendshipAcceptRequest{
+	_, err = p.grpcClient.FriendshipAccept(context.Background(), &pbwechaty.FriendshipAcceptRequest{
 		Id: friendshipID,
 	})
 	return err
