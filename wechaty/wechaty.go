@@ -281,7 +281,12 @@ func (w *Wechaty) initPuppetEventBridge() {
 			})
 		case schemas.PuppetEventNameLogout:
 			w.puppet.On(name, func(i ...interface{}) {
-				w.emit(name, "todo")
+				payload := i[0].(*schemas.EventLogoutPayload)
+				contact := w.contact.LoadSelf(payload.ContactId)
+				if err := contact.Ready(false); err != nil {
+					log.Printf("emit logout contact.Ready err: %s", err.Error())
+				}
+				w.emit(name, contact, payload.Data)
 			})
 		case schemas.PuppetEventNameScan:
 			w.puppet.On(name, func(i ...interface{}) {

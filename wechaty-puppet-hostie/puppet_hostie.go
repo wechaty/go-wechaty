@@ -5,15 +5,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"net/http"
+
 	"github.com/golang/protobuf/ptypes/wrappers"
-	"github.com/gorilla/websocket"
 	pbwechaty "github.com/wechaty/go-grpc/wechaty"
+	"google.golang.org/grpc"
+
 	wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
 	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-	"google.golang.org/grpc"
-	"io"
-	"log"
 )
 
 // ErrNoEndpoint err no endpoint
@@ -164,57 +167,37 @@ func (p *PuppetHostie) startGrpcClient() error {
 }
 
 func (p *PuppetHostie) discoverHostieIP() (s string, err error) {
-	defer func() {
-		if err != nil {
-			err = fmt.Errorf("discoverHostieIP() err:%w", err)
-		}
-	}()
+	const hostieEndpoint = "https://api.chatie.io/v0/hosties/%s"
+
 	if p.Token == "" {
 		return "", errors.New("wechaty-puppet-hostie: token not found. See: <https://github.com/wechaty/wechaty-puppet-hostie#1-wechaty_puppet_hostie_token>")
 	}
-	const chatieEndpoint = "wss://api.chatie.io/v0/websocket/token/%s"
-	const protocol = "puppet-hostie|0.0.1"
 
-	dialer := websocket.Dialer{}
-	dialer.Subprotocols = append(dialer.Subprotocols, protocol)
-	conn, _, err := dialer.Dial(fmt.Sprintf(chatieEndpoint, p.Token), nil)
-	if err != nil {
-		return "", err
-	}
-	defer conn.Close()
-	err = conn.WriteJSON(map[string]interface{}{
-		"name": "hostie",
-	})
-	if err != nil {
-		return "", err
-	}
-
-	result := make(chan string)
-	errChan := make(chan error)
-	go func() {
-		for {
-			_, message, err := conn.ReadMessage()
-			if err != nil {
-				errChan <- err
-			}
-			resultMap := make(map[string]string)
-			err = json.Unmarshal(message, &resultMap)
-			if err != nil {
-				errChan <- err
-			}
-			if resultMap["name"] == "hostie" {
-				result <- resultMap["payload"]
-				return
-			}
+	client := &http.Client{}
+	if p.Timeout > 0 {
+		client = &http.Client{
+			Timeout: p.Timeout,
 		}
-	}()
-
-	select {
-	case ip := <-result:
-		return ip, nil
-	case err := <-errChan:
-		return "", err
 	}
+
+	resp, err := client.Get(fmt.Sprintf(hostieEndpoint, p.Token))
+	if err != nil {
+		return "", fmt.Errorf("discoverHostieIP() err: %w", err)
+	}
+
+	if resp.StatusCode == 200 {
+		defer resp.Body.Close()
+		body, _ := ioutil.ReadAll(resp.Body)
+		var ip struct {
+			IP string `json:"ip"`
+		}
+		err = json.Unmarshal(body, &ip)
+		if err != nil {
+			return "", fmt.Errorf("discoverHostieIP() err: %w", err)
+		}
+		return ip.IP, nil
+	}
+	return "", fmt.Errorf("discoverHostieIP() err: %w", err)
 }
 
 func (p *PuppetHostie) startGrpcStream() (err error) {
@@ -899,7 +882,7 @@ func (p *PuppetHostie) FriendshipAdd(contactID, hello string) (err error) {
 // FriendshipAccept ...
 func (p *PuppetHostie) FriendshipAccept(friendshipID string) (err error) {
 	log.Printf("PuppetHostie FriendshipAccept(%s)\n", friendshipID)
-	_, err = p.grpcClient.FrendshipAccept(context.Background(), &pbwechaty.FriendshipAcceptRequest{
+	_, err = p.grpcClient.FriendshipAccept(context.Background(), &pbwechaty.FriendshipAcceptRequest{
 		Id: friendshipID,
 	})
 	return err
