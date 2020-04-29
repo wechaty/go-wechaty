@@ -26,7 +26,7 @@ func (f *FriendshipReceive) Accept() {
   contact := f.Contact()
   _ = helper_functions.TryWait(func() error {
     contact.Ready(false)
-    if contact.isReady() {
+    if contact.IsReady() {
       return nil
     }
     return errors.New("friendshipReceive.accept() contact.ready() not ready")
