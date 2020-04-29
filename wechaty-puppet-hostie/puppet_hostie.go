@@ -5,15 +5,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"net/http"
+
 	"github.com/golang/protobuf/ptypes/wrappers"
-	"github.com/gorilla/websocket"
 	pbwechaty "github.com/wechaty/go-grpc/wechaty"
+	"google.golang.org/grpc"
+
 	wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
 	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-	"google.golang.org/grpc"
-	"io"
-	"log"
 )
 
 // ErrNoEndpoint err no endpoint
