@@ -22,7 +22,7 @@ func NewFriendship(accessory _interface.Accessory, friendshipPayloadBase schemas
 }
 
 func (f *Friendship) Contact() *Contact {
-  return NewContact(f.Accessory, f.friendshipPayloadBase.ContactId)
+  return NewContact(f.friendshipPayloadBase.ContactId, f.Accessory)
 }
 
 func (f *Friendship) Hello() string {
