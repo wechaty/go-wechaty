@@ -14,4 +14,8 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 .idea/
+
+coverage.out
+report.json
+tests_report.xml
 go.sum
