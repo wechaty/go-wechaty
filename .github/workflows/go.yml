@@ -30,17 +30,5 @@ jobs:
     - name: Go Test
       run: make test
 
-    - name: Codeclimate
-      run: |
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./test-reporter
-        chmod +x ./test-reporter
-        ./test-reporter before-build
-        go test -coverprofile c.out `go list ./... | grep -v /vendor/` -v -count=1 -coverpkg=./...
-        sed -i "s/github.com\/wechaty\/go-wechaty\///g" c.out
-        ./test-reporter format-coverage -t gocov
-        ./test-reporter upload-coverage
-      env:
-        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-
     - name: Build
       run: go build -o ding-dong -v ./examples/ding-dong-bot.go
