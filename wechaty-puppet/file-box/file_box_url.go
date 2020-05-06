@@ -1,7 +1,7 @@
 package file_box
 
 import (
-  helper_functions "github.com/wechaty/go-wechaty/wechaty-puppet/helper-functions"
+    helper_functions "github.com/wechaty/go-wechaty/wechaty-puppet/helper"
   "io/ioutil"
   "net/http"
 )

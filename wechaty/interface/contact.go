@@ -3,6 +3,10 @@ package _interface
 type IContactFactory interface {
 	Load(id string) IContact
 	LoadSelf(id string) IContact
+	// Find query params is string or *schemas.ContactQueryFilter
+	Find(query interface{}) IContact
+	// FindAll query params is string or *schemas.ContactQueryFilter
+	FindAll(query interface{}) []IContact
 }
 
 type IContact interface {

@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/bitly/go-simplejson"
 	"github.com/tuotoo/qrcode"
-	helper_functions "github.com/wechaty/go-wechaty/wechaty-puppet/helper-functions"
+    helper_functions "github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"io/ioutil"
 	"mime"
 	"net/http"

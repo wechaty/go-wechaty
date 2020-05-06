@@ -1,4 +1,4 @@
-package helper_functions
+package helper
 
 import "os"
 
