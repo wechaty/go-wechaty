@@ -1,0 +1,142 @@
+{
+  "ci_service": {
+    "branch": "master",
+    "build_identifier": "",
+    "build_url": "",
+    "commit_sha": "b969386a605c96c89ec1634c1372d61ec1649ae1",
+    "committed_at": 1587204986,
+    "name": ""
+  },
+  "environment": {
+    "gem_version": "3.0.3",
+    "package_version": "",
+    "pwd": "/Users/Shared/git/dingdayu/go-wechaty",
+    "prefix": "/Users/Shared/git/dingdayu/go-wechaty",
+    "rails_root": "",
+    "reporter_version": "latest",
+    "simplecov_root": ""
+  },
+  "git": {
+    "branch": "master",
+    "head": "b969386a605c96c89ec1634c1372d61ec1649ae1",
+    "committed_at": 1587204986
+  },
+  "covered_percent": 45.53191489361702,
+  "covered_strength": 0,
+  "line_counts": {
+    "missed": 128,
+    "covered": 107,
+    "total": 235
+  },
+  "source_files": [
+    {
+      "blob_id": "e5959b010389bdf711976f71e99bc7337871e236",
+      "coverage": "[null,null,null,null,null,null,null,null,null,null,null,1,null,null,null,0,null,null,null,null,null,1,1,0,null,null,1]",
+      "covered_percent": 66.66666666666666,
+      "covered_strength": 0.6666666666666666,
+      "line_counts": {
+        "missed": 2,
+        "covered": 4,
+        "total": 6
+      },
+      "name": "wechaty-puppet/file-box/file_box_base64.go"
+    },
+    {
+      "blob_id": "62cfb9a1a8d5e877a0f1e7f9a84d8d1f5f4da04f",
+      "coverage": "[null,null,null,null,null,null,null,null,null,null,null,null,null,null,1,null,null,null,0,null,null,null,null,null,null,0,0,0,null,null,0,0,0,0,null,0,0]",
+      "covered_percent": 9.090909090909092,
+      "covered_strength": 0.09090909090909091,
+      "line_counts": {
+        "missed": 10,
+        "covered": 1,
+        "total": 11
+      },
+      "name": "wechaty-puppet/file-box/file_box_url.go"
+    },
+    {
+      "blob_id": "b872776c491e1ccff36b9d7c1428dd2b616d235c",
+      "coverage": "[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1,1,0,null,null,1,null,null,1,1,0,null,null,1,null,null,1,0,null,null,1,1,0,null,1,1,1,1,0,null,1,null,null,1,null,null,null,1,1,1,null,null,1,1,1,0,null,1,null,1]",
+      "covered_percent": 79.3103448275862,
+      "covered_strength": 0.7931034482758621,
+      "line_counts": {
+        "missed": 6,
+        "covered": 23,
+        "total": 29
+      },
+      "name": "wechaty-puppet/memory-card/storage/file.go"
+    },
+    {
+      "blob_id": "c08c973ccc1cf556fa38f277e57545e06fd1ce58",
+      "coverage": "[null,null,null,null,null,null,0,null,null,null,0,null,null,null,0]",
+      "covered_percent": 0,
+      "covered_strength": 0,
+      "line_counts": {
+        "missed": 3,
+        "covered": 0,
+        "total": 3
+      },
+      "name": "wechaty-puppet/memory-card/storage/nop.go"
+    },
+    {
+      "blob_id": "c6aa852bf3b2d3c10f5dcd7332c85096f265abd8",
+      "coverage": "[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1,1,null,0,null,null,null,1,null,null,null,1,1,1,1,null,null,1,null,null,null,null,0,0,null,null,null,null,0,0,null,null,null,null,0,0,null,null,null,null,1,1,null,null,null,null,0,0,null,null,null,null,0,0,null,null,null,null,0,0,null,null,null,null,0,0,null,null,null,null,1,1,null,null,null,null,0,0,null,null,null,null,0,0,null,null,null,null,0,0,null,null,null,null,0,0,null,null,null,null,0,0,null,null,null,null,0,0,null,null,null,null,0,0,null,null,null,null,0,0,null,null,null,1,null,null,null,null,0,0,0,null,null,0,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0,null,null,null,0,0,null,null,null,null,0,0,0,0,null,null,null,null,0,0,0,0,null,null,0,0,0,0,null,null,null,0,0,0,0,null,null,null,null,0]",
+      "covered_percent": 18.84057971014493,
+      "covered_strength": 0.18840579710144928,
+      "line_counts": {
+        "missed": 56,
+        "covered": 13,
+        "total": 69
+      },
+      "name": "wechaty/wechaty.go"
+    },
+    {
+      "blob_id": "70f5839c2c9b23527e397458bce794a45939aa64",
+      "coverage": "[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1,null,null,null,null,null,null,null,null,null,1,1,0,null,null,1,1,0,null,1,1,1,0,null,null,1,1,1,0,null,null,1,1,1,0,null,null,1,0,null,null,null,null,1,null,null,null,1,null,null,null,1,null,null,null,0,0,0,null,null,null,null,0,null,null,0,0,null,null,1,0,null,null,1,1,0,null,1,1,1,null,1,1,0,null,1,null,null,1,0,null,null,1,1,0,null,1,1,null,null,0,0,0,null,null,0,null,null,0,0,0,null,null,0,null,null,0,0,0,null,null,0,0,0,null,0]",
+      "covered_percent": 50,
+      "covered_strength": 0.5,
+      "line_counts": {
+        "missed": 32,
+        "covered": 32,
+        "total": 64
+      },
+      "name": "wechaty-puppet/file-box/file_box.go"
+    },
+    {
+      "blob_id": "b8c6874fcb6bdba4e0b7c14f4d76f7e2d060c436",
+      "coverage": "[null,null,null,null,null,null,null,null,null,null,null,1,null,null,null,0,null,null,null,null,null,0,0,0,null,null,0]",
+      "covered_percent": 16.666666666666664,
+      "covered_strength": 0.16666666666666666,
+      "line_counts": {
+        "missed": 5,
+        "covered": 1,
+        "total": 6
+      },
+      "name": "wechaty-puppet/file-box/file_box_qrcode.go"
+    },
+    {
+      "blob_id": "d4cc651292544fc5717dc977a6c76b1ec9ab993d",
+      "coverage": "[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1,1,0,null,null,1,1,null,null,null,null,null,null,null,null,1,1,null,1,1,null,1,null,1,null,null,null,null,1,1,1,null,null,1,null,null,1,1,null,null,null,1,null,null,null,1,null,null,null,1,null,null,null,1,null,null,null,1,null,null,null,1,1,null,null,null,1,1,0,null,null,1,1,null,1,null,null,1,1,1,1,null,null,1,null,null,0,0]",
+      "covered_percent": 89.1891891891892,
+      "covered_strength": 0.8918918918918919,
+      "line_counts": {
+        "missed": 4,
+        "covered": 33,
+        "total": 37
+      },
+      "name": "wechaty-puppet/memory-card/memory_card.go"
+    },
+    {
+      "blob_id": "f5695ce811cd64f430778988ba39b9e189334a31",
+      "coverage": "[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0,0,null,null,null,null,null,0,0,null,null,null,null,null,0,0,null,null,null,null,null,0,0,null,null,null,null,null,0,0]",
+      "covered_percent": 0,
+      "covered_strength": 0,
+      "line_counts": {
+        "missed": 10,
+        "covered": 0,
+        "total": 10
+      },
+      "name": "wechaty/option.go"
+    }
+  ],
+  "repo_token": ""
+}

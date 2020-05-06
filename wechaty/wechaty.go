@@ -45,6 +45,7 @@ type Wechaty struct {
 	message _interface.IMessageFactory
 	room    _interface.IRoomFactory
 	contact _interface.IContactFactory
+	tag     _interface.ITagFactory
 }
 
 // NewWechaty ...
@@ -214,6 +215,7 @@ func (w *Wechaty) initPuppetAccessory() {
 	}
 	w.contact = factory.NewContactFactory(accessory)
 	w.room = factory.NewRoomFactory(accessory)
+	w.tag = factory.NewTagFactory(accessory)
 }
 
 // Start ...
@@ -322,4 +324,9 @@ func (w *Wechaty) Message() _interface.IMessageFactory {
 // Contact ...
 func (w *Wechaty) Contact() _interface.IContactFactory {
 	return w.contact
+}
+
+// Tag ...
+func (w *Wechaty) Tag() _interface.ITagFactory {
+	return w.tag
 }

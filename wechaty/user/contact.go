@@ -23,6 +23,7 @@ package user
 
 import (
 	"fmt"
+	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"github.com/wechaty/go-wechaty/wechaty/interface"
 )
@@ -87,4 +88,27 @@ func (r *Contact) ID() string {
 
 func (r *Contact) Name() string {
 	return r.payload.Name
+}
+
+func (r *Contact) Say(something interface{}) (msg _interface.IMessage, err error) {
+	var msgID string
+	switch v := something.(type) {
+	case string:
+		msgID, err = r.GetPuppet().MessageSendText(r.Id, v)
+	case *Contact:
+		msgID, err = r.GetPuppet().MessageSendContact(r.Id, v.Id)
+	case *file_box.FileBox:
+		msgID, err = r.GetPuppet().MessageSendFile(r.Id, v)
+	case *UrlLink:
+		msgID, err = r.GetPuppet().MessageSendURL(r.Id, v.payload)
+	case *MiniProgram:
+		msgID, err = r.GetPuppet().MessageSendMiniProgram(r.Id, v.payload)
+	default:
+		return nil, fmt.Errorf("unsupported arg: %v", something)
+	}
+	if msgID == "" {
+		return nil, nil
+	}
+	msg = r.GetWechaty().Message().Load(msgID)
+	return msg, msg.Ready()
 }

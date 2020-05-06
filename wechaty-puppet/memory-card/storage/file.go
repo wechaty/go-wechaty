@@ -2,7 +2,7 @@ package storage
 
 import (
   "encoding/json"
-  helper_functions "github.com/wechaty/go-wechaty/wechaty-puppet/helper-functions"
+    helper_functions "github.com/wechaty/go-wechaty/wechaty-puppet/helper"
   "io/ioutil"
   "os"
   "path/filepath"

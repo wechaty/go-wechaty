@@ -5,4 +5,5 @@ type Wechaty interface {
 	Room() IRoomFactory
 	Contact() IContactFactory
 	Message() IMessageFactory
+	Tag() ITagFactory
 }
