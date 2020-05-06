@@ -3,8 +3,8 @@ name: Codeclimate
 on:
   push:
     branches: [ master ]
-  tags:
-    - '!*'
+    tags:
+      - '!*'
 
 jobs:
   build:
