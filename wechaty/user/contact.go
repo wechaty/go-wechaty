@@ -123,3 +123,8 @@ func (r *Contact) Say(something interface{}) (msg _interface.IMessage, err error
 func (r *Contact) Friend() bool {
 	return r.payload.Friend
 }
+
+// Type contact type
+func (r *Contact) Type() schemas.ContactType {
+	return r.payload.Type
+}

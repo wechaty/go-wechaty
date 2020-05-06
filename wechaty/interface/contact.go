@@ -1,5 +1,7 @@
 package _interface
 
+import "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+
 type IContactFactory interface {
 	Load(id string) IContact
 	LoadSelf(id string) IContact
@@ -22,4 +24,5 @@ type IContact interface {
 	Say(something interface{}) (msg IMessage, err error)
 	// Friend true for friend of the bot, false for not friend of the bot
 	Friend() bool
+	Type() schemas.ContactType
 }

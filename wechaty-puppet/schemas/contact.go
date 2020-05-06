@@ -10,6 +10,7 @@ const (
 	ContactGenderFemale  ContactGender = 2
 )
 
+//go:generate stringer -type=ContactType
 type ContactType uint8
 
 const (
