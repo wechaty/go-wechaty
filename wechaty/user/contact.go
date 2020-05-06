@@ -87,9 +87,13 @@ func (r *Contact) ID() string {
 }
 
 func (r *Contact) Name() string {
+	if r.payload == nil {
+		return ""
+	}
 	return r.payload.Name
 }
 
+// Say something params {(string | Contact | FileBox | UrlLink | MiniProgram)}
 func (r *Contact) Say(something interface{}) (msg _interface.IMessage, err error) {
 	var msgID string
 	switch v := something.(type) {
@@ -111,4 +115,11 @@ func (r *Contact) Say(something interface{}) (msg _interface.IMessage, err error
 	}
 	msg = r.GetWechaty().Message().Load(msgID)
 	return msg, msg.Ready()
+}
+
+// TODO Alias()
+
+// Friend true for friend of the bot, false for not friend of the bot
+func (r *Contact) Friend() bool {
+	return r.payload.Friend
 }

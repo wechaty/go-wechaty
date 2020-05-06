@@ -18,5 +18,8 @@ type IContact interface {
 	String() string
 	ID() string
 	Name() string
+	// Say something params {(string | Contact | FileBox | UrlLink | MiniProgram)}
 	Say(something interface{}) (msg IMessage, err error)
+	// Friend true for friend of the bot, false for not friend of the bot
+	Friend() bool
 }
