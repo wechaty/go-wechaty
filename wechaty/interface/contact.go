@@ -18,4 +18,5 @@ type IContact interface {
 	String() string
 	ID() string
 	Name() string
+	Say(something interface{}) (msg IMessage, err error)
 }

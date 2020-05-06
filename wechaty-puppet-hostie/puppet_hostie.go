@@ -474,7 +474,10 @@ func (p *PuppetHostie) MessageSendMiniProgram(conversationID string, miniProgram
 	if err != nil {
 		return "", err
 	}
-	return response.Id.Value, nil
+	if response.Id != nil {
+		return response.Id.Value, nil
+	}
+	return "", nil
 }
 
 // MessageRecall ...
@@ -574,7 +577,10 @@ func (p *PuppetHostie) MessageSendContact(conversationID string, contactID strin
 	if err != nil {
 		return "", err
 	}
-	return response.Id.Value, nil
+	if response.Id != nil {
+		return response.Id.Value, nil
+	}
+	return "", nil
 }
 
 // MessageSendURL ...
@@ -587,7 +593,10 @@ func (p *PuppetHostie) MessageSendURL(conversationID string, urlLinkPayload *sch
 	if err != nil {
 		return "", err
 	}
-	return response.Id.Value, nil
+	if response.Id != nil {
+		return response.Id.Value, nil
+	}
+	return "", nil
 }
 
 // MessageURL ...
