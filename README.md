@@ -2,7 +2,7 @@
 
 ![Go Version](https://img.shields.io/github/go-mod/go-version/wechaty/go-wechaty)
 [![Go](https://github.com/wechaty/go-wechaty/workflows/Go/badge.svg)](https://github.com/wechaty/go-wechaty/actions?query=workflow%3AGo)
-[![Maintainability](https://api.codeclimate.com/v1/badges/5e9ee9e1dbb8591ce30048c9/maintainability)](https://codeclimate.com/github/wechaty/go-wechaty/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/dbae0a43d431b0fccee5/maintainability)](https://codeclimate.com/github/wechaty/go-wechaty/maintainability)
 
 ![Go Wechaty](https://wechaty.github.io/go-wechaty/images/go-wechaty.png)
 
