@@ -7,6 +7,8 @@ type IContactFactory interface {
 	Find(query interface{}) IContact
 	// FindAll query params is string or *schemas.ContactQueryFilter
 	FindAll(query interface{}) []IContact
+	// Tags get tags for all contact
+	Tags() []ITag
 }
 
 type IContact interface {

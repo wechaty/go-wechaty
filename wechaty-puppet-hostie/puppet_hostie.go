@@ -920,9 +920,11 @@ func (p *PuppetHostie) TagContactDelete(id string) (err error) {
 // TagContactList ...
 func (p *PuppetHostie) TagContactList(contactID string) ([]string, error) {
 	log.Printf("PuppetHostie TagContactList(%s)\n", contactID)
-	response, err := p.grpcClient.TagContactList(context.Background(), &pbwechaty.TagContactListRequest{
-		ContactId: &wrappers.StringValue{Value: contactID},
-	})
+	request := &pbwechaty.TagContactListRequest{}
+	if contactID != "" {
+		request.ContactId = &wrappers.StringValue{Value: contactID}
+	}
+	response, err := p.grpcClient.TagContactList(context.Background(), request)
 	if err != nil {
 		return nil, err
 	}

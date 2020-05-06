@@ -92,3 +92,23 @@ func (c *ContactFactory) FindAll(query interface{}) []_interface.IContact {
 	}
 	return contacts
 }
+
+func NewTagFactory(accessory _interface.Accessory) *TagFactory {
+	return &TagFactory{
+		Accessory: accessory,
+		pool:      &sync.Map{},
+	}
+}
+
+func (c *ContactFactory) Tags() []_interface.ITag {
+	tagIDList, err := c.GetPuppet().TagContactList("")
+	if err != nil {
+		log.Printf("ContactFactory Tags() exception: %s\n", err)
+		return nil
+	}
+	tagList := make([]_interface.ITag, 0, len(tagIDList))
+	for _, id := range tagIDList {
+		tagList = append(tagList, c.GetWechaty().Tag().Load(id))
+	}
+	return tagList
+}
