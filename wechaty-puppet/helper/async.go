@@ -22,9 +22,9 @@ type (
 	}
 
 	async struct {
-		wg         sync.WaitGroup
-		tasks      []Task
-		workerNum  int
+		wg        sync.WaitGroup
+		tasks     []Task
+		workerNum int
 	}
 
 	// Task task func
@@ -36,8 +36,8 @@ func NewAsync(workerNum int) IAsync {
 		workerNum = DefaultWorkerNum
 	}
 	return &async{
-		wg:         sync.WaitGroup{},
-		workerNum:  workerNum,
+		wg:        sync.WaitGroup{},
+		workerNum: workerNum,
 	}
 }
 
@@ -61,7 +61,7 @@ func (a *async) Result() []AsyncResult {
 	}
 
 	go func() {
-		for _,v := range a.tasks {
+		for _, v := range a.tasks {
 			taskChan <- v
 		}
 		a.wg.Wait()
