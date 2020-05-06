@@ -1,0 +1,31 @@
+name: Codeclimate
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.14
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.14
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+
+      - name: Codeclimate
+        run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./test-reporter
+          chmod +x ./test-reporter
+          ./test-reporter before-build
+          go test -coverprofile c.out `go list ./... | grep -v /vendor/` -v -count=1 -coverpkg=./...
+          sed -i "s/github.com\/wechaty\/go-wechaty\///g" c.out
+          ./test-reporter format-coverage -t gocov
+          ./test-reporter upload-coverage
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
