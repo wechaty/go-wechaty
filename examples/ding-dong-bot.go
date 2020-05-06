@@ -14,7 +14,8 @@ import (
 
 func main() {
 	var bot = wechaty.NewWechaty(wechaty.WithPuppetOption(&wp.Option{
-		Token: "",
+		Token:    "puppet_padplus_25b4c29eeb3a7a20",
+		Endpoint: "padplus.juzibot.com:50051",
 	}))
 
 	bot.OnScan(func(qrCode string, status schemas.ScanStatus, data string) {
