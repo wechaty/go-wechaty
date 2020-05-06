@@ -1,6 +1,9 @@
 package _interface
 
-import "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+import (
+	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+)
 
 type IContactFactory interface {
 	Load(id string) IContact
@@ -25,4 +28,11 @@ type IContact interface {
 	// Friend true for friend of the bot, false for not friend of the bot
 	Friend() bool
 	Type() schemas.ContactType
+	// Star check if the contact is star contact
+	Star() bool
+	Gender() schemas.ContactGender
+	Province() string
+	City() string
+	// Avatar get avatar picture file stream
+	Avatar() *file_box.FileBox
 }

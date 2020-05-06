@@ -8,7 +8,7 @@ type fileBoxQRCode struct {
   qrCode string
 }
 
-func NewFileBoxQRCode(qrCode string) *fileBoxQRCode {
+func newFileBoxQRCode(qrCode string) *fileBoxQRCode {
   return &fileBoxQRCode{qrCode: qrCode}
 }
 

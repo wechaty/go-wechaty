@@ -52,7 +52,7 @@ func TestNewFileBoxFromJSONString(t *testing.T) {
   }{
     {
       jsonString: `{
-"name":"test.png",
+"Name":"test.png",
 "metadata": null,
 "boxType":1,
 "base64":"dGVzdCBjb250ZW50"
@@ -61,7 +61,7 @@ func TestNewFileBoxFromJSONString(t *testing.T) {
     },
     {
       jsonString: `{
-"name":"test.png",
+"Name":"test.png",
 "metadata": null,
 "boxType":2,
 "remoteUrl":"http://www.example.com",
@@ -71,7 +71,7 @@ func TestNewFileBoxFromJSONString(t *testing.T) {
     },
     {
       jsonString: `{
-"name":"test.png",
+"Name":"test.png",
 "metadata": null,
 "boxType":3,
 "qrCode":"test content"
@@ -80,7 +80,7 @@ func TestNewFileBoxFromJSONString(t *testing.T) {
     },
   }
   for _, t := range tests {
-    fileBox, err := NewFileBoxFromJSONString(t.jsonString)
+    fileBox, err := FromJSON(t.jsonString)
     if err != nil {
       log.Fatal(err)
     }

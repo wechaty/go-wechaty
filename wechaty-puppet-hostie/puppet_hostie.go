@@ -59,15 +59,15 @@ func (p *PuppetHostie) MessageImage(messageID string, imageType schemas.ImageTyp
 	if err != nil {
 		return nil, err
 	}
-	return file_box.NewFileBoxFromJSONString(response.Filebox)
+	return file_box.FromJSON(response.Filebox)
 }
 
-// Start ...
+// Star ...
 func (p *PuppetHostie) Start() (err error) {
-	log.Println("PuppetHostie Start()")
+	log.Println("PuppetHostie Star()")
 	defer func() {
 		if err != nil {
-			err = fmt.Errorf("PuppetHostie Start() rejection: %w", err)
+			err = fmt.Errorf("PuppetHostie Star() rejection: %w", err)
 		}
 	}()
 
@@ -381,7 +381,7 @@ func (p *PuppetHostie) GetContactAvatar(contactID string) (*file_box.FileBox, er
 	if err != nil {
 		return nil, err
 	}
-	return file_box.NewFileBoxFromJSONString(response.Filebox.Value)
+	return file_box.FromJSON(response.Filebox.Value)
 }
 
 // ContactRawPayload ...
@@ -405,7 +405,7 @@ func (p *PuppetHostie) ContactRawPayload(contactID string) (*schemas.ContactPayl
 		Friend:    response.Friend,
 		Province:  response.Province,
 		Signature: response.Signature,
-		Start:     response.Star,
+		Star:      response.Star,
 		WeiXin:    response.Weixin,
 	}, nil
 }
@@ -501,7 +501,7 @@ func (p *PuppetHostie) MessageFile(id string) (*file_box.FileBox, error) {
 	if err != nil {
 		return nil, err
 	}
-	return file_box.NewFileBoxFromJSONString(response.Filebox)
+	return file_box.FromJSON(response.Filebox)
 }
 
 // MessageRawPayload ...
@@ -664,7 +664,7 @@ func (p *PuppetHostie) RoomAvatar(roomID string) (*file_box.FileBox, error) {
 	if err != nil {
 		return nil, err
 	}
-	return file_box.NewFileBoxFromJSONString(response.Filebox)
+	return file_box.FromJSON(response.Filebox)
 }
 
 // RoomAdd ...

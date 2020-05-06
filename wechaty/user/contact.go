@@ -25,7 +25,9 @@ import (
 	"fmt"
 	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+	"github.com/wechaty/go-wechaty/wechaty/config"
 	"github.com/wechaty/go-wechaty/wechaty/interface"
+	"log"
 )
 
 type Contact struct {
@@ -42,89 +44,119 @@ func NewContact(id string, accessory _interface.Accessory) *Contact {
 	}
 }
 
-func (r *Contact) Ready(forceSync bool) (err error) {
-	if !forceSync && r.IsReady() {
+func (c *Contact) Ready(forceSync bool) (err error) {
+	if !forceSync && c.IsReady() {
 		return nil
 	}
 
 	if forceSync {
-		r.GetPuppet().ContactPayloadDirty(r.Id)
+		c.GetPuppet().ContactPayloadDirty(c.Id)
 	}
 
-	r.payload, err = r.GetPuppet().ContactPayload(r.Id)
+	c.payload, err = c.GetPuppet().ContactPayload(c.Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *Contact) IsReady() bool {
-	return r.payload != nil
+func (c *Contact) IsReady() bool {
+	return c.payload != nil
 }
 
-func (r *Contact) Sync() error {
-	return r.Ready(true)
+func (c *Contact) Sync() error {
+	return c.Ready(true)
 }
 
-func (r *Contact) String() string {
-	return fmt.Sprintf("Contact<%s>", r.identity())
+func (c *Contact) String() string {
+	return fmt.Sprintf("Contact<%s>", c.identity())
 }
 
-func (r *Contact) identity() string {
+func (c *Contact) identity() string {
 	identity := "loading..."
-	if r.payload.Alias != "" {
-		identity = r.payload.Alias
-	} else if r.payload.Name != "" {
-		identity = r.payload.Name
-	} else if r.Id != "" {
-		identity = r.Id
+	if c.payload.Alias != "" {
+		identity = c.payload.Alias
+	} else if c.payload.Name != "" {
+		identity = c.payload.Name
+	} else if c.Id != "" {
+		identity = c.Id
 	}
 	return identity
 }
 
-func (r *Contact) ID() string {
-	return r.Id
+func (c *Contact) ID() string {
+	return c.Id
 }
 
-func (r *Contact) Name() string {
-	if r.payload == nil {
+func (c *Contact) Name() string {
+	if c.payload == nil {
 		return ""
 	}
-	return r.payload.Name
+	return c.payload.Name
 }
 
 // Say something params {(string | Contact | FileBox | UrlLink | MiniProgram)}
-func (r *Contact) Say(something interface{}) (msg _interface.IMessage, err error) {
+func (c *Contact) Say(something interface{}) (msg _interface.IMessage, err error) {
 	var msgID string
 	switch v := something.(type) {
 	case string:
-		msgID, err = r.GetPuppet().MessageSendText(r.Id, v)
+		msgID, err = c.GetPuppet().MessageSendText(c.Id, v)
 	case *Contact:
-		msgID, err = r.GetPuppet().MessageSendContact(r.Id, v.Id)
+		msgID, err = c.GetPuppet().MessageSendContact(c.Id, v.Id)
 	case *file_box.FileBox:
-		msgID, err = r.GetPuppet().MessageSendFile(r.Id, v)
+		msgID, err = c.GetPuppet().MessageSendFile(c.Id, v)
 	case *UrlLink:
-		msgID, err = r.GetPuppet().MessageSendURL(r.Id, v.payload)
+		msgID, err = c.GetPuppet().MessageSendURL(c.Id, v.payload)
 	case *MiniProgram:
-		msgID, err = r.GetPuppet().MessageSendMiniProgram(r.Id, v.payload)
+		msgID, err = c.GetPuppet().MessageSendMiniProgram(c.Id, v.payload)
 	default:
 		return nil, fmt.Errorf("unsupported arg: %v", something)
 	}
 	if msgID == "" {
 		return nil, nil
 	}
-	msg = r.GetWechaty().Message().Load(msgID)
+	msg = c.GetWechaty().Message().Load(msgID)
 	return msg, msg.Ready()
 }
 
 // TODO Alias()
 
 // Friend true for friend of the bot, false for not friend of the bot
-func (r *Contact) Friend() bool {
-	return r.payload.Friend
+func (c *Contact) Friend() bool {
+	return c.payload.Friend
 }
 
 // Type contact type
-func (r *Contact) Type() schemas.ContactType {
-	return r.payload.Type
+func (c *Contact) Type() schemas.ContactType {
+	return c.payload.Type
+}
+
+// Star check if the contact is star contact
+func (c *Contact) Star() bool {
+	return c.payload.Star
+}
+
+// Gender gender
+func (c *Contact) Gender() schemas.ContactGender {
+	return c.payload.Gender
+}
+
+// Province Get the region 'province' from a contact
+func (c *Contact) Province() string {
+	return c.payload.Province
+}
+
+// City Get the region 'city' from a contact
+func (c *Contact) City() string {
+	return c.payload.City
+}
+
+// Avatar get avatar picture file stream
+func (c *Contact) Avatar() *file_box.FileBox {
+	avatar, err := c.GetPuppet().GetContactAvatar(c.Id)
+	if err != nil {
+		log.Printf("Contact Avatar() exception: %s\n", err)
+		return config.QRCodeForChatie()
+	}
+	return avatar
 }

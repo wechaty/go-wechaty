@@ -11,7 +11,7 @@ type fileBoxUrl struct {
   headers   http.Header
 }
 
-func NewFileBoxUrl(remoteUrl string, headers http.Header) *fileBoxUrl {
+func newFileBoxUrl(remoteUrl string, headers http.Header) *fileBoxUrl {
   return &fileBoxUrl{remoteUrl: remoteUrl, headers: headers}
 }
 

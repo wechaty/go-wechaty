@@ -2,6 +2,7 @@ package schemas
 
 import "regexp"
 
+//go:generate stringer -type=ContactGender
 type ContactGender uint8
 
 const (
@@ -41,7 +42,7 @@ type ContactPayload struct {
 	Friend    bool
 	Province  string
 	Signature string
-	Start     bool
+	Star      bool
 	WeiXin    string
 }
 
