@@ -64,7 +64,7 @@ func (p *PuppetHostie) MessageImage(messageID string, imageType schemas.ImageTyp
 
 // Start ...
 func (p *PuppetHostie) Start() (err error) {
-	log.Println("PuppetHostie Star()")
+	log.Println("PuppetHostie Start()")
 	defer func() {
 		if err != nil {
 			err = fmt.Errorf("PuppetHostie Star() rejection: %w", err)
