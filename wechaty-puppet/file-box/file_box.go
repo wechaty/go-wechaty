@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/bitly/go-simplejson"
 	"github.com/tuotoo/qrcode"
-	helper_functions "github.com/wechaty/go-wechaty/wechaty-puppet/helper-functions"
+	helper_functions "github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"io/ioutil"
 	"mime"
 	"net/http"
@@ -25,7 +25,7 @@ type fileImplInterface interface {
 // FileBox struct
 type FileBox struct {
 	fileImpl  fileImplInterface
-	name      string
+	Name      string
 	metadata  map[string]interface{}
 	boxType   FileBoxType
 	fileBytes []byte
@@ -35,14 +35,14 @@ type FileBox struct {
 func newFileBox(common *FileBoxJsonObjectCommon, fileImpl fileImplInterface) *FileBox {
 	return &FileBox{
 		fileImpl: fileImpl,
-		name:     common.Name,
+		Name:     common.Name,
 		metadata: common.Metadata,
 		boxType:  common.BoxType,
 		mimeType: mime.TypeByExtension(filepath.Ext(common.Name)),
 	}
 }
 
-func NewFileBoxFromJSONString(s string) (*FileBox, error) {
+func FromJSON(s string) (*FileBox, error) {
 	newJson, err := simplejson.NewJson([]byte(s))
 	if err != nil {
 		return nil, err
@@ -63,19 +63,19 @@ func NewFileBoxFromJSONString(s string) (*FileBox, error) {
 		if err := json.Unmarshal([]byte(s), fileBoxStruct); err != nil {
 			return nil, err
 		}
-		return NewFileBoxFromJSONObjectQRCode(fileBoxStruct), nil
+		return newFileBoxFromJSONObjectQRCode(fileBoxStruct), nil
 	case FileBoxTypeUrl:
 		fileBoxStruct := new(FileBoxJsonObjectUrl)
 		if err := json.Unmarshal([]byte(s), fileBoxStruct); err != nil {
 			return nil, err
 		}
-		return NewFileBoxFromJSONObjectUrl(fileBoxStruct), nil
+		return newFileBoxFromJSONObjectUrl(fileBoxStruct), nil
 	default:
 		return nil, errors.New("invalid value boxType")
 	}
 }
 
-func NewFileBoxFromUrl(urlString string, name string, headers http.Header) (*FileBox, error) {
+func FromUrl(urlString string, name string, headers http.Header) (*FileBox, error) {
 	if name == "" {
 		u, err := url.Parse(urlString)
 		if err != nil {
@@ -86,24 +86,31 @@ func NewFileBoxFromUrl(urlString string, name string, headers http.Header) (*Fil
 	return newFileBox(&FileBoxJsonObjectCommon{
 		Name:    name,
 		BoxType: FileBoxTypeUrl,
-	}, NewFileBoxUrl(urlString, headers)), nil
+	}, newFileBoxUrl(urlString, headers)), nil
+}
+
+func FromQRCode(qrCode string) *FileBox {
+	return newFileBox(&FileBoxJsonObjectCommon{
+		Name:    "qrcode.png",
+		BoxType: FileBoxTypeQRCode,
+	}, newFileBoxQRCode(qrCode))
 }
 
 func NewFileBoxFromJSONObjectBase64(data *FileBoxJsonObjectBase64) *FileBox {
 	return newFileBox(data.FileBoxJsonObjectCommon, newFileBoxBase64(data.Base64))
 }
 
-func NewFileBoxFromJSONObjectUrl(data *FileBoxJsonObjectUrl) *FileBox {
-	return newFileBox(data.FileBoxJsonObjectCommon, NewFileBoxUrl(data.RemoteUrl, data.Headers))
+func newFileBoxFromJSONObjectUrl(data *FileBoxJsonObjectUrl) *FileBox {
+	return newFileBox(data.FileBoxJsonObjectCommon, newFileBoxUrl(data.RemoteUrl, data.Headers))
 }
 
-func NewFileBoxFromJSONObjectQRCode(data *FileBoxJsonObjectQRCode) *FileBox {
-	return newFileBox(data.FileBoxJsonObjectCommon, NewFileBoxQRCode(data.QrCode))
+func newFileBoxFromJSONObjectQRCode(data *FileBoxJsonObjectQRCode) *FileBox {
+	return newFileBox(data.FileBoxJsonObjectCommon, newFileBoxQRCode(data.QrCode))
 }
 
 func (fb *FileBox) ToJSONString() (string, error) {
 	jsonMap := map[string]interface{}{
-		"name":     fb.name,
+		"Name":     fb.Name,
 		"metadata": fb.metadata,
 		"boxType":  fb.boxType,
 	}
@@ -117,7 +124,7 @@ func (fb *FileBox) ToJSONString() (string, error) {
 
 func (fb *FileBox) ToFile(filePath string, overwrite bool) error {
 	if filePath == "" {
-		filePath = fb.name
+		filePath = fb.Name
 	}
 	path, err := os.Getwd()
 	if err != nil {
@@ -176,5 +183,5 @@ func (fb *FileBox) ToQrCode() (string, error) {
 
 // String ...
 func (fb *FileBox) String() string {
-	return fmt.Sprintf("FileBox#%s<%s>", fb.boxType, fb.name)
+	return fmt.Sprintf("FileBox#%s<%s>", fb.boxType, fb.Name)
 }

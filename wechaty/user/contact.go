@@ -23,8 +23,11 @@ package user
 
 import (
 	"fmt"
+	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+	"github.com/wechaty/go-wechaty/wechaty/config"
 	"github.com/wechaty/go-wechaty/wechaty/interface"
+	"log"
 )
 
 type Contact struct {
@@ -41,50 +44,161 @@ func NewContact(id string, accessory _interface.Accessory) *Contact {
 	}
 }
 
-func (r *Contact) Ready(forceSync bool) (err error) {
-	if !forceSync && r.IsReady() {
+// Ready is For FrameWork ONLY!
+func (c *Contact) Ready(forceSync bool) (err error) {
+	if !forceSync && c.IsReady() {
 		return nil
 	}
 
 	if forceSync {
-		r.GetPuppet().ContactPayloadDirty(r.Id)
+		c.GetPuppet().ContactPayloadDirty(c.Id)
 	}
 
-	r.payload, err = r.GetPuppet().ContactPayload(r.Id)
+	c.payload, err = c.GetPuppet().ContactPayload(c.Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *Contact) IsReady() bool {
-	return r.payload != nil
+func (c *Contact) IsReady() bool {
+	return c.payload != nil
 }
 
-func (r *Contact) Sync() error {
-	return r.Ready(true)
+// Sync force reload data for Contact, sync data from lowlevel API again.
+func (c *Contact) Sync() error {
+	return c.Ready(true)
 }
 
-func (r *Contact) String() string {
-	return fmt.Sprintf("Contact<%s>", r.identity())
+func (c *Contact) String() string {
+	return fmt.Sprintf("Contact<%s>", c.identity())
 }
 
-func (r *Contact) identity() string {
+func (c *Contact) identity() string {
 	identity := "loading..."
-	if r.payload.Alias != "" {
-		identity = r.payload.Alias
-	} else if r.payload.Name != "" {
-		identity = r.payload.Name
-	} else if r.Id != "" {
-		identity = r.Id
+	if c.payload.Alias != "" {
+		identity = c.payload.Alias
+	} else if c.payload.Name != "" {
+		identity = c.payload.Name
+	} else if c.Id != "" {
+		identity = c.Id
 	}
 	return identity
 }
 
-func (r *Contact) ID() string {
-	return r.Id
+func (c *Contact) ID() string {
+	return c.Id
 }
 
-func (r *Contact) Name() string {
-	return r.payload.Name
+func (c *Contact) Name() string {
+	if c.payload == nil {
+		return ""
+	}
+	return c.payload.Name
+}
+
+// Say something params {(string | Contact | FileBox | UrlLink | MiniProgram)}
+func (c *Contact) Say(something interface{}) (msg _interface.IMessage, err error) {
+	var msgID string
+	switch v := something.(type) {
+	case string:
+		msgID, err = c.GetPuppet().MessageSendText(c.Id, v)
+	case *Contact:
+		msgID, err = c.GetPuppet().MessageSendContact(c.Id, v.Id)
+	case *file_box.FileBox:
+		msgID, err = c.GetPuppet().MessageSendFile(c.Id, v)
+	case *UrlLink:
+		msgID, err = c.GetPuppet().MessageSendURL(c.Id, v.payload)
+	case *MiniProgram:
+		msgID, err = c.GetPuppet().MessageSendMiniProgram(c.Id, v.payload)
+	default:
+		return nil, fmt.Errorf("unsupported arg: %v", something)
+	}
+	if msgID == "" {
+		return nil, nil
+	}
+	msg = c.GetWechaty().Message().Load(msgID)
+	return msg, msg.Ready()
+}
+
+// TODO Alias()
+
+// Friend true for friend of the bot, false for not friend of the bot
+func (c *Contact) Friend() bool {
+	return c.payload.Friend
+}
+
+// Type contact type
+func (c *Contact) Type() schemas.ContactType {
+	return c.payload.Type
+}
+
+// Star check if the contact is star contact
+func (c *Contact) Star() bool {
+	return c.payload.Star
+}
+
+// Gender gender
+func (c *Contact) Gender() schemas.ContactGender {
+	return c.payload.Gender
+}
+
+// Province Get the region 'province' from a contact
+func (c *Contact) Province() string {
+	return c.payload.Province
+}
+
+// City Get the region 'city' from a contact
+func (c *Contact) City() string {
+	return c.payload.City
+}
+
+// Avatar get avatar picture file stream
+func (c *Contact) Avatar() *file_box.FileBox {
+	avatar, err := c.GetPuppet().GetContactAvatar(c.Id)
+	if err != nil {
+		log.Printf("Contact Avatar() exception: %s\n", err)
+		return config.QRCodeForChatie()
+	}
+	return avatar
+}
+
+// Self Check if contact is self
+func (c *Contact) Self() bool {
+	return c.GetPuppet().SelfID() == c.Id
+}
+
+// Weixin get the weixin number from a contact
+// Sometimes cannot get weixin number due to weixin security mechanism, not recommend.
+func (c *Contact) Weixin() string {
+	return c.payload.WeiXin
+}
+
+// Alias get alias
+func (c *Contact) Alias() string {
+	return c.payload.Alias
+}
+
+// SetAlias set alias
+func (c *Contact) SetAlias(newAlias string) {
+	var err error
+	defer func() {
+		if err != nil {
+			log.Printf("Contact SetAlias(%s) rejected: %s\n", newAlias, err)
+		}
+	}()
+	err = c.GetPuppet().SetContactAlias(c.Id, newAlias)
+	if err != nil {
+		return
+	}
+	c.GetPuppet().ContactPayloadDirty(c.Id)
+	c.payload, err = c.GetPuppet().ContactPayload(c.Id)
+	fmt.Println(c.payload)
+	if err != nil {
+		return
+	}
+	if c.payload.Alias != newAlias {
+		log.Printf("Contact SetAlias(%s) sync with server fail: set(%s) is not equal to get(%s)\n", newAlias, newAlias, c.payload.Alias)
+	}
+	return
 }

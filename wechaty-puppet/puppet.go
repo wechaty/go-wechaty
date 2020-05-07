@@ -1,9 +1,11 @@
 package wechatypuppet
 
 import (
+	"errors"
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/events"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
@@ -15,7 +17,7 @@ type iPuppet interface {
 	Logout() error
 	Ding(data string)
 	SetContactAlias(contactID string, alias string) error
-	GetContactAlias(contactID string) (string, error)
+	ContactAlias(contactID string) (string, error)
 	ContactList() ([]string, error)
 	ContactQRCode(contactID string) (string, error)
 	SetContactAvatar(contactID string, fileBox *file_box.FileBox) error
@@ -72,9 +74,11 @@ type IPuppetAbstract interface {
 	RoomPayload(roomID string) (payload *schemas.RoomPayload, err error)
 	ContactPayloadDirty(contactID string)
 	ContactPayload(contactID string) (*schemas.ContactPayload, error)
+	ContactSearch(query interface{}, searchIDList []string) ([]string, error)
 	SelfID() string
 	iPuppet
 	events.EventEmitter
+	ContactValidate(contactID string) bool
 }
 
 // Puppet puppet abstract struct
@@ -269,4 +273,104 @@ func (p *Puppet) ContactPayload(contactID string) (*schemas.ContactPayload, erro
 	}
 	p.cacheContactPayload.Add(contactID, payload)
 	return payload, nil
+}
+
+// ContactSearch query params is string or *schemas.ContactQueryFilter
+func (p *Puppet) ContactSearch(query interface{}, searchIDList []string) ([]string, error) {
+	if searchIDList == nil {
+		var err error
+		searchIDList, err = p.puppetImplementation.ContactList()
+		if err != nil || len(searchIDList) == 0 {
+			return nil, err
+		}
+	}
+
+	switch v := query.(type) {
+	case string:
+		return p.contactSearchByQueryString(v, searchIDList)
+	case *schemas.ContactQueryFilter:
+		return p.contactSearchByQueryFilter(query.(*schemas.ContactQueryFilter), searchIDList)
+	default:
+		return nil, errors.New("unsupported query types")
+	}
+}
+
+func (p *Puppet) contactSearchByQueryString(query string, searchIDList []string) ([]string, error) {
+	nameIDList, err := p.contactSearchByQueryFilter(&schemas.ContactQueryFilter{Name: query}, searchIDList)
+	if err != nil {
+		return nil, err
+	}
+	aliasIDList, err := p.contactSearchByQueryFilter(&schemas.ContactQueryFilter{Alias: query}, searchIDList)
+	if err != nil {
+		return nil, err
+	}
+	return append(nameIDList, aliasIDList...), nil
+}
+
+func (p *Puppet) contactQueryFilterFactory(query *schemas.ContactQueryFilter) (schemas.ContactPayloadFilterFunction, error) {
+	if query.Alias != "" {
+		return func(payload *schemas.ContactPayload) bool {
+			return payload.Alias == query.Alias
+		}, nil
+	}
+	if query.AliasRegexp != nil {
+		return func(payload *schemas.ContactPayload) bool {
+			return query.AliasRegexp.MatchString(payload.Alias)
+		}, nil
+	}
+	if query.Id != "" {
+		return func(payload *schemas.ContactPayload) bool {
+			return payload.Id == query.Id
+		}, nil
+	}
+	if query.Name != "" {
+		return func(payload *schemas.ContactPayload) bool {
+			return payload.Name == query.Name
+		}, nil
+	}
+	if query.NameRegexp != nil {
+		return func(payload *schemas.ContactPayload) bool {
+			return query.NameRegexp.MatchString(payload.Name)
+		}, nil
+	}
+	if query.WeiXin != "" {
+		return func(payload *schemas.ContactPayload) bool {
+			return payload.WeiXin == query.WeiXin
+		}, nil
+	}
+	return nil, errors.New("query must provide at least one key. current query is empty. ")
+}
+
+func (p *Puppet) contactSearchByQueryFilter(query *schemas.ContactQueryFilter, searchIDList []string) ([]string, error) {
+	filterFun, err := p.contactQueryFilterFactory(query)
+	if err != nil {
+		return nil, err
+	}
+	async := helper.NewAsync(helper.DefaultWorkerNum)
+	for _, id := range searchIDList {
+		id := id
+		async.AddTask(func() (interface{}, error) {
+			payload, err := p.ContactPayload(id)
+			if err != nil {
+				p.ContactPayloadDirty(id)
+			}
+			return payload, err
+		})
+	}
+	var contactIDs []string
+	for _, v := range async.Result() {
+		if v.Err != nil {
+			continue
+		}
+		payload := v.Value.(*schemas.ContactPayload)
+		if filterFun(payload) {
+			contactIDs = append(contactIDs, payload.Id)
+		}
+	}
+	return contactIDs, nil
+}
+
+// ContactValidate ...
+func (p *Puppet) ContactValidate(contactID string) bool {
+	return true
 }

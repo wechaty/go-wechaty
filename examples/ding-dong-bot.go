@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/wechaty/go-wechaty/wechaty"
 	wp "github.com/wechaty/go-wechaty/wechaty-puppet"
-	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"github.com/wechaty/go-wechaty/wechaty/user"
 	"log"
@@ -64,12 +63,12 @@ func onMessage(message *user.Message) {
 	}
 	log.Println("REPLY: dong")
 
-	// 2. reply image(qrcode image)
-	fileBox, _ := file_box.NewFileBoxFromUrl("https://wechaty.github.io/wechaty/images/bot-qr-code.png", "", nil)
-	_, err = message.SayFile(fileBox)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	log.Printf("REPLY: %s\n", fileBox)
+	//	// 2. reply image(qrcode image)
+	//	fileBox, _ := file_box.NewFileBoxFromUrl("https://wechaty.github.io/wechaty/images/bot-qr-code.png", "", nil)
+	//	_, err = message.SayFile(fileBox)
+	//	if err != nil {
+	//		log.Println(err)
+	//		return
+	//	}
+	//	log.Printf("REPLY: %s\n", fileBox)
 }

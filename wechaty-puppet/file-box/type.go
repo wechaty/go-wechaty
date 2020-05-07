@@ -3,7 +3,7 @@ package file_box
 import "net/http"
 
 type FileBoxJsonObjectCommon struct {
-	Name     string                 `json:"name"`
+	Name     string                 `json:"Name"`
 	Metadata map[string]interface{} `json:"metadata"`
 	BoxType  FileBoxType            `json:"boxType"`
 }
