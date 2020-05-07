@@ -44,6 +44,7 @@ func NewContact(id string, accessory _interface.Accessory) *Contact {
 	}
 }
 
+// Ready is For FrameWork ONLY!
 func (c *Contact) Ready(forceSync bool) (err error) {
 	if !forceSync && c.IsReady() {
 		return nil
@@ -64,6 +65,7 @@ func (c *Contact) IsReady() bool {
 	return c.payload != nil
 }
 
+// Sync force reload data for Contact, sync data from lowlevel API again.
 func (c *Contact) Sync() error {
 	return c.Ready(true)
 }
@@ -159,4 +161,44 @@ func (c *Contact) Avatar() *file_box.FileBox {
 		return config.QRCodeForChatie()
 	}
 	return avatar
+}
+
+// Self Check if contact is self
+func (c *Contact) Self() bool {
+	return c.GetPuppet().SelfID() == c.Id
+}
+
+// Weixin get the weixin number from a contact
+// Sometimes cannot get weixin number due to weixin security mechanism, not recommend.
+func (c *Contact) Weixin() string {
+	return c.payload.WeiXin
+}
+
+// Alias get alias
+func (c *Contact) Alias() string {
+	return c.payload.Alias
+}
+
+// SetAlias set alias
+func (c *Contact) SetAlias(newAlias string) {
+	var err error
+	defer func() {
+		if err != nil {
+			log.Printf("Contact SetAlias(%s) rejected: %s\n", newAlias, err)
+		}
+	}()
+	err = c.GetPuppet().SetContactAlias(c.Id, newAlias)
+	if err != nil {
+		return
+	}
+	c.GetPuppet().ContactPayloadDirty(c.Id)
+	c.payload, err = c.GetPuppet().ContactPayload(c.Id)
+	fmt.Println(c.payload)
+	if err != nil {
+		return
+	}
+	if c.payload.Alias != newAlias {
+		log.Printf("Contact SetAlias(%s) sync with server fail: set(%s) is not equal to get(%s)\n", newAlias, newAlias, c.payload.Alias)
+	}
+	return
 }

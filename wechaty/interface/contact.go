@@ -17,8 +17,10 @@ type IContactFactory interface {
 }
 
 type IContact interface {
+	// Ready is For FrameWork ONLY!
 	Ready(forceSync bool) (err error)
 	IsReady() bool
+	// Sync force reload data for Contact, sync data from lowlevel API again.
 	Sync() error
 	String() string
 	ID() string
@@ -35,4 +37,13 @@ type IContact interface {
 	City() string
 	// Avatar get avatar picture file stream
 	Avatar() *file_box.FileBox
+	// Self Check if contact is self
+	Self() bool
+	// Weixin get the weixin number from a contact
+	// Sometimes cannot get weixin number due to weixin security mechanism, not recommend.
+	Weixin() string
+	// Alias get alias
+	Alias() string
+	// SetAlias set alias
+	SetAlias(newAlias string)
 }

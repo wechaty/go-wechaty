@@ -62,7 +62,7 @@ func (p *PuppetHostie) MessageImage(messageID string, imageType schemas.ImageTyp
 	return file_box.FromJSON(response.Filebox)
 }
 
-// Star ...
+// Start ...
 func (p *PuppetHostie) Start() (err error) {
 	log.Println("PuppetHostie Star()")
 	defer func() {
@@ -302,7 +302,7 @@ func (p *PuppetHostie) Ding(data string) {
 
 // SetContactAlias ...
 func (p *PuppetHostie) SetContactAlias(contactID string, alias string) error {
-	log.Printf("PuppetHostie, 'SetContactAlias(%s, %s)\n", contactID, alias)
+	log.Printf("PuppetHostie, SetContactAlias(%s, %s)\n", contactID, alias)
 	_, err := p.grpcClient.ContactAlias(context.Background(), &pbwechaty.ContactAliasRequest{
 		Id: contactID,
 		Alias: &wrappers.StringValue{
@@ -315,14 +315,14 @@ func (p *PuppetHostie) SetContactAlias(contactID string, alias string) error {
 	return nil
 }
 
-// GetContactAlias ...
-func (p *PuppetHostie) GetContactAlias(contactID string) (string, error) {
-	log.Printf("PuppetHostie, 'GetContactAlias(%s)\n", contactID)
+// ContactAlias ...
+func (p *PuppetHostie) ContactAlias(contactID string) (string, error) {
+	log.Printf("PuppetHostie, 'ContactAlias(%s)\n", contactID)
 	response, err := p.grpcClient.ContactAlias(context.Background(), &pbwechaty.ContactAliasRequest{
 		Id: contactID,
 	})
 	if err != nil {
-		return "", fmt.Errorf("PuppetHostie GetContactAlias err: %w", err)
+		return "", fmt.Errorf("PuppetHostie ContactAlias err: %w", err)
 	}
 	if response.Alias == nil {
 		return "", fmt.Errorf("can not get aliasWrapper")

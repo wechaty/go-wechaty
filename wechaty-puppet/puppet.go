@@ -17,7 +17,7 @@ type iPuppet interface {
 	Logout() error
 	Ding(data string)
 	SetContactAlias(contactID string, alias string) error
-	GetContactAlias(contactID string) (string, error)
+	ContactAlias(contactID string) (string, error)
 	ContactList() ([]string, error)
 	ContactQRCode(contactID string) (string, error)
 	SetContactAvatar(contactID string, fileBox *file_box.FileBox) error
@@ -370,6 +370,7 @@ func (p *Puppet) contactSearchByQueryFilter(query *schemas.ContactQueryFilter, s
 	return contactIDs, nil
 }
 
+// ContactValidate ...
 func (p *Puppet) ContactValidate(contactID string) bool {
 	return true
 }

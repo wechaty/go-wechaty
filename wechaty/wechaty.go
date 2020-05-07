@@ -218,7 +218,7 @@ func (w *Wechaty) initPuppetAccessory() {
 	w.tag = factory.NewTagFactory(accessory)
 }
 
-// Star ...
+// Start ...
 func (w *Wechaty) Start() error {
 
 	var err error

@@ -92,7 +92,7 @@ func (p *PuppetMock) SetContactAlias(contactID string, alias string) error {
   panic("implement me")
 }
 
-func (p *PuppetMock) GetContactAlias(contactID string) (string, error) {
+func (p *PuppetMock) ContactAlias(contactID string) (string, error) {
   panic("implement me")
 }
 
