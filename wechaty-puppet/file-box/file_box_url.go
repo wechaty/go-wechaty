@@ -15,11 +15,11 @@ func newFileBoxUrl(remoteUrl string, headers http.Header) *fileBoxUrl {
 	return &fileBoxUrl{remoteUrl: remoteUrl, headers: headers}
 }
 
-func (fb *fileBoxUrl) toJSONMap() map[string]interface{} {
+func (fb *fileBoxUrl) toJSONMap() (map[string]interface{}, error) {
 	return map[string]interface{}{
 		"headers":   fb.headers,
 		"remoteUrl": fb.remoteUrl,
-	}
+	}, nil
 }
 
 func (fb *fileBoxUrl) toBytes() ([]byte, error) {
