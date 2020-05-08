@@ -11,14 +11,7 @@ import (
 
 func TestFileBox_ToFile(t *testing.T) {
 	expect := "test content"
-	fileBox := NewFileBoxFromJSONObjectBase64(&FileBoxJsonObjectBase64{
-		FileBoxJsonObjectCommon: &FileBoxJsonObjectCommon{
-			Name:     "test.text",
-			Metadata: nil,
-			BoxType:  FileBoxTypeBase64,
-		},
-		Base64: base64.StdEncoding.EncodeToString([]byte(expect)),
-	})
+	fileBox := FromBase64(base64.StdEncoding.EncodeToString([]byte(expect)), "test.text")
 	const filename = "testdata/test.text"
 	t.Run("toFile success", func(t *testing.T) {
 		err := fileBox.ToFile(filename, true)

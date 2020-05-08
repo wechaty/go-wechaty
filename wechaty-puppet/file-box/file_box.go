@@ -14,11 +14,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	path2 "path"
 	"path/filepath"
 )
 
 type fileImplInterface interface {
-	toJSONMap() map[string]interface{}
+	toJSONMap() (map[string]interface{}, error)
 	toBytes() ([]byte, error)
 }
 
@@ -32,7 +33,7 @@ type FileBox struct {
 	mimeType  string
 }
 
-func newFileBox(common *FileBoxJsonObjectCommon, fileImpl fileImplInterface) *FileBox {
+func newFileBox(common *FileBoxOptionsCommon, fileImpl fileImplInterface) *FileBox {
 	return &FileBox{
 		fileImpl: fileImpl,
 		Name:     common.Name,
@@ -51,28 +52,27 @@ func FromJSON(s string) (*FileBox, error) {
 	if err != nil {
 		return nil, err
 	}
+	options := new(FileBoxOptions)
+	if err := json.Unmarshal([]byte(s), options); err != nil {
+		return nil, err
+	}
 	switch boxType {
 	case FileBoxTypeBase64:
-		fileBoxStruct := new(FileBoxJsonObjectBase64)
-		if err := json.Unmarshal([]byte(s), fileBoxStruct); err != nil {
-			return nil, err
-		}
-		return NewFileBoxFromJSONObjectBase64(fileBoxStruct), nil
+		return FromBase64(options.Base64, options.Base64), nil
 	case FileBoxTypeQRCode:
-		fileBoxStruct := new(FileBoxJsonObjectQRCode)
-		if err := json.Unmarshal([]byte(s), fileBoxStruct); err != nil {
-			return nil, err
-		}
-		return newFileBoxFromJSONObjectQRCode(fileBoxStruct), nil
+		return FromQRCode(options.QrCode), nil
 	case FileBoxTypeUrl:
-		fileBoxStruct := new(FileBoxJsonObjectUrl)
-		if err := json.Unmarshal([]byte(s), fileBoxStruct); err != nil {
-			return nil, err
-		}
-		return newFileBoxFromJSONObjectUrl(fileBoxStruct), nil
+		return FromUrl(options.RemoteUrl, options.Name, nil)
 	default:
 		return nil, errors.New("invalid value boxType")
 	}
+}
+
+func FromBase64(base64 string, name string) *FileBox {
+	return newFileBox(&FileBoxOptionsCommon{
+		Name:    name,
+		BoxType: FileBoxTypeBase64,
+	}, newFileBoxBase64(base64))
 }
 
 func FromUrl(urlString string, name string, headers http.Header) (*FileBox, error) {
@@ -83,38 +83,43 @@ func FromUrl(urlString string, name string, headers http.Header) (*FileBox, erro
 		}
 		name = u.Path
 	}
-	return newFileBox(&FileBoxJsonObjectCommon{
+	return newFileBox(&FileBoxOptionsCommon{
 		Name:    name,
 		BoxType: FileBoxTypeUrl,
 	}, newFileBoxUrl(urlString, headers)), nil
 }
 
+func FromFile(path, name string) *FileBox {
+	if name == "" {
+		name = path2.Base(path)
+	}
+	return newFileBox(&FileBoxOptionsCommon{
+		Name:    name,
+		BoxType: FileBoxTypeFile,
+	}, newFileBoxFile(path))
+}
+
 func FromQRCode(qrCode string) *FileBox {
-	return newFileBox(&FileBoxJsonObjectCommon{
+	return newFileBox(&FileBoxOptionsCommon{
 		Name:    "qrcode.png",
 		BoxType: FileBoxTypeQRCode,
 	}, newFileBoxQRCode(qrCode))
 }
 
-func NewFileBoxFromJSONObjectBase64(data *FileBoxJsonObjectBase64) *FileBox {
-	return newFileBox(data.FileBoxJsonObjectCommon, newFileBoxBase64(data.Base64))
-}
-
-func newFileBoxFromJSONObjectUrl(data *FileBoxJsonObjectUrl) *FileBox {
-	return newFileBox(data.FileBoxJsonObjectCommon, newFileBoxUrl(data.RemoteUrl, data.Headers))
-}
-
-func newFileBoxFromJSONObjectQRCode(data *FileBoxJsonObjectQRCode) *FileBox {
-	return newFileBox(data.FileBoxJsonObjectCommon, newFileBoxQRCode(data.QrCode))
-}
-
-func (fb *FileBox) ToJSONString() (string, error) {
-	jsonMap := map[string]interface{}{
-		"Name":     fb.Name,
-		"metadata": fb.metadata,
-		"boxType":  fb.boxType,
+func (fb *FileBox) ToJSON() (string, error) {
+	boxType := fb.boxType
+	if fb.boxType == FileBoxTypeFile {
+		boxType = FileBoxTypeBase64
 	}
-	implJsonMap := fb.fileImpl.toJSONMap()
+	jsonMap := map[string]interface{}{
+		"name":     fb.Name,
+		"metadata": fb.metadata,
+		"boxType":  boxType,
+	}
+	implJsonMap, err := fb.fileImpl.toJSONMap()
+	if err != nil {
+		return "", err
+	}
 	for k, v := range implJsonMap {
 		jsonMap[k] = v
 	}
@@ -169,7 +174,7 @@ func (fb *FileBox) ToDataURL() (string, error) {
 	return fmt.Sprintf("data:%s;base64,%s", fb.mimeType, toBase64), nil
 }
 
-func (fb *FileBox) ToQrCode() (string, error) {
+func (fb *FileBox) ToQRCode() (string, error) {
 	fileBytes, err := fb.ToBytes()
 	if err != nil {
 		return "", err

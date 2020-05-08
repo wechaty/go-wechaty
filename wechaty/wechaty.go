@@ -42,10 +42,11 @@ type Wechaty struct {
 	puppet wp.IPuppetAbstract
 	events events.EventEmitter
 
-	message _interface.IMessageFactory
-	room    _interface.IRoomFactory
-	contact _interface.IContactFactory
-	tag     _interface.ITagFactory
+	message    _interface.IMessageFactory
+	room       _interface.IRoomFactory
+	contact    _interface.IContactFactory
+	tag        _interface.ITagFactory
+	friendship _interface.IFriendshipFactory
 }
 
 // NewWechaty ...
@@ -101,21 +102,9 @@ func (w *Wechaty) OnError(f EventError) *Wechaty {
 	return w
 }
 
-// OnFriendshipConfirm ...
-func (w *Wechaty) OnFriendshipConfirm(f EventFriendshipConfirm) *Wechaty {
-	w.registerEvent(schemas.PuppetEventNameFriendShipConfirm, f)
-	return w
-}
-
-// OnFriendshipVerify ...
-func (w *Wechaty) OnFriendshipVerify(f EventFriendshipVerify) *Wechaty {
-	w.registerEvent(schemas.PuppetEventNameFriendShipVerify, f)
-	return w
-}
-
-// OnFriendshipReceive ...
-func (w *Wechaty) OnFriendshipReceive(f EventFriendshipReceive) *Wechaty {
-	w.registerEvent(schemas.PuppetEventNameFriendShipReceive, f)
+// OnFriendship ...
+func (w *Wechaty) OnFriendship(f EventFriendship) *Wechaty {
+	w.registerEvent(schemas.PuppetEventNameFriendship, f)
 	return w
 }
 
@@ -210,12 +199,11 @@ func (w *Wechaty) initPuppetAccessory() {
 		puppet:  w.puppet,
 		wechaty: w,
 	}
-	w.message = &factory.MessageFactory{
-		Accessory: accessory,
-	}
+	w.message = &factory.MessageFactory{Accessory: accessory}
 	w.contact = factory.NewContactFactory(accessory)
 	w.room = factory.NewRoomFactory(accessory)
 	w.tag = factory.NewTagFactory(accessory)
+	w.friendship = &factory.FriendshipFactory{Accessory: accessory}
 }
 
 // Start ...
@@ -286,7 +274,7 @@ func (w *Wechaty) initPuppetEventBridge() {
 				payload := i[0].(*schemas.EventLogoutPayload)
 				contact := w.contact.LoadSelf(payload.ContactId)
 				if err := contact.Ready(false); err != nil {
-					log.Printf("emit logout contact.Ready err: %s", err.Error())
+					log.Printf("emit logout contact.Ready err: %s\n", err.Error())
 				}
 				w.emit(name, contact, payload.Data)
 			})
@@ -300,10 +288,19 @@ func (w *Wechaty) initPuppetEventBridge() {
 				messageID := i[0].(*schemas.EventMessagePayload).MessageId
 				message := w.message.Load(messageID)
 				if err := message.Ready(); err != nil {
-					// TODO panic ?
-					panic(err)
+					log.Printf("emit message message.Ready() err: %s\n", err.Error())
+					return
 				}
 				w.emit(name, message)
+			})
+		case schemas.PuppetEventNameFriendship:
+			w.puppet.On(name, func(i ...interface{}) {
+				friendship := w.friendship.Load(i[0].(*schemas.EventFriendshipPayload).FriendshipID)
+				if err := friendship.Ready(); err != nil {
+					log.Printf("emit friendship friendship.Ready() err: %s\n", err.Error())
+					return
+				}
+				w.emit(name, friendship)
 			})
 		default:
 
@@ -329,4 +326,9 @@ func (w *Wechaty) Contact() _interface.IContactFactory {
 // Tag ...
 func (w *Wechaty) Tag() _interface.ITagFactory {
 	return w.tag
+}
+
+// Friendship ...
+func (w *Wechaty) Friendship() _interface.IFriendshipFactory {
+	return w.friendship
 }
