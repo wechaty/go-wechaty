@@ -28,10 +28,10 @@ const (
 )
 
 type FriendshipPayloadBase struct {
-	Id        string
-	ContactId string
-	Hello     string
-	Timestamp int64
+	Id        string `json:"id"`
+	ContactId string `json:"contactId"`
+	Hello     string `json:"hello"`
+	Timestamp int64  `json:"timestamp"`
 }
 
 type FriendshipPayloadConfirm struct {
@@ -41,10 +41,10 @@ type FriendshipPayloadConfirm struct {
 
 type FriendshipPayloadReceive struct {
 	FriendshipPayloadBase
-	Type     FriendshipType // FriendshipTypeReceive
-	Scene    FriendshipSceneType
-	Stranger string
-	Ticket   string
+	Type     FriendshipType      `json:"type"` // FriendshipTypeReceive
+	Scene    FriendshipSceneType `json:"scene"`
+	Stranger string              `json:"stranger"`
+	Ticket   string              `json:"ticket"`
 }
 
 type FriendshipPayloadVerify struct {

@@ -69,6 +69,7 @@ type IPuppetAbstract interface {
 	MessageSearch(query schemas.MessageUserQueryFilter) ([]string, error)
 	MessagePayload(messageID string) (payload *schemas.MessagePayload, err error)
 	FriendshipPayload(friendshipID string) (*schemas.FriendshipPayload, error)
+	SetFriendshipPayload(friendshipID string, newPayload *schemas.FriendshipPayload)
 	RoomPayloadDirty(roomID string)
 	RoomMemberPayloadDirty(roomID string) error
 	RoomPayload(roomID string) (payload *schemas.RoomPayload, err error)
@@ -205,6 +206,11 @@ func (p *Puppet) FriendshipPayload(friendshipID string) (*schemas.FriendshipPayl
 	}
 	p.cacheFriendshipPayload.Add(friendshipID, payload)
 	return payload, nil
+}
+
+// SetFriendshipPayload ...
+func (p *Puppet) SetFriendshipPayload(friendshipID string, newPayload *schemas.FriendshipPayload) {
+	p.cacheFriendshipPayload.Add(friendshipID, newPayload)
 }
 
 // SetPuppetImplementation set puppet implementation
