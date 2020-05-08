@@ -155,7 +155,7 @@ func (c *Contact) City() string {
 
 // Avatar get avatar picture file stream
 func (c *Contact) Avatar() *file_box.FileBox {
-	avatar, err := c.GetPuppet().GetContactAvatar(c.Id)
+	avatar, err := c.GetPuppet().ContactAvatar(c.Id)
 	if err != nil {
 		log.Printf("Contact Avatar() exception: %s\n", err)
 		return config.QRCodeForChatie()

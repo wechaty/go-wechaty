@@ -372,9 +372,9 @@ func (p *PuppetHostie) SetContactAvatar(contactID string, fileBox *file_box.File
 	return nil
 }
 
-// GetContactAvatar ...
-func (p *PuppetHostie) GetContactAvatar(contactID string) (*file_box.FileBox, error) {
-	log.Printf("PuppetHostie GetContactAvatar(%s)\n", contactID)
+// ContactAvatar ...
+func (p *PuppetHostie) ContactAvatar(contactID string) (*file_box.FileBox, error) {
+	log.Printf("PuppetHostie ContactAvatar(%s)\n", contactID)
 	response, err := p.grpcClient.ContactAvatar(context.Background(), &pbwechaty.ContactAvatarRequest{
 		Id: contactID,
 	})

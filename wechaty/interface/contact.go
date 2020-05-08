@@ -7,7 +7,7 @@ import (
 
 type IContactFactory interface {
 	Load(id string) IContact
-	LoadSelf(id string) IContact
+	LoadSelf(id string) IContactSelf
 	// Find query params is string or *schemas.ContactQueryFilter
 	Find(query interface{}) IContact
 	// FindAll query params is string or *schemas.ContactQueryFilter

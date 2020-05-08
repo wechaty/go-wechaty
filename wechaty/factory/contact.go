@@ -35,7 +35,7 @@ func (c *ContactFactory) Load(id string) _interface.IContact {
 	}
 }
 
-func (c *ContactFactory) LoadSelf(id string) _interface.IContact {
+func (c *ContactFactory) LoadSelf(id string) _interface.IContactSelf {
 	load, ok := c.pool.Load(id)
 	if ok {
 		return load.(*user.ContactSelf)

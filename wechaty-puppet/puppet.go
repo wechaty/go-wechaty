@@ -21,7 +21,7 @@ type iPuppet interface {
 	ContactList() ([]string, error)
 	ContactQRCode(contactID string) (string, error)
 	SetContactAvatar(contactID string, fileBox *file_box.FileBox) error
-	GetContactAvatar(contactID string) (*file_box.FileBox, error)
+	ContactAvatar(contactID string) (*file_box.FileBox, error)
 	ContactRawPayload(contactID string) (*schemas.ContactPayload, error)
 	SetContactSelfName(name string) error
 	ContactSelfQRCode() (string, error)
