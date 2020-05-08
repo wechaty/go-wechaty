@@ -356,7 +356,7 @@ func (p *PuppetHostie) ContactQRCode(contactID string) (string, error) {
 // SetContactAvatar ...
 func (p *PuppetHostie) SetContactAvatar(contactID string, fileBox *file_box.FileBox) error {
 	log.Printf("PuppetHostie SetContactAvatar(%s)\n", contactID)
-	jsonString, err := fileBox.ToJSONString()
+	jsonString, err := fileBox.ToJSON()
 	if err != nil {
 		return err
 	}
@@ -550,7 +550,8 @@ func (p *PuppetHostie) MessageSendText(conversationID string, text string) (stri
 // MessageSendFile ...
 func (p *PuppetHostie) MessageSendFile(conversationID string, fileBox *file_box.FileBox) (string, error) {
 	log.Printf("PuppetHostie MessageSendFile(%s)\n", conversationID)
-	jsonString, err := fileBox.ToJSONString()
+	jsonString, err := fileBox.ToJSON()
+	fmt.Println(jsonString)
 	if err != nil {
 		return "", err
 	}

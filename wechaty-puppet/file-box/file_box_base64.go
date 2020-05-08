@@ -12,10 +12,10 @@ func newFileBoxBase64(base64Data string) *fileBoxBase64 {
   return &fileBoxBase64{base64Data: base64Data}
 }
 
-func (fb *fileBoxBase64) toJSONMap() map[string]interface{} {
+func (fb *fileBoxBase64) toJSONMap() (map[string]interface{}, error) {
   return map[string]interface{}{
     "base64": fb.base64Data,
-  }
+  }, nil
 }
 
 func (fb *fileBoxBase64) toBytes() ([]byte, error) {
