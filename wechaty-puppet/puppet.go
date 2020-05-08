@@ -75,6 +75,7 @@ type IPuppetAbstract interface {
 	ContactPayloadDirty(contactID string)
 	ContactPayload(contactID string) (*schemas.ContactPayload, error)
 	ContactSearch(query interface{}, searchIDList []string) ([]string, error)
+	FriendshipSearch(query *schemas.FriendshipSearchCondition) (string, error)
 	SelfID() string
 	iPuppet
 	events.EventEmitter
@@ -373,4 +374,15 @@ func (p *Puppet) contactSearchByQueryFilter(query *schemas.ContactQueryFilter, s
 // ContactValidate ...
 func (p *Puppet) ContactValidate(contactID string) bool {
 	return true
+}
+
+// FriendshipSearch ...
+func (p *Puppet) FriendshipSearch(query *schemas.FriendshipSearchCondition) (string, error) {
+	if query.Phone != "" {
+		return p.puppetImplementation.FriendshipSearchPhone(query.Phone)
+	} else if query.WeiXin != "" {
+		return p.puppetImplementation.FriendshipSearchWeixin(query.WeiXin)
+	} else {
+		return "", errors.New("query must provide at least one key. current query is empty. ")
+	}
 }

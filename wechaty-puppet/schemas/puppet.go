@@ -13,10 +13,7 @@ type PuppetEventName uint8
 
 const (
   PuppetEventNameUnknown PuppetEventName = iota
-  PuppetEventNameFriendShipConfirm
-  PuppetEventNameFriendShipReceive
-  PuppetEventNameFriendShipVerify
-  PuppetEventNameFriendShip
+  PuppetEventNameFriendship
   PuppetEventNameLogin
   PuppetEventNameLogout
   PuppetEventNameMessage
@@ -37,7 +34,7 @@ const (
 )
 
 var eventNames = []PuppetEventName{
-  PuppetEventNameFriendShip,
+  PuppetEventNameFriendship,
   PuppetEventNameLogin,
   PuppetEventNameLogout,
   PuppetEventNameMessage,
@@ -65,7 +62,7 @@ var pbEventType2PuppetEventName = map[pbwechaty.EventType]PuppetEventName{
   pbwechaty.EventType_EVENT_TYPE_DONG:        PuppetEventNameDong,
   pbwechaty.EventType_EVENT_TYPE_ERROR:       PuppetEventNameError,
   pbwechaty.EventType_EVENT_TYPE_HEARTBEAT:   PuppetEventNameHeartbeat,
-  pbwechaty.EventType_EVENT_TYPE_FRIENDSHIP:  PuppetEventNameFriendShip,
+  pbwechaty.EventType_EVENT_TYPE_FRIENDSHIP:  PuppetEventNameFriendship,
   pbwechaty.EventType_EVENT_TYPE_LOGIN:       PuppetEventNameLogin,
   pbwechaty.EventType_EVENT_TYPE_LOGOUT:      PuppetEventNameLogout,
   pbwechaty.EventType_EVENT_TYPE_MESSAGE:     PuppetEventNameMessage,
