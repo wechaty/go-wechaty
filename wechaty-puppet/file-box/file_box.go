@@ -174,7 +174,7 @@ func (fb *FileBox) ToDataURL() (string, error) {
 	return fmt.Sprintf("data:%s;base64,%s", fb.mimeType, toBase64), nil
 }
 
-func (fb *FileBox) ToQrCode() (string, error) {
+func (fb *FileBox) ToQRCode() (string, error) {
 	fileBytes, err := fb.ToBytes()
 	if err != nil {
 		return "", err
