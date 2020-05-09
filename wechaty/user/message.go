@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-//type MessageUserQueryFilter struct {
+//type MessageQueryFilter struct {
 //	From Contact
 //	Text string // todo:: RegExp
 //	Room Room
@@ -32,12 +32,12 @@ func NewMessage(id string, accessory _interface.Accessory) _interface.IMessage {
 }
 
 //// Find
-////  userQuery: MessageUserQueryFilter | string
+////  userQuery: MessageQueryFilter | string
 //func (m *Message) Find(query interface{}) Message {
-//	var userQuery MessageUserQueryFilter
+//	var userQuery MessageQueryFilter
 //	if q, ok := query.(string); ok {
 //		userQuery.Text = q
-//	} else if q, ok := query.(MessageUserQueryFilter); ok {
+//	} else if q, ok := query.(MessageQueryFilter); ok {
 //		userQuery = q
 //	}
 //
@@ -49,8 +49,8 @@ func NewMessage(id string, accessory _interface.Accessory) _interface.IMessage {
 //}
 //
 //// FindAll
-//func (m *Message) FindAll(userQuery MessageUserQueryFilter) (messages []Message) {
-//	puppetQuery := schemas.MessageUserQueryFilter{
+//func (m *Message) FindAll(userQuery MessageQueryFilter) (messages []Message) {
+//	puppetQuery := schemas.MessageQueryFilter{
 //		FromId: userQuery.From.id,
 //		RoomId: userQuery.Room.id,
 //		Text:   userQuery.Text,

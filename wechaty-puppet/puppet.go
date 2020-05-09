@@ -66,7 +66,7 @@ type iPuppet interface {
 
 // IPuppetAbstract puppet abstract class interface
 type IPuppetAbstract interface {
-	MessageSearch(query schemas.MessageUserQueryFilter) ([]string, error)
+	MessageSearch(query *schemas.MessageQueryFilter) ([]string, error)
 	MessagePayload(messageID string) (payload *schemas.MessagePayload, err error)
 	FriendshipPayload(friendshipID string) (*schemas.FriendshipPayload, error)
 	SetFriendshipPayload(friendshipID string, newPayload *schemas.FriendshipPayload)
@@ -149,35 +149,85 @@ func (p *Puppet) MessageList() (ks []string) {
 }
 
 // MessageSearch search message
-func (p *Puppet) MessageSearch(query schemas.MessageUserQueryFilter) ([]string, error) {
+func (p *Puppet) MessageSearch(query *schemas.MessageQueryFilter) ([]string, error) {
 	allMessageIDList := p.MessageList()
-	if len(allMessageIDList) <= 0 {
+	if query == nil {
 		return allMessageIDList, nil
 	}
 
-	// load
-	var messagePayloadList []*schemas.MessagePayload
-	for _, v := range allMessageIDList {
-		payload, err := p.MessagePayload(v)
-		if err != nil {
-			return nil, err
-		}
-		messagePayloadList = append(messagePayloadList, payload)
+	async := helper.NewAsync(helper.DefaultWorkerNum)
+	for _, id := range allMessageIDList {
+		id := id
+		async.AddTask(func() (interface{}, error) {
+			return p.MessagePayload(id)
+		})
 	}
-	// Filter todo:: messageQueryFilterFactory
-	var messageIDList []string
-	for _, message := range messagePayloadList {
-		if message.FromId == query.FromId || message.RoomId == query.RoomId || message.ToId == query.ToId {
-			messageIDList = append(messageIDList, message.Id)
+
+	var messagePayloadList []*schemas.MessagePayload
+	for _, v := range async.Result() {
+		if v.Err != nil {
+			continue
 		}
+		messagePayloadList = append(messagePayloadList, v.Value.(*schemas.MessagePayload))
+	}
+
+	filterFunction := p.messageQueryFilterFactory(query)
+	var messageIDList []string
+	for _, payload := range messagePayloadList {
+		if !filterFunction(payload) {
+			continue
+		}
+		messageIDList = append(messageIDList, payload.Id)
 	}
 
 	return messageIDList, nil
 }
 
-// messageQueryFilterFactory 实现正则和直接匹配
-func (p *Puppet) messageQueryFilterFactory(query string) schemas.MessagePayloadFilterFunction {
-	return nil
+func (p *Puppet) messageQueryFilterFactory(query *schemas.MessageQueryFilter) schemas.MessagePayloadFilterFunction {
+	var filters []schemas.MessagePayloadFilterFunction
+	if query.FromId != "" {
+		filters = append(filters, func(payload *schemas.MessagePayload) bool {
+			return query.FromId == payload.FromId
+		})
+	}
+	if query.Id != "" {
+		filters = append(filters, func(payload *schemas.MessagePayload) bool {
+			return query.Id == payload.Id
+		})
+	}
+	if query.RoomId != "" {
+		filters = append(filters, func(payload *schemas.MessagePayload) bool {
+			return query.RoomId == payload.RoomId
+		})
+	}
+	if query.Text != "" {
+		filters = append(filters, func(payload *schemas.MessagePayload) bool {
+			return query.Text == payload.Text
+		})
+	}
+	if query.TextRegExp != nil {
+		filters = append(filters, func(payload *schemas.MessagePayload) bool {
+			return query.TextRegExp.MatchString(payload.Text)
+		})
+	}
+	if query.ToId != "" {
+		filters = append(filters, func(payload *schemas.MessagePayload) bool {
+			return query.ToId == payload.ToId
+		})
+	}
+	if query.Type != 0 {
+		filters = append(filters, func(payload *schemas.MessagePayload) bool {
+			return query.Type == payload.Type
+		})
+	}
+	return func(payload *schemas.MessagePayload) bool {
+		for _, v := range filters {
+			if !v(payload) {
+				return false
+			}
+		}
+		return true
+	}
 }
 
 // MessagePayload message payload todo:: no finish
