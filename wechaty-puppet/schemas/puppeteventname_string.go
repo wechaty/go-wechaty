@@ -9,30 +9,27 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[PuppetEventNameUnknown-0]
-	_ = x[PuppetEventNameFriendShipConfirm-1]
-	_ = x[PuppetEventNameFriendShipReceive-2]
-	_ = x[PuppetEventNameFriendShipVerify-3]
-	_ = x[PuppetEventNameFriendShip-4]
-	_ = x[PuppetEventNameLogin-5]
-	_ = x[PuppetEventNameLogout-6]
-	_ = x[PuppetEventNameMessage-7]
-	_ = x[PuppetEventNameRoomInvite-8]
-	_ = x[PuppetEventNameRoomJoin-9]
-	_ = x[PuppetEventNameRoomLeave-10]
-	_ = x[PuppetEventNameRoomTopic-11]
-	_ = x[PuppetEventNameScan-12]
-	_ = x[PuppetEventNameDong-13]
-	_ = x[PuppetEventNameError-14]
-	_ = x[PuppetEventNameHeartbeat-15]
-	_ = x[PuppetEventNameReady-16]
-	_ = x[PuppetEventNameReset-17]
-	_ = x[PuppetEventNameStop-18]
-	_ = x[PuppetEventNameStart-19]
+	_ = x[PuppetEventNameFriendship-1]
+	_ = x[PuppetEventNameLogin-2]
+	_ = x[PuppetEventNameLogout-3]
+	_ = x[PuppetEventNameMessage-4]
+	_ = x[PuppetEventNameRoomInvite-5]
+	_ = x[PuppetEventNameRoomJoin-6]
+	_ = x[PuppetEventNameRoomLeave-7]
+	_ = x[PuppetEventNameRoomTopic-8]
+	_ = x[PuppetEventNameScan-9]
+	_ = x[PuppetEventNameDong-10]
+	_ = x[PuppetEventNameError-11]
+	_ = x[PuppetEventNameHeartbeat-12]
+	_ = x[PuppetEventNameReady-13]
+	_ = x[PuppetEventNameReset-14]
+	_ = x[PuppetEventNameStop-15]
+	_ = x[PuppetEventNameStart-16]
 }
 
-const _PuppetEventName_name = "PuppetEventNameUnknownPuppetEventNameFriendShipConfirmPuppetEventNameFriendShipReceivePuppetEventNameFriendShipVerifyPuppetEventNameFriendShipPuppetEventNameLoginPuppetEventNameLogoutPuppetEventNameMessagePuppetEventNameRoomInvitePuppetEventNameRoomJoinPuppetEventNameRoomLeavePuppetEventNameRoomTopicPuppetEventNameScanPuppetEventNameDongPuppetEventNameErrorPuppetEventNameHeartbeatPuppetEventNameReadyPuppetEventNameResetPuppetEventNameStopPuppetEventNameStart"
+const _PuppetEventName_name = "PuppetEventNameUnknownPuppetEventNameFriendshipPuppetEventNameLoginPuppetEventNameLogoutPuppetEventNameMessagePuppetEventNameRoomInvitePuppetEventNameRoomJoinPuppetEventNameRoomLeavePuppetEventNameRoomTopicPuppetEventNameScanPuppetEventNameDongPuppetEventNameErrorPuppetEventNameHeartbeatPuppetEventNameReadyPuppetEventNameResetPuppetEventNameStopPuppetEventNameStart"
 
-var _PuppetEventName_index = [...]uint16{0, 22, 54, 86, 117, 142, 162, 183, 205, 230, 253, 277, 301, 320, 339, 359, 383, 403, 423, 442, 462}
+var _PuppetEventName_index = [...]uint16{0, 22, 47, 67, 88, 110, 135, 158, 182, 206, 225, 244, 264, 288, 308, 328, 347, 367}
 
 func (i PuppetEventName) String() string {
 	if i >= PuppetEventName(len(_PuppetEventName_index)-1) {

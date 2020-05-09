@@ -108,7 +108,7 @@ func (p *PuppetMock) SetContactAvatar(contactID string, fileBox *file_box.FileBo
 	panic("implement me")
 }
 
-func (p *PuppetMock) GetContactAvatar(contactID string) (*file_box.FileBox, error) {
+func (p *PuppetMock) ContactAvatar(contactID string) (*file_box.FileBox, error) {
 	panic("implement me")
 }
 
