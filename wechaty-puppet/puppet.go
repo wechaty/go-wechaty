@@ -2,6 +2,7 @@ package wechatypuppet
 
 import (
 	"errors"
+	"fmt"
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/events"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
@@ -81,6 +82,9 @@ type IPuppetAbstract interface {
 	iPuppet
 	events.EventEmitter
 	ContactValidate(contactID string) bool
+	RoomMemberSearch(roomID string, query interface{}) ([]string, error)
+	RoomMemberPayload(roomID, memberID string) (*schemas.RoomMemberPayload, error)
+	MessageForward(conversationID string, messageID string) (string, error)
 }
 
 // Puppet puppet abstract struct
@@ -441,4 +445,167 @@ func (p *Puppet) FriendshipSearch(query *schemas.FriendshipSearchCondition) (str
 	} else {
 		return "", errors.New("query must provide at least one key. current query is empty. ")
 	}
+}
+
+// RoomMemberSearch ...
+func (p *Puppet) RoomMemberSearch(roomID string, query interface{}) ([]string, error) {
+	switch v := query.(type) {
+	case string:
+		return p.roomMemberSearchByString(roomID, v)
+	case *schemas.RoomMemberQueryFilter:
+		return p.roomMemberSearchByQueryFilter(roomID, v)
+	default:
+		return nil, errors.New("unsupported query types")
+	}
+}
+
+func (p *Puppet) roomMemberSearchByString(roomID string, query string) ([]string, error) {
+	roomAliasIDList, err := p.puppetImplementation.RoomMemberSearch(roomID, &schemas.RoomMemberQueryFilter{
+		RoomAlias: query,
+	})
+	if err != nil {
+		return nil, err
+	}
+	nameIDList, err := p.puppetImplementation.RoomMemberSearch(roomID, &schemas.RoomMemberQueryFilter{
+		Name: query,
+	})
+	if err != nil {
+		return nil, err
+	}
+	contactAliasIDList, err := p.puppetImplementation.RoomMemberSearch(roomID, &schemas.RoomMemberQueryFilter{
+		ContactAlias: query,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return append(roomAliasIDList, append(nameIDList, contactAliasIDList...)...), nil
+}
+
+func (p *Puppet) roomMemberSearchByQueryFilter(roomID string, query *schemas.RoomMemberQueryFilter) ([]string, error) {
+	memberIDList, err := p.puppetImplementation.RoomMemberList(roomID)
+	if err != nil {
+		return nil, err
+	}
+	var idList []string
+	if query.ContactAlias != "" || query.Name != "" {
+		contactQueryFilter := &schemas.ContactQueryFilter{
+			Alias: query.ContactAlias,
+			Name:  query.Name,
+		}
+		contactIDList, err := p.puppetImplementation.ContactSearch(contactQueryFilter, memberIDList)
+		if err != nil {
+			return nil, err
+		}
+		idList = append(idList, contactIDList...)
+	}
+	async := helper.NewAsync(helper.DefaultWorkerNum)
+	for _, id := range memberIDList {
+		id := id
+		async.AddTask(func() (interface{}, error) {
+			return p.RoomMemberPayload(roomID, id)
+		})
+	}
+	for _, v := range async.Result() {
+		if query.RoomAlias == "" {
+			continue
+		}
+		payload := v.Value.(*schemas.RoomMemberPayload)
+		if payload.RoomAlias == query.RoomAlias {
+			idList = append(idList, payload.Id)
+		}
+	}
+	return idList, nil
+}
+
+// RoomMemberPayload ...
+func (p *Puppet) RoomMemberPayload(roomID, memberID string) (*schemas.RoomMemberPayload, error) {
+	cacheKey := p.cacheKeyRoomMember(roomID, memberID)
+	cachePayload, ok := p.cacheRoomMemberPayload.Get(cacheKey)
+	if ok {
+		return cachePayload.(*schemas.RoomMemberPayload), nil
+	}
+	payload, err := p.puppetImplementation.RoomMemberRawPayload(roomID, memberID)
+	if err != nil {
+		return nil, err
+	}
+	p.cacheRoomMemberPayload.Add(cacheKey, payload)
+	return payload, nil
+}
+
+// MessageForward ...
+func (p *Puppet) MessageForward(conversationID string, messageID string) (string, error) {
+	payload, err := p.MessagePayload(messageID)
+	if err != nil {
+		return "", err
+	}
+	var newMsgID string
+	switch payload.Type {
+	case schemas.MessageTypeAttachment,
+		schemas.MessageTypeVideo,
+		schemas.MessageTypeAudio,
+		schemas.MessageTypeImage:
+		newMsgID, err = p.messageForwardFile(conversationID, messageID)
+	case schemas.MessageTypeText:
+		newMsgID, err = p.puppetImplementation.MessageSendText(conversationID, payload.Text)
+	case schemas.MessageTypeMiniProgram:
+		newMsgID, err = p.messageForwardMiniProgram(conversationID, messageID)
+	case schemas.MessageTypeUrl:
+		newMsgID, err = p.messageForwardURL(conversationID, messageID)
+	case schemas.MessageTypeContact:
+		newMsgID, err = p.messageForwardContact(conversationID, messageID)
+	default:
+		return "", fmt.Errorf("unsupported forward message type: %s", payload.Type)
+	}
+	if err != nil {
+		return "", err
+	}
+	return newMsgID, nil
+}
+
+func (p *Puppet) messageForwardFile(conversationID string, messageID string) (string, error) {
+	file, err := p.puppetImplementation.MessageFile(messageID)
+	if err != nil {
+		return "", err
+	}
+	newMsgID, err := p.puppetImplementation.MessageSendFile(conversationID, file)
+	if err != nil {
+		return "", err
+	}
+	return newMsgID, nil
+}
+
+func (p *Puppet) messageForwardMiniProgram(conversationID string, messageID string) (string, error) {
+	payload, err := p.puppetImplementation.MessageMiniProgram(messageID)
+	if err != nil {
+		return "", err
+	}
+	newMsgID, err := p.puppetImplementation.MessageSendMiniProgram(conversationID, payload)
+	if err != nil {
+		return "", err
+	}
+	return newMsgID, nil
+}
+
+func (p *Puppet) messageForwardURL(conversationID string, messageID string) (string, error) {
+	payload, err := p.puppetImplementation.MessageURL(messageID)
+	if err != nil {
+		return "", err
+	}
+	newMsgID, err := p.puppetImplementation.MessageSendURL(conversationID, payload)
+	if err != nil {
+		return "", err
+	}
+	return newMsgID, nil
+}
+
+func (p *Puppet) messageForwardContact(conversationID string, messageID string) (string, error) {
+	payload, err := p.puppetImplementation.MessageContact(messageID)
+	if err != nil {
+		return "", err
+	}
+	newMsgID, err := p.puppetImplementation.MessageSendContact(conversationID, payload)
+	if err != nil {
+		return "", err
+	}
+	return newMsgID, nil
 }
