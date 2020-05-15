@@ -58,7 +58,7 @@ func FromJSON(s string) (*FileBox, error) {
 	}
 	switch boxType {
 	case FileBoxTypeBase64:
-		return FromBase64(options.Base64, options.Base64), nil
+		return FromBase64(options.Base64, options.Name), nil
 	case FileBoxTypeQRCode:
 		return FromQRCode(options.QrCode), nil
 	case FileBoxTypeUrl:

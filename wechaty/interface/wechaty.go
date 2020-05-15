@@ -7,4 +7,5 @@ type Wechaty interface {
 	Message() IMessageFactory
 	Tag() ITagFactory
 	Friendship() IFriendshipFactory
+	Image() IImageFactory
 }
