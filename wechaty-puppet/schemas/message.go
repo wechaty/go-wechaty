@@ -1,5 +1,7 @@
 package schemas
 
+import "regexp"
+
 //go:generate stringer -type=MessageType
 type MessageType uint8
 
@@ -99,13 +101,14 @@ type MessagePayload struct {
 	MessagePayloadRoom
 }
 
-type MessageUserQueryFilter struct {
-	FromId string
-	Id     string
-	RoomId string
-	Text   string // todo:: RegExp
-	ToId   string
-	Type   MessageType
+type MessageQueryFilter struct {
+	FromId     string
+	Id         string
+	RoomId     string
+	Text       string
+	TextRegExp *regexp.Regexp
+	ToId       string
+	Type       MessageType
 }
 
-type MessagePayloadFilterFunction func(payload MessagePayload) bool
+type MessagePayloadFilterFunction func(payload *MessagePayload) bool

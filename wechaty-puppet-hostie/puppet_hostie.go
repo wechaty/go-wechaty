@@ -59,7 +59,7 @@ func (p *PuppetHostie) MessageImage(messageID string, imageType schemas.ImageTyp
 	if err != nil {
 		return nil, err
 	}
-	return file_box.NewFileBoxFromJSONString(response.Filebox)
+	return file_box.FromJSON(response.Filebox)
 }
 
 // Start ...
@@ -67,7 +67,7 @@ func (p *PuppetHostie) Start() (err error) {
 	log.Println("PuppetHostie Start()")
 	defer func() {
 		if err != nil {
-			err = fmt.Errorf("PuppetHostie Start() rejection: %w", err)
+			err = fmt.Errorf("PuppetHostie Star() rejection: %w", err)
 		}
 	}()
 
@@ -302,7 +302,7 @@ func (p *PuppetHostie) Ding(data string) {
 
 // SetContactAlias ...
 func (p *PuppetHostie) SetContactAlias(contactID string, alias string) error {
-	log.Printf("PuppetHostie, 'SetContactAlias(%s, %s)\n", contactID, alias)
+	log.Printf("PuppetHostie, SetContactAlias(%s, %s)\n", contactID, alias)
 	_, err := p.grpcClient.ContactAlias(context.Background(), &pbwechaty.ContactAliasRequest{
 		Id: contactID,
 		Alias: &wrappers.StringValue{
@@ -315,14 +315,14 @@ func (p *PuppetHostie) SetContactAlias(contactID string, alias string) error {
 	return nil
 }
 
-// GetContactAlias ...
-func (p *PuppetHostie) GetContactAlias(contactID string) (string, error) {
-	log.Printf("PuppetHostie, 'GetContactAlias(%s)\n", contactID)
+// ContactAlias ...
+func (p *PuppetHostie) ContactAlias(contactID string) (string, error) {
+	log.Printf("PuppetHostie, 'ContactAlias(%s)\n", contactID)
 	response, err := p.grpcClient.ContactAlias(context.Background(), &pbwechaty.ContactAliasRequest{
 		Id: contactID,
 	})
 	if err != nil {
-		return "", fmt.Errorf("PuppetHostie GetContactAlias err: %w", err)
+		return "", fmt.Errorf("PuppetHostie ContactAlias err: %w", err)
 	}
 	if response.Alias == nil {
 		return "", fmt.Errorf("can not get aliasWrapper")
@@ -356,7 +356,7 @@ func (p *PuppetHostie) ContactQRCode(contactID string) (string, error) {
 // SetContactAvatar ...
 func (p *PuppetHostie) SetContactAvatar(contactID string, fileBox *file_box.FileBox) error {
 	log.Printf("PuppetHostie SetContactAvatar(%s)\n", contactID)
-	jsonString, err := fileBox.ToJSONString()
+	jsonString, err := fileBox.ToJSON()
 	if err != nil {
 		return err
 	}
@@ -372,16 +372,16 @@ func (p *PuppetHostie) SetContactAvatar(contactID string, fileBox *file_box.File
 	return nil
 }
 
-// GetContactAvatar ...
-func (p *PuppetHostie) GetContactAvatar(contactID string) (*file_box.FileBox, error) {
-	log.Printf("PuppetHostie GetContactAvatar(%s)\n", contactID)
+// ContactAvatar ...
+func (p *PuppetHostie) ContactAvatar(contactID string) (*file_box.FileBox, error) {
+	log.Printf("PuppetHostie ContactAvatar(%s)\n", contactID)
 	response, err := p.grpcClient.ContactAvatar(context.Background(), &pbwechaty.ContactAvatarRequest{
 		Id: contactID,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return file_box.NewFileBoxFromJSONString(response.Filebox.Value)
+	return file_box.FromJSON(response.Filebox.Value)
 }
 
 // ContactRawPayload ...
@@ -405,7 +405,7 @@ func (p *PuppetHostie) ContactRawPayload(contactID string) (*schemas.ContactPayl
 		Friend:    response.Friend,
 		Province:  response.Province,
 		Signature: response.Signature,
-		Start:     response.Star,
+		Star:      response.Star,
 		WeiXin:    response.Weixin,
 	}, nil
 }
@@ -474,7 +474,10 @@ func (p *PuppetHostie) MessageSendMiniProgram(conversationID string, miniProgram
 	if err != nil {
 		return "", err
 	}
-	return response.Id.Value, nil
+	if response.Id != nil {
+		return response.Id.Value, nil
+	}
+	return "", nil
 }
 
 // MessageRecall ...
@@ -498,7 +501,7 @@ func (p *PuppetHostie) MessageFile(id string) (*file_box.FileBox, error) {
 	if err != nil {
 		return nil, err
 	}
-	return file_box.NewFileBoxFromJSONString(response.Filebox)
+	return file_box.FromJSON(response.Filebox)
 }
 
 // MessageRawPayload ...
@@ -547,7 +550,8 @@ func (p *PuppetHostie) MessageSendText(conversationID string, text string) (stri
 // MessageSendFile ...
 func (p *PuppetHostie) MessageSendFile(conversationID string, fileBox *file_box.FileBox) (string, error) {
 	log.Printf("PuppetHostie MessageSendFile(%s)\n", conversationID)
-	jsonString, err := fileBox.ToJSONString()
+	jsonString, err := fileBox.ToJSON()
+	fmt.Println(jsonString)
 	if err != nil {
 		return "", err
 	}
@@ -574,7 +578,10 @@ func (p *PuppetHostie) MessageSendContact(conversationID string, contactID strin
 	if err != nil {
 		return "", err
 	}
-	return response.Id.Value, nil
+	if response.Id != nil {
+		return response.Id.Value, nil
+	}
+	return "", nil
 }
 
 // MessageSendURL ...
@@ -587,7 +594,10 @@ func (p *PuppetHostie) MessageSendURL(conversationID string, urlLinkPayload *sch
 	if err != nil {
 		return "", err
 	}
-	return response.Id.Value, nil
+	if response.Id != nil {
+		return response.Id.Value, nil
+	}
+	return "", nil
 }
 
 // MessageURL ...
@@ -655,7 +665,7 @@ func (p *PuppetHostie) RoomAvatar(roomID string) (*file_box.FileBox, error) {
 	if err != nil {
 		return nil, err
 	}
-	return file_box.NewFileBoxFromJSONString(response.Filebox)
+	return file_box.FromJSON(response.Filebox)
 }
 
 // RoomAdd ...
@@ -920,9 +930,11 @@ func (p *PuppetHostie) TagContactDelete(id string) (err error) {
 // TagContactList ...
 func (p *PuppetHostie) TagContactList(contactID string) ([]string, error) {
 	log.Printf("PuppetHostie TagContactList(%s)\n", contactID)
-	response, err := p.grpcClient.TagContactList(context.Background(), &pbwechaty.TagContactListRequest{
-		ContactId: &wrappers.StringValue{Value: contactID},
-	})
+	request := &pbwechaty.TagContactListRequest{}
+	if contactID != "" {
+		request.ContactId = &wrappers.StringValue{Value: contactID}
+	}
+	response, err := p.grpcClient.TagContactList(context.Background(), request)
 	if err != nil {
 		return nil, err
 	}
