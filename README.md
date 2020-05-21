@@ -289,18 +289,16 @@ make test
 
 ## Maintainers
 
-1. [@dingdayu](https://github.com/dingdayu) - Xiaoyu DING (丁小雨) 
 1. [@SilkageNet](https://github.com/SilkageNet) - Bojie LI (李博杰)
-1. [@dchaofei](https://github.com/dchaofei) - Chaofei DING (丁超飞)
 
-## Author
+## Commiters
 
-[Huan LI](https://github.com/huan) ([李卓桓](http://linkedin.com/in/zixia)) zixia@zixia.net
-
-[![Profile of Huan LI (李卓桓) on StackOverflow](https://stackexchange.com/users/flair/265499.png)](https://stackexchange.com/users/265499)
+- [@dchaofei](https://github.com/dchaofei) - Chaofei DING (丁超飞)
+- [@dingdayu](https://github.com/dingdayu) - Xiaoyu DING (丁小雨) 
+- [@huan](https://github.com/huan) - Huan LI ([李卓桓](http://linkedin.com/in/zixia)) zixia@zixia.net
 
 ## Copyright & License
 
-- Code & Docs © 2020-now Huan LI \<zixia@zixia.net\>
+- Code & Docs © 2020 Wechaty Contributors <https://github.com/wechaty>
 - Code released under the Apache-2.0 License
 - Docs released under Creative Commons
