@@ -3,8 +3,8 @@ package puppethostie
 import "os"
 
 var (
-    // WechatyPuppetHostieToken ...
-	WechatyPuppetHostieToken    string
+	// WechatyPuppetHostieToken ...
+	WechatyPuppetHostieToken string
 	// WechatyPuppetHostieEndpoint ...
 	WechatyPuppetHostieEndpoint string
 )
