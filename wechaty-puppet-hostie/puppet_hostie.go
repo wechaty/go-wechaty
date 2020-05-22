@@ -38,6 +38,12 @@ type PuppetHostie struct {
 
 // NewPuppetHostie new PuppetHostie struct
 func NewPuppetHostie(o *wechatyPuppet.Option) (*PuppetHostie, error) {
+	if o.Token == "" {
+		o.Token = WechatyPuppetHostieToken
+	}
+	if o.Endpoint == "" {
+		o.Endpoint = WechatyPuppetHostieEndpoint
+	}
 	puppetAbstract, err := wechatyPuppet.NewPuppet(o)
 	if err != nil {
 		return nil, err
@@ -531,7 +537,7 @@ func (p *PuppetHostie) MessageRawPayload(id string) (*schemas.MessagePayload, er
 }
 
 // MessageSendText ...
-func (p *PuppetHostie) MessageSendText(conversationID string, text string) (string, error) {
+func (p *PuppetHostie) MessageSendText(conversationID string, text string, mentionIDList ...string) (string, error) {
 	log.Printf("PuppetHostie messageSendText(%s, %s)\n", conversationID, text)
 	response, err := p.grpcClient.MessageSendText(context.Background(), &pbwechaty.MessageSendTextRequest{
 		ConversationId: conversationID,
@@ -696,9 +702,9 @@ func (p *PuppetHostie) SetRoomTopic(roomID string, topic string) error {
 	return nil
 }
 
-// GetRoomTopic ...
-func (p *PuppetHostie) GetRoomTopic(roomID string) (string, error) {
-	log.Printf("PuppetHostie GetRoomTopic(%s)\n", roomID)
+// RoomTopic ...
+func (p *PuppetHostie) RoomTopic(roomID string) (string, error) {
+	log.Printf("PuppetHostie RoomTopic(%s)\n", roomID)
 	response, err := p.grpcClient.RoomTopic(context.Background(), &pbwechaty.RoomTopicRequest{
 		Id: roomID,
 	})
@@ -789,9 +795,9 @@ func (p *PuppetHostie) SetRoomAnnounce(roomID, text string) error {
 	return nil
 }
 
-// GetRoomAnnounce ...
-func (p *PuppetHostie) GetRoomAnnounce(roomID string) (string, error) {
-	log.Printf("PuppetHostie GetRoomAnnounce(%s)\n", roomID)
+// RoomAnnounce ...
+func (p *PuppetHostie) RoomAnnounce(roomID string) (string, error) {
+	log.Printf("PuppetHostie RoomAnnounce(%s)\n", roomID)
 	response, err := p.grpcClient.RoomAnnounce(context.Background(), &pbwechaty.RoomAnnounceRequest{
 		Id: roomID,
 	})

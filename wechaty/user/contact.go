@@ -121,8 +121,6 @@ func (c *Contact) Say(something interface{}) (msg _interface.IMessage, err error
 	return msg, msg.Ready()
 }
 
-// TODO Alias()
-
 // Friend true for friend of the bot, false for not friend of the bot
 func (c *Contact) Friend() bool {
 	return c.payload.Friend
