@@ -289,7 +289,7 @@ make test
 - [Python Wechaty](https://github.com/wechaty/python-wechaty) - Python WeChat Bot SDK for Individual Account.
 - [Java Wechaty](https://github.com/wechaty/java-wechaty) - Java WeChat Bot SDK for Individual Account.
 
-## Maintainers
+## Contributors
 
 1. [@SilkageNet](https://github.com/SilkageNet) - Bojie LI (李博杰)
 
