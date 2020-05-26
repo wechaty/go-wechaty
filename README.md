@@ -297,7 +297,6 @@ make test
 
 - [@dchaofei](https://github.com/dchaofei) - Chaofei DING (丁超飞)
 - [@dingdayu](https://github.com/dingdayu) - Xiaoyu DING (丁小雨) 
-- [@huan](https://github.com/huan) - Huan LI ([李卓桓](http://linkedin.com/in/zixia)) zixia@zixia.net
 
 ## Copyright & License
 
