@@ -2,6 +2,7 @@ package wechaty
 
 import (
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 	"github.com/wechaty/go-wechaty/wechaty/user"
 	"time"
 )
@@ -26,11 +27,11 @@ type (
 	// EventRoomInvite ...
 	EventRoomInvite func(roomInvitation *user.RoomInvitation)
 	// EventRoomJoin ...
-	EventRoomJoin func(room *user.Room, inviteeList []*user.Contact, inviter *user.Contact, date time.Time)
+	EventRoomJoin func(room *user.Room, inviteeList []_interface.IContact, inviter _interface.IContact, date time.Time)
 	// EventRoomLeave ...
-	EventRoomLeave func(room *user.Room, leaverList []*user.Contact, remover *user.Contact, date time.Time)
+	EventRoomLeave func(room *user.Room, leaverList []_interface.IContact, remover _interface.IContact, date time.Time)
 	// EventRoomTopic ...
-	EventRoomTopic func(room *user.Room, newTopic string, oldTopic string, changer *user.Contact, date time.Time)
+	EventRoomTopic func(room *user.Room, newTopic string, oldTopic string, changer _interface.IContact, date time.Time)
 	// EventScan ...
 	EventScan func(qrCode string, status schemas.ScanStatus, data string)
 	// EventStart ...

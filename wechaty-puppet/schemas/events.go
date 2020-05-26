@@ -41,8 +41,8 @@ type EventRoomJoinPayload struct {
 }
 
 type EventRoomLeavePayload struct {
-  RemoveIdList []string
-  RemoverId    string
+  RemoveeIdList []string
+  RemoverId     string
   RoomId       string
   Timestamp    int64
 }
