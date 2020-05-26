@@ -56,7 +56,7 @@ func (p PuppetMock) RoomInvitationAccept(roomInvitationID string) error {
 	panic("implement me")
 }
 
-func (p PuppetMock) MessageSendText(conversationID string, text string) (string, error) {
+func (p PuppetMock) MessageSendText(conversationID string, text string, mentionIdList ...string) (string, error) {
 	panic("implement me")
 }
 
@@ -176,7 +176,7 @@ func (p *PuppetMock) SetRoomTopic(roomID string, topic string) error {
 	panic("implement me")
 }
 
-func (p *PuppetMock) GetRoomTopic(roomID string) (string, error) {
+func (p *PuppetMock) RoomTopic(roomID string) (string, error) {
 	panic("implement me")
 }
 
@@ -204,7 +204,7 @@ func (p *PuppetMock) SetRoomAnnounce(roomID, text string) error {
 	panic("implement me")
 }
 
-func (p *PuppetMock) GetRoomAnnounce(roomID string) (string, error) {
+func (p *PuppetMock) RoomAnnounce(roomID string) (string, error) {
 	panic("implement me")
 }
 

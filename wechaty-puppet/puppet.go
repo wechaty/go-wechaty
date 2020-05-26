@@ -33,7 +33,7 @@ type iPuppet interface {
 	MessageRecall(messageID string) (bool, error)
 	MessageFile(id string) (*file_box.FileBox, error)
 	MessageRawPayload(id string) (*schemas.MessagePayload, error)
-	MessageSendText(conversationID string, text string) (string, error)
+	MessageSendText(conversationID string, text string, mentionIDList ...string) (string, error)
 	MessageSendFile(conversationID string, fileBox *file_box.FileBox) (string, error)
 	MessageSendContact(conversationID string, contactID string) (string, error)
 	MessageSendURL(conversationID string, urlLinkPayload *schemas.UrlLinkPayload) (string, error)
@@ -44,14 +44,14 @@ type iPuppet interface {
 	RoomAvatar(roomID string) (*file_box.FileBox, error)
 	RoomAdd(roomID, contactID string) error
 	SetRoomTopic(roomID string, topic string) error
-	GetRoomTopic(roomID string) (string, error)
+	RoomTopic(roomID string) (string, error)
 	RoomCreate(contactIDList []string, topic string) (string, error)
 	RoomQuit(roomID string) error
 	RoomQRCode(roomID string) (string, error)
 	RoomMemberList(roomID string) ([]string, error)
 	RoomMemberRawPayload(roomID string, contactID string) (*schemas.RoomMemberPayload, error)
 	SetRoomAnnounce(roomID, text string) error
-	GetRoomAnnounce(roomID string) (string, error)
+	RoomAnnounce(roomID string) (string, error)
 	RoomInvitationAccept(roomInvitationID string) error
 	RoomInvitationRawPayload(id string) (*schemas.RoomInvitationPayload, error)
 	FriendshipSearchPhone(phone string) (string, error)
@@ -82,9 +82,11 @@ type IPuppetAbstract interface {
 	iPuppet
 	events.EventEmitter
 	ContactValidate(contactID string) bool
+	RoomValidate(roomID string) bool
 	RoomMemberSearch(roomID string, query interface{}) ([]string, error)
 	RoomMemberPayload(roomID, memberID string) (*schemas.RoomMemberPayload, error)
 	MessageForward(conversationID string, messageID string) (string, error)
+	RoomSearch(query *schemas.RoomQueryFilter) ([]string, error)
 }
 
 // Puppet puppet abstract struct
@@ -608,4 +610,73 @@ func (p *Puppet) messageForwardContact(conversationID string, messageID string) 
 		return "", err
 	}
 	return newMsgID, nil
+}
+
+// RoomSearch ...
+func (p *Puppet) RoomSearch(query *schemas.RoomQueryFilter) ([]string, error) {
+	allRoomIDList, err := p.puppetImplementation.RoomList()
+	if err != nil {
+		return nil, err
+	}
+	if query == nil || query.Empty() {
+		return allRoomIDList, nil
+	}
+	filterFunc, err := p.roomQueryFilterFactory(query)
+	if err != nil {
+		return nil, err
+	}
+	async := helper.NewAsync(helper.DefaultWorkerNum)
+	for _, id := range allRoomIDList {
+		id := id
+		async.AddTask(func() (interface{}, error) {
+			payload, err := p.RoomPayload(id)
+			if err != nil {
+				p.RoomPayloadDirty(id)
+				_ = p.RoomMemberPayloadDirty(id)
+				return nil, err
+			}
+			return payload, nil
+		})
+	}
+	var roomIDList []string
+	for _, v := range async.Result() {
+		if v.Err != nil {
+			continue
+		}
+		payload := v.Value.(*schemas.RoomPayload)
+		if !filterFunc(payload) {
+			continue
+		}
+		roomIDList = append(roomIDList, payload.Id)
+	}
+	return roomIDList, nil
+}
+
+func (p *Puppet) roomQueryFilterFactory(query *schemas.RoomQueryFilter) (schemas.RoomPayloadFilterFunction, error) {
+	if query.Empty() {
+		return nil, errors.New("query must provide at least one key. current query is empty")
+	} else if query.All() {
+		return nil, errors.New("query only support one key. multi key support is not availble now")
+	}
+	if query.TopicRegexp != nil {
+		return func(payload *schemas.RoomPayload) bool {
+			return query.TopicRegexp.MatchString(payload.Topic)
+		}, nil
+	}
+	if query.Id != "" {
+		return func(payload *schemas.RoomPayload) bool {
+			return query.Id == payload.Id
+		}, nil
+	}
+	if query.Topic != "" {
+		return func(payload *schemas.RoomPayload) bool {
+			return query.Topic == payload.Topic
+		}, nil
+	}
+	return nil, nil
+}
+
+// RoomValidate ...
+func (p *Puppet) RoomValidate(roomID string) bool {
+	return true
 }
