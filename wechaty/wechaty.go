@@ -422,8 +422,8 @@ func (w *Wechaty) Image() _interface.IImageFactory {
 	return w.image
 }
 
-// UrlLink ...
-func (w *Wechaty) UrlLink() _interface.IUrlLinkFactory {
+// URLLink ...
+func (w *Wechaty) URLLink() _interface.IUrlLinkFactory {
 	return w.urlLink
 }
 
