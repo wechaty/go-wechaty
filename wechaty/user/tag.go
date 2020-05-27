@@ -19,20 +19,31 @@
  * limitations under the License.
  */
 
- package user
+package user
 
 import (
-  "github.com/wechaty/go-wechaty/wechaty/interface"
+	"github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type Tag struct {
-  _interface.Accessory
-	TagId string
+	_interface.Accessory
+	id string
 }
 
 func NewTag(id string, accessory _interface.Accessory) *Tag {
-	if accessory.GetPuppet() == nil {
-		panic("Tag class can not be instantiated without a puppet!")
-	}
 	return &Tag{accessory, id}
+}
+
+func (t *Tag) ID() string {
+	return t.id
+}
+
+// Add tag for contact
+func (t *Tag) Add(to _interface.IContact) error {
+	return t.GetPuppet().TagContactAdd(t.id, to.ID())
+}
+
+// Remove this tag from Contact
+func (t *Tag) Remove(from _interface.IContact) error {
+	return t.GetPuppet().TagContactRemove(t.id, from.ID())
 }
