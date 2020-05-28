@@ -87,6 +87,8 @@ type IPuppetAbstract interface {
 	RoomMemberPayload(roomID, memberID string) (*schemas.RoomMemberPayload, error)
 	MessageForward(conversationID string, messageID string) (string, error)
 	RoomSearch(query *schemas.RoomQueryFilter) ([]string, error)
+	RoomInvitationPayload(roomInvitationID string) (*schemas.RoomInvitationPayload, error)
+	SetRoomInvitationPayload(payload *schemas.RoomInvitationPayload)
 }
 
 // Puppet puppet abstract struct
@@ -532,6 +534,25 @@ func (p *Puppet) RoomMemberPayload(roomID, memberID string) (*schemas.RoomMember
 	}
 	p.cacheRoomMemberPayload.Add(cacheKey, payload)
 	return payload, nil
+}
+
+// RoomInvitationPayload ...
+func (p *Puppet) RoomInvitationPayload(roomInvitationID string) (*schemas.RoomInvitationPayload, error) {
+	cachePayload, ok := p.cacheRoomInvitationPayload.Get(roomInvitationID)
+	if ok {
+		return cachePayload.(*schemas.RoomInvitationPayload), nil
+	}
+	payload, err := p.puppetImplementation.RoomInvitationRawPayload(roomInvitationID)
+	if err != nil {
+		return nil, err
+	}
+	p.cacheRoomInvitationPayload.Add(roomInvitationID, payload)
+	return payload, nil
+}
+
+// SetRoomInvitationPayload ...
+func (p *Puppet) SetRoomInvitationPayload(payload *schemas.RoomInvitationPayload) {
+	p.cacheRoomInvitationPayload.Add(payload.Id, payload)
 }
 
 // MessageForward ...

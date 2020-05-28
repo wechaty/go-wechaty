@@ -28,12 +28,13 @@ checks:
       threshold: 12
   similar-code:         # 相似代码检查
     config:
-      threshold: 12
+      threshold: 70
   identical-code:       # 相同代码检查
     config:
-      threshold: 6
+      threshold: 25
 
 plugins:
+  # "Gofmt's style is no one's favorite, yet gofmt is everyone's favorite." - The Go Proverbs
   gofmt:
     enabled: true
   golint:
