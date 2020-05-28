@@ -53,7 +53,7 @@ func (p *PuppetHostie) discoverHostieEndPoint() (endPoint HostieEndPoint, err er
 		return endPoint, fmt.Errorf("discoverHostieIP() err: %w", err)
 	}
 
-	if resp.StatusCode == 200 {
+	if resp.StatusCode == http.StatusOK {
 		defer resp.Body.Close()
 		body, _ := ioutil.ReadAll(resp.Body)
 		var endPoint HostieEndPoint
