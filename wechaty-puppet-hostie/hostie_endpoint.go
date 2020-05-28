@@ -50,7 +50,7 @@ func (p *PuppetHostie) discoverHostieEndPoint() (endPoint HostieEndPoint, err er
 
 	resp, err := client.Get(fmt.Sprintf(hostieEndpoint, p.Token))
 	if err != nil {
-		return endPoint, fmt.Errorf("discoverHostieIP() err: %w", err)
+		return endPoint, fmt.Errorf("discoverHostieEndPoint() err: %w", err)
 	}
 
 	if resp.StatusCode == http.StatusOK {
@@ -58,9 +58,9 @@ func (p *PuppetHostie) discoverHostieEndPoint() (endPoint HostieEndPoint, err er
 		body, _ := ioutil.ReadAll(resp.Body)
 		err = json.Unmarshal(body, &endPoint)
 		if err != nil {
-			return endPoint, fmt.Errorf("discoverHostieIP() err: %w", err)
+			return endPoint, fmt.Errorf("discoverHostieEndPoint() err: %w", err)
 		}
 		return endPoint, nil
 	}
-	return endPoint, fmt.Errorf("discoverHostieIP() err: %w", err)
+	return endPoint, fmt.Errorf("discoverHostieEndPoint() err: %w", err)
 }
