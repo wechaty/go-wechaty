@@ -14,14 +14,6 @@ import (
 	"time"
 )
 
-//type MessageQueryFilter struct {
-//	From Contact
-//	Text string // todo:: RegExp
-//	Room Room
-//	Type schemas.MessageType
-//	To   Contact
-//}
-
 type Message struct {
 	_interface.Accessory
 
@@ -383,11 +375,23 @@ func (m *Message) ToContact() (_interface.IContact, error) {
 }
 
 func (m *Message) ToUrlLink() (*UrlLink, error) {
-	// TODO
-	return nil, errors.New("TODO")
+	if m.Type() != schemas.MessageTypeUrl {
+		return nil, errors.New("message not a Url Link")
+	}
+	urlPayload, err := m.GetPuppet().MessageURL(m.id)
+	if err != nil {
+		return nil, err
+	}
+	return NewUrlLink(urlPayload), nil
 }
 
 func (m *Message) ToMiniProgram() (*MiniProgram, error) {
-	// TODO
-	return nil, errors.New("TODO")
+	if m.Type() != schemas.MessageTypeMiniProgram {
+		return nil, errors.New("message not a MiniProgram")
+	}
+	miniProgramPayload, err := m.GetPuppet().MessageMiniProgram(m.id)
+	if err != nil {
+		return nil, err
+	}
+	return NewMiniProgram(miniProgramPayload), nil
 }

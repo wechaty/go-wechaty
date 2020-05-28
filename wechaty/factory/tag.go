@@ -20,3 +20,11 @@ func (r *TagFactory) Load(id string) _interface.ITag {
 	r.pool.Store(id, tag)
 	return tag
 }
+
+func (r *TagFactory) Get(tag string) _interface.ITag {
+	return r.Load(tag)
+}
+
+func (r *TagFactory) Delete(tag _interface.ITag) error {
+	return r.GetPuppet().TagContactDelete(tag.ID())
+}
