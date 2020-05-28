@@ -19,18 +19,12 @@
  * limitations under the License.
  */
 
- package user
+package user
 
 import (
-	"errors"
 	"fmt"
 
-	"github.com/otiai10/opengraph"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-)
-
-var (
-	ErrImageUrlOrDescNotFound = errors.New("imgUrl.or.desc.not.found")
 )
 
 type UrlLink struct {
@@ -71,26 +65,4 @@ func (ul *UrlLink) Description() string {
 		return ""
 	}
 	return ul.payload.Description
-}
-
-func CreateUrlLink(url string) (*UrlLink, error) {
-	var og, err = opengraph.Fetch(url)
-	if err != nil {
-		return nil, err
-	}
-	var payload = &schemas.UrlLinkPayload{
-		Url:         url,
-		Title:       og.Title,
-		Description: og.Description,
-	}
-
-	if len(og.Image) != 0 {
-		payload.ThumbnailUrl = og.Image[0].URL
-	}
-
-	if payload.ThumbnailUrl == "" || payload.Description == "" {
-		return nil, ErrImageUrlOrDescNotFound
-	}
-
-	return NewUrlLink(payload), nil
 }
