@@ -9,6 +9,7 @@ import (
 )
 
 var (
+	// ErrNotToken token not found error
 	ErrNotToken = errors.New("wechaty-puppet-hostie: token not found. See: <https://github.com/wechaty/wechaty-puppet-hostie#1-wechaty_puppet_hostie_token>")
 )
 
