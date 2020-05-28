@@ -56,7 +56,6 @@ func (p *PuppetHostie) discoverHostieEndPoint() (endPoint HostieEndPoint, err er
 	if resp.StatusCode == http.StatusOK {
 		defer resp.Body.Close()
 		body, _ := ioutil.ReadAll(resp.Body)
-		var endPoint HostieEndPoint
 		err = json.Unmarshal(body, &endPoint)
 		if err != nil {
 			return endPoint, fmt.Errorf("discoverHostieIP() err: %w", err)
