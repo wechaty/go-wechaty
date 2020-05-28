@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
- package user
+package user
 
 import "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 
@@ -31,7 +31,7 @@ func NewMiniProgram(payload *schemas.MiniProgramPayload) *MiniProgram {
 	return &MiniProgram{payload: payload}
 }
 
-func (mp *MiniProgram) Appid() string {
+func (mp *MiniProgram) AppID() string {
 	if mp.payloadIsNil() {
 		return ""
 	}

@@ -5,8 +5,8 @@ import (
 	"sync"
 )
 
-// DefaultWorkerNum default number of goroutines is twice the number of CPUs
-var DefaultWorkerNum = runtime.NumCPU() * 2
+// DefaultWorkerNum default number of goroutines is twice the number of GOMAXPROCS
+var DefaultWorkerNum = runtime.GOMAXPROCS(0) * 2
 
 type (
 	// IAsync interface

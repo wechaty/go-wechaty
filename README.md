@@ -6,6 +6,8 @@
 
 ![Go Wechaty](https://wechaty.github.io/go-wechaty/images/go-wechaty.png)
 
+[![Go Wechaty Getting Started](https://img.shields.io/badge/Go%20Wechaty-Getting%20Started-7de)](https://github.com/wechaty/go-wechaty-getting-started)
+
 ## Connecting Chatbots
 
 [![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-brightgreen.svg)](https://github.com/Wechaty/wechaty)
@@ -287,20 +289,17 @@ make test
 - [Python Wechaty](https://github.com/wechaty/python-wechaty) - Python WeChat Bot SDK for Individual Account.
 - [Java Wechaty](https://github.com/wechaty/java-wechaty) - Java WeChat Bot SDK for Individual Account.
 
-## Maintainers
+## Contributors
 
-1. [@dingdayu](https://github.com/dingdayu) - Xiaoyu DING (丁小雨) 
 1. [@SilkageNet](https://github.com/SilkageNet) - Bojie LI (李博杰)
-1. [@dchaofei](https://github.com/dchaofei) - Chaofei DING (丁超飞)
 
-## Author
+## Commiters
 
-[Huan LI](https://github.com/huan) ([李卓桓](http://linkedin.com/in/zixia)) zixia@zixia.net
-
-[![Profile of Huan LI (李卓桓) on StackOverflow](https://stackexchange.com/users/flair/265499.png)](https://stackexchange.com/users/265499)
+- [@dchaofei](https://github.com/dchaofei) - Chaofei DING (丁超飞)
+- [@dingdayu](https://github.com/dingdayu) - Xiaoyu DING (丁小雨) 
 
 ## Copyright & License
 
-- Code & Docs © 2020-now Huan LI \<zixia@zixia.net\>
+- Code & Docs © 2020 Wechaty Contributors <https://github.com/wechaty>
 - Code released under the Apache-2.0 License
 - Docs released under Creative Commons
