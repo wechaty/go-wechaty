@@ -21,7 +21,7 @@ type HostieEndPoint struct {
 
 // IsValid EndPoint is valid
 func (p *HostieEndPoint) IsValid() bool {
-	return p.IP == "" || p.IP == "0.0.0.0"
+	return len(p.IP) > 0 && p.IP != "0.0.0.0"
 }
 
 // Target Export IP+Port
