@@ -6,9 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
-	"net/http"
 
 	"github.com/golang/protobuf/ptypes/wrappers"
 	pbwechaty "github.com/wechaty/go-grpc/wechaty"
@@ -154,14 +152,14 @@ func (p *PuppetHostie) logonoff() bool {
 func (p *PuppetHostie) startGrpcClient() error {
 	endpoint := p.Endpoint
 	if endpoint == "" {
-		ip, err := p.discoverHostieIP()
+		hostieEndPoint, err := p.discoverHostieEndPoint()
 		if err != nil {
 			return err
 		}
-		if ip == "" || ip == "0.0.0.0" {
+		if !hostieEndPoint.IsValid() {
 			return ErrNoEndpoint
 		}
-		endpoint = ip + ":8788"
+		endpoint = hostieEndPoint.Target()
 	}
 	conn, err := grpc.Dial(endpoint, grpc.WithInsecure())
 	if err != nil {
@@ -170,40 +168,6 @@ func (p *PuppetHostie) startGrpcClient() error {
 	p.grpcConn = conn
 	p.grpcClient = pbwechaty.NewPuppetClient(conn)
 	return nil
-}
-
-func (p *PuppetHostie) discoverHostieIP() (s string, err error) {
-	const hostieEndpoint = "https://api.chatie.io/v0/hosties/%s"
-
-	if p.Token == "" {
-		return "", errors.New("wechaty-puppet-hostie: token not found. See: <https://github.com/wechaty/wechaty-puppet-hostie#1-wechaty_puppet_hostie_token>")
-	}
-
-	client := &http.Client{}
-	if p.Timeout > 0 {
-		client = &http.Client{
-			Timeout: p.Timeout,
-		}
-	}
-
-	resp, err := client.Get(fmt.Sprintf(hostieEndpoint, p.Token))
-	if err != nil {
-		return "", fmt.Errorf("discoverHostieIP() err: %w", err)
-	}
-
-	if resp.StatusCode == 200 {
-		defer resp.Body.Close()
-		body, _ := ioutil.ReadAll(resp.Body)
-		var ip struct {
-			IP string `json:"ip"`
-		}
-		err = json.Unmarshal(body, &ip)
-		if err != nil {
-			return "", fmt.Errorf("discoverHostieIP() err: %w", err)
-		}
-		return ip.IP, nil
-	}
-	return "", fmt.Errorf("discoverHostieIP() err: %w", err)
 }
 
 func (p *PuppetHostie) startGrpcStream() (err error) {
