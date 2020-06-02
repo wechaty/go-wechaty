@@ -24,6 +24,8 @@ package wechaty
 
 import (
 	"errors"
+	"fmt"
+	"github.com/lucsky/cuid"
 	wp "github.com/wechaty/go-wechaty/wechaty-puppet"
 	puppethostie "github.com/wechaty/go-wechaty/wechaty-puppet-hostie"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/events"
@@ -39,6 +41,9 @@ import (
 // Wechaty ...
 type Wechaty struct {
 	*Option
+
+	// cuid
+	id string
 
 	puppet wp.IPuppetAbstract
 	events events.EventEmitter
@@ -56,18 +61,37 @@ type Wechaty struct {
 // NewWechaty ...
 // instance by golang.
 func NewWechaty(optFns ...OptionFn) *Wechaty {
-	var wy = &Wechaty{events: events.New(), Option: &Option{}}
+	var w = &Wechaty{events: events.New(), Option: &Option{}}
 
 	for _, fn := range optFns {
-		fn(wy.Option)
+		fn(w.Option)
 	}
 
-	return wy
+	w.id = cuid.New()
+
+	return w
+}
+
+func (w *Wechaty) String() string {
+	return fmt.Sprintf("Wechaty#%s", w.id)
+}
+
+// Name Wechaty bot name set by `options.name`
+func (w *Wechaty) Name() string {
+	if len(w.Option.name) != 0 {
+		return w.Option.name
+	}
+	return "wechaty"
 }
 
 // register event
 func (w *Wechaty) registerEvent(name schemas.PuppetEventName, f interface{}) {
 	w.events.On(name, func(data ...interface{}) {
+		defer func() {
+			if err := recover(); err != nil {
+				w.emit(schemas.PuppetEventNameError, fmt.Errorf("panic: event %s %v", name ,err))
+			}
+		}()
 		values := make([]reflect.Value, 0, len(data))
 		for _, v := range data {
 			values = append(values, reflect.ValueOf(v))
@@ -262,7 +286,7 @@ func (w *Wechaty) initPuppetEventBridge() {
 			})
 		case schemas.PuppetEventNameError:
 			w.puppet.On(name, func(i ...interface{}) {
-				w.emit(name, i[0].(*schemas.EventErrorPayload).Data)
+				w.emit(name, errors.New(i[0].(*schemas.EventErrorPayload).Data))
 			})
 		case schemas.PuppetEventNameHeartbeat:
 			w.puppet.On(name, func(i ...interface{}) {
@@ -273,6 +297,7 @@ func (w *Wechaty) initPuppetEventBridge() {
 				contact := w.contact.LoadSelf(i[0].(*schemas.EventLoginPayload).ContactId)
 				if err := contact.Ready(false); err != nil {
 					log.Printf("emit login contact.Ready err: %s\n", err.Error())
+					w.emit(schemas.PuppetEventNameError, err)
 					return
 				}
 				w.emit(name, contact)
@@ -283,6 +308,8 @@ func (w *Wechaty) initPuppetEventBridge() {
 				contact := w.contact.LoadSelf(payload.ContactId)
 				if err := contact.Ready(false); err != nil {
 					log.Printf("emit logout contact.Ready err: %s\n", err.Error())
+					w.emit(schemas.PuppetEventNameError, err)
+					return
 				}
 				w.emit(name, contact, payload.Data)
 			})
@@ -297,6 +324,7 @@ func (w *Wechaty) initPuppetEventBridge() {
 				message := w.message.Load(messageID)
 				if err := message.Ready(); err != nil {
 					log.Printf("emit message message.Ready() err: %s\n", err.Error())
+					w.emit(schemas.PuppetEventNameError, err)
 					return
 				}
 				w.emit(name, message)
@@ -306,6 +334,7 @@ func (w *Wechaty) initPuppetEventBridge() {
 				friendship := w.friendship.Load(i[0].(*schemas.EventFriendshipPayload).FriendshipID)
 				if err := friendship.Ready(); err != nil {
 					log.Printf("emit friendship friendship.Ready() err: %s\n", err.Error())
+					w.emit(schemas.PuppetEventNameError, err)
 					return
 				}
 				w.emit(name, friendship)
@@ -321,6 +350,7 @@ func (w *Wechaty) initPuppetEventBridge() {
 				room := w.room.Load(payload.RoomId)
 				if err := room.Sync(); err != nil {
 					log.Printf("emit roomjoin room.Sync() err: %s\n", err.Error())
+					w.emit(schemas.PuppetEventNameError, err)
 					return
 				}
 				var inviteeList []_interface.IContact
@@ -328,6 +358,7 @@ func (w *Wechaty) initPuppetEventBridge() {
 					c := w.contact.Load(id)
 					if err := c.Ready(false); err != nil {
 						log.Printf("emit roomjoin contact.Ready() err: %s\n", err.Error())
+						w.emit(schemas.PuppetEventNameError, err)
 						return
 					}
 					inviteeList = append(inviteeList, c)
@@ -335,6 +366,7 @@ func (w *Wechaty) initPuppetEventBridge() {
 				inviter := w.contact.Load(payload.InviterId)
 				if err := inviter.Ready(false); err != nil {
 					log.Printf("emit roomjoin inviter.Ready() err: %s\n", err.Error())
+					w.emit(schemas.PuppetEventNameError, err)
 					return
 				}
 				w.emit(name, room, inviteeList, inviter, time.Unix(payload.Timestamp, 0))
@@ -345,6 +377,7 @@ func (w *Wechaty) initPuppetEventBridge() {
 				room := w.room.Load(payload.RoomId)
 				if err := room.Sync(); err != nil {
 					log.Printf("emit roomleave room.Sync() err: %s\n", err.Error())
+					w.emit(schemas.PuppetEventNameError, err)
 					return
 				}
 				var leaverList []_interface.IContact
@@ -352,6 +385,7 @@ func (w *Wechaty) initPuppetEventBridge() {
 					c := w.contact.Load(id)
 					if err := c.Ready(false); err != nil {
 						log.Printf("emit roomleave contact.Ready() err: %s\n", err.Error())
+						w.emit(schemas.PuppetEventNameError, err)
 						return
 					}
 					leaverList = append(leaverList, c)
@@ -359,6 +393,7 @@ func (w *Wechaty) initPuppetEventBridge() {
 				remover := w.contact.Load(payload.RemoverId)
 				if err := remover.Ready(false); err != nil {
 					log.Printf("emit roomleave inviter.Ready() err: %s\n", err.Error())
+					w.emit(schemas.PuppetEventNameError, err)
 					return
 				}
 				w.emit(name, room, leaverList, remover, time.Unix(payload.Timestamp, 0))
@@ -377,11 +412,13 @@ func (w *Wechaty) initPuppetEventBridge() {
 				room := w.room.Load(payload.RoomId)
 				if err := room.Sync(); err != nil {
 					log.Printf("emit roomtopic room.Sync() err: %s\n", err.Error())
+					w.emit(schemas.PuppetEventNameError, err)
 					return
 				}
 				changer := w.contact.Load(payload.ChangerId)
 				if err := changer.Ready(false); err != nil {
 					log.Printf("emit roomtopic changer.Ready() err: %s\n", err.Error())
+					w.emit(schemas.PuppetEventNameError, err)
 					return
 				}
 				w.emit(name, room, payload.NewTopic, payload.OldTopic, changer, time.Unix(payload.Timestamp, 0))

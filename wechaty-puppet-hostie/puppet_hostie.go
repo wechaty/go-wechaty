@@ -71,7 +71,7 @@ func (p *PuppetHostie) Start() (err error) {
 	log.Println("PuppetHostie Start()")
 	defer func() {
 		if err != nil {
-			err = fmt.Errorf("PuppetHostie Star() rejection: %w", err)
+			err = fmt.Errorf("PuppetHostie Start() rejection: %w", err)
 		}
 	}()
 

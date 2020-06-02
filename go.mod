@@ -9,6 +9,7 @@ require (
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/kr/pretty v0.1.0 // indirect
+	github.com/lucsky/cuid v1.0.2
 	github.com/otiai10/opengraph v1.1.1
 	github.com/skip2/go-qrcode v0.0.0-20191027152451-9434209cb086
 	github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
