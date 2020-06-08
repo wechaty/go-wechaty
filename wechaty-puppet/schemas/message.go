@@ -16,11 +16,12 @@ const (
 	MessageTypeText        MessageType = 7
 	MessageTypeLocation    MessageType = 8
 	MessageTypeMiniProgram MessageType = 9
-	MessageTypeTransfer    MessageType = 10
-	MessageTypeRedEnvelope MessageType = 11
-	MessageTypeRecalled    MessageType = 12
-	MessageTypeUrl         MessageType = 13
-	MessageTypeVideo       MessageType = 14
+	MessageTypeGroupNote   MessageType = 10
+	MessageTypeTransfer    MessageType = 11
+	MessageTypeRedEnvelope MessageType = 12
+	MessageTypeRecalled    MessageType = 13
+	MessageTypeUrl         MessageType = 14
+	MessageTypeVideo       MessageType = 15
 )
 
 type WeChatAppMessageType int

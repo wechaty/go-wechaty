@@ -18,16 +18,17 @@ func _() {
 	_ = x[MessageTypeText-7]
 	_ = x[MessageTypeLocation-8]
 	_ = x[MessageTypeMiniProgram-9]
-	_ = x[MessageTypeTransfer-10]
-	_ = x[MessageTypeRedEnvelope-11]
-	_ = x[MessageTypeRecalled-12]
-	_ = x[MessageTypeUrl-13]
-	_ = x[MessageTypeVideo-14]
+	_ = x[MessageTypeGroupNote-10]
+	_ = x[MessageTypeTransfer-11]
+	_ = x[MessageTypeRedEnvelope-12]
+	_ = x[MessageTypeRecalled-13]
+	_ = x[MessageTypeUrl-14]
+	_ = x[MessageTypeVideo-15]
 }
 
-const _MessageType_name = "MessageTypeUnknownMessageTypeAttachmentMessageTypeAudioMessageTypeContactMessageTypeChatHistoryMessageTypeEmoticonMessageTypeImageMessageTypeTextMessageTypeLocationMessageTypeMiniProgramMessageTypeTransferMessageTypeRedEnvelopeMessageTypeRecalledMessageTypeUrlMessageTypeVideo"
+const _MessageType_name = "MessageTypeUnknownMessageTypeAttachmentMessageTypeAudioMessageTypeContactMessageTypeChatHistoryMessageTypeEmoticonMessageTypeImageMessageTypeTextMessageTypeLocationMessageTypeMiniProgramMessageTypeGroupNoteMessageTypeTransferMessageTypeRedEnvelopeMessageTypeRecalledMessageTypeUrlMessageTypeVideo"
 
-var _MessageType_index = [...]uint16{0, 18, 39, 55, 73, 95, 114, 130, 145, 164, 186, 205, 227, 246, 260, 276}
+var _MessageType_index = [...]uint16{0, 18, 39, 55, 73, 95, 114, 130, 145, 164, 186, 206, 225, 247, 266, 280, 296}
 
 func (i MessageType) String() string {
 	if i >= MessageType(len(_MessageType_index)-1) {
