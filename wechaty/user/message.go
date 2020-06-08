@@ -395,3 +395,7 @@ func (m *Message) ToMiniProgram() (*MiniProgram, error) {
 	}
 	return NewMiniProgram(miniProgramPayload), nil
 }
+
+func (m *Message) ID() string {
+	return m.id
+}

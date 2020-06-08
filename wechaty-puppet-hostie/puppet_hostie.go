@@ -252,7 +252,7 @@ func (p *PuppetHostie) Logout() error {
 	if err != nil {
 		return fmt.Errorf("PuppetHostie Logout() err: %w", err)
 	}
-	go p.Emit(schemas.PuppetEventNameLogout, schemas.EventLogoutPayload{
+	go p.Emit(schemas.PuppetEventNameLogout, &schemas.EventLogoutPayload{
 		ContactId: p.SelfID(),
 	})
 	p.SetID("")

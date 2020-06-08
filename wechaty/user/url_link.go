@@ -66,3 +66,7 @@ func (ul *UrlLink) Description() string {
 	}
 	return ul.payload.Description
 }
+
+func (ul *UrlLink) Payload() schemas.UrlLinkPayload {
+	return *ul.payload
+}
