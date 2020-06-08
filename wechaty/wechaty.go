@@ -89,7 +89,7 @@ func (w *Wechaty) registerEvent(name schemas.PuppetEventName, f interface{}) {
 	w.events.On(name, func(data ...interface{}) {
 		defer func() {
 			if err := recover(); err != nil {
-				w.emit(schemas.PuppetEventNameError, fmt.Errorf("panic: event %s %v", name ,err))
+				w.emit(schemas.PuppetEventNameError, fmt.Errorf("panic: event %s %v", name, err))
 			}
 		}()
 		values := make([]reflect.Value, 0, len(data))
@@ -271,6 +271,8 @@ func (w *Wechaty) Start() error {
 	}
 
 	// TODO: io start
+
+	go w.emit(schemas.PuppetEventNameStart)
 
 	return nil
 }
