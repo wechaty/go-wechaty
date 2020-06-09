@@ -20,7 +20,7 @@ const (
 	MessageTypeTransfer    MessageType = 11
 	MessageTypeRedEnvelope MessageType = 12
 	MessageTypeRecalled    MessageType = 13
-	MessageTypeUrl         MessageType = 14
+	MessageTypeURL         MessageType = 14
 	MessageTypeVideo       MessageType = 15
 )
 

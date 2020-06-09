@@ -22,7 +22,7 @@ func _() {
 	_ = x[MessageTypeTransfer-11]
 	_ = x[MessageTypeRedEnvelope-12]
 	_ = x[MessageTypeRecalled-13]
-	_ = x[MessageTypeUrl-14]
+	_ = x[MessageTypeURL-14]
 	_ = x[MessageTypeVideo-15]
 }
 
