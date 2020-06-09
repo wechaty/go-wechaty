@@ -9,13 +9,13 @@ import (
 )
 
 type RoomInvitation struct {
-	_interface.Accessory
+	_interface.IAccessory
 	id string
 }
 
-func NewRoomInvitation(id string, accessory _interface.Accessory) *RoomInvitation {
+func NewRoomInvitation(id string, accessory _interface.IAccessory) *RoomInvitation {
 	return &RoomInvitation{
-		Accessory: accessory,
+		IAccessory: accessory,
 		id:        id,
 	}
 }

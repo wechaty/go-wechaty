@@ -8,14 +8,14 @@ import (
 )
 
 type Friendship struct {
-	_interface.Accessory
+	_interface.IAccessory
 	id      string
 	payload *schemas.FriendshipPayload
 }
 
-func NewFriendship(id string, accessory _interface.Accessory) *Friendship {
+func NewFriendship(id string, accessory _interface.IAccessory) *Friendship {
 	return &Friendship{
-		Accessory: accessory,
+		IAccessory: accessory,
 		id:        id,
 	}
 }

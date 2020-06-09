@@ -10,9 +10,9 @@ type ContactSelf struct {
 	*Contact
 }
 
-func NewContactSelf(id string, accessory _interface.Accessory) *ContactSelf {
+func NewContactSelf(id string, accessory _interface.IAccessory) *ContactSelf {
 	return &ContactSelf{&Contact{
-		Accessory: accessory,
+		IAccessory: accessory,
 		Id:        id,
 	}}
 }

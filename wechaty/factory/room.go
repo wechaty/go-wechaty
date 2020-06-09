@@ -11,13 +11,13 @@ import (
 )
 
 type RoomFactory struct {
-	_interface.Accessory
+	_interface.IAccessory
 	pool *sync.Map
 }
 
-func NewRoomFactory(accessory _interface.Accessory) *RoomFactory {
+func NewRoomFactory(accessory _interface.IAccessory) *RoomFactory {
 	return &RoomFactory{
-		Accessory: accessory,
+		IAccessory: accessory,
 		pool:      &sync.Map{},
 	}
 }
@@ -94,7 +94,7 @@ func (r *RoomFactory) Load(id string) _interface.IRoom {
 	if ok {
 		return load.(*user.Room)
 	}
-	room := user.NewRoom(id, r.Accessory)
+	room := user.NewRoom(id, r.IAccessory)
 	r.pool.Store(id, room)
 	return room
 }

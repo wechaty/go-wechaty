@@ -26,11 +26,11 @@ import (
 )
 
 type Tag struct {
-	_interface.Accessory
+	_interface.IAccessory
 	id string
 }
 
-func NewTag(id string, accessory _interface.Accessory) *Tag {
+func NewTag(id string, accessory _interface.IAccessory) *Tag {
 	return &Tag{accessory, id}
 }
 

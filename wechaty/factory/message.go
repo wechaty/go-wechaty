@@ -9,11 +9,11 @@ import (
 )
 
 type MessageFactory struct {
-	_interface.Accessory
+	_interface.IAccessory
 }
 
 func (m *MessageFactory) Load(id string) _interface.IMessage {
-	return user.NewMessage(id, m.Accessory)
+	return user.NewMessage(id, m.IAccessory)
 }
 
 // Find find message in cache

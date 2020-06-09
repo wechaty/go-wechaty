@@ -9,13 +9,13 @@ import (
 )
 
 type ContactFactory struct {
-	_interface.Accessory
+	_interface.IAccessory
 	pool *sync.Map
 }
 
-func NewContactFactory(accessory _interface.Accessory) *ContactFactory {
+func NewContactFactory(accessory _interface.IAccessory) *ContactFactory {
 	return &ContactFactory{
-		Accessory: accessory,
+		IAccessory: accessory,
 		pool:      &sync.Map{},
 	}
 }
@@ -23,7 +23,7 @@ func NewContactFactory(accessory _interface.Accessory) *ContactFactory {
 func (c *ContactFactory) Load(id string) _interface.IContact {
 	load, ok := c.pool.Load(id)
 	if !ok {
-		contact := user.NewContact(id, c.Accessory)
+		contact := user.NewContact(id, c.IAccessory)
 		c.pool.Store(id, contact)
 		return contact
 	}
@@ -40,7 +40,7 @@ func (c *ContactFactory) LoadSelf(id string) _interface.IContactSelf {
 	if ok {
 		return load.(*user.ContactSelf)
 	}
-	contact := user.NewContactSelf(id, c.Accessory)
+	contact := user.NewContactSelf(id, c.IAccessory)
 	c.pool.Store(id, contact)
 	return contact
 }
@@ -93,9 +93,9 @@ func (c *ContactFactory) FindAll(query interface{}) []_interface.IContact {
 	return contacts
 }
 
-func NewTagFactory(accessory _interface.Accessory) *TagFactory {
+func NewTagFactory(accessory _interface.IAccessory) *TagFactory {
 	return &TagFactory{
-		Accessory: accessory,
+		IAccessory: accessory,
 		pool:      &sync.Map{},
 	}
 }

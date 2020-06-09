@@ -14,13 +14,13 @@ import (
 type Room struct {
 	id      string
 	payLoad *schemas.RoomPayload
-	_interface.Accessory
+	_interface.IAccessory
 }
 
-func NewRoom(id string, accessory _interface.Accessory) *Room {
+func NewRoom(id string, accessory _interface.IAccessory) *Room {
 	return &Room{
 		id:        id,
-		Accessory: accessory,
+		IAccessory: accessory,
 	}
 }
 

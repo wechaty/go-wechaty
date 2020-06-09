@@ -15,15 +15,15 @@ import (
 )
 
 type Message struct {
-	_interface.Accessory
+	_interface.IAccessory
 
 	id      string
 	payload *schemas.MessagePayload
 }
 
-func NewMessage(id string, accessory _interface.Accessory) _interface.IMessage {
+func NewMessage(id string, accessory _interface.IAccessory) _interface.IMessage {
 	return &Message{
-		Accessory: accessory,
+		IAccessory: accessory,
 		id:        id,
 	}
 }

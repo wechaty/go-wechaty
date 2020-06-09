@@ -31,15 +31,15 @@ import (
 )
 
 type Contact struct {
-	_interface.Accessory
+	_interface.IAccessory
 
 	Id      string
 	payload *schemas.ContactPayload
 }
 
-func NewContact(id string, accessory _interface.Accessory) *Contact {
+func NewContact(id string, accessory _interface.IAccessory) *Contact {
 	return &Contact{
-		Accessory: accessory,
+		IAccessory: accessory,
 		Id:        id,
 	}
 }
