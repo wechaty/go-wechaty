@@ -304,7 +304,7 @@ make test
 
 1. [@SilkageNet](https://github.com/SilkageNet) - Bojie LI (李博杰)
 
-## Commiters
+## Authors
 
 - [@dchaofei](https://github.com/dchaofei) - Chaofei DING (丁超飞)
 - [@dingdayu](https://github.com/dingdayu) - Xiaoyu DING (丁小雨) 
