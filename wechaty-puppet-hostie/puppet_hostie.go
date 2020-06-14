@@ -35,7 +35,7 @@ type PuppetHostie struct {
 }
 
 // NewPuppetHostie new PuppetHostie struct
-func NewPuppetHostie(o *wechatyPuppet.Option) (*PuppetHostie, error) {
+func NewPuppetHostie(o wechatyPuppet.Option) (*PuppetHostie, error) {
 	if o.Token == "" {
 		o.Token = WechatyPuppetHostieToken
 	}
