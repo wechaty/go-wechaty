@@ -506,7 +506,7 @@ func (p *PuppetHostie) MessageSendText(conversationID string, text string, menti
 	response, err := p.grpcClient.MessageSendText(context.Background(), &pbwechaty.MessageSendTextRequest{
 		ConversationId: conversationID,
 		Text:           text,
-		MentonalIds:    nil,
+		MentonalIds:    mentionIDList,
 	})
 	if err != nil {
 		return "", err
