@@ -174,6 +174,7 @@ func (r *Room) sayText(text string, mentionList ..._interface.IContact) (string,
 			if alias == "" {
 				alias = contact.Name()
 			}
+			alias = strings.ReplaceAll(alias, " ", atSeparator)
 			mentionAlias = append(mentionAlias, "@"+alias)
 		}
 		text = strings.Join(mentionAlias, atSeparator) + " " + text
