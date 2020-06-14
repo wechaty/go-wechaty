@@ -176,7 +176,7 @@ func (r *Room) sayText(text string, mentionList ..._interface.IContact) (string,
 			}
 			mentionAlias = append(mentionAlias, "@"+alias)
 		}
-		text = strings.Join(mentionAlias, atSeparator) + text
+		text = strings.Join(mentionAlias, atSeparator) + " " + text
 	}
 	return r.GetPuppet().MessageSendText(r.id, text, mentionIDList...)
 }
