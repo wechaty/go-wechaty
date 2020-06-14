@@ -86,7 +86,11 @@ func (r *Room) MemberAll(query interface{}) ([]_interface.IContact, error) {
 	}
 	var contactList []_interface.IContact
 	for _, id := range idList {
-		contactList = append(contactList, r.GetWechaty().Contact().Load(id))
+		contact := r.GetWechaty().Contact().Load(id)
+		if err := contact.Ready(false); err != nil {
+			return nil, err
+		}
+		contactList = append(contactList, contact)
 	}
 	return contactList, nil
 }
