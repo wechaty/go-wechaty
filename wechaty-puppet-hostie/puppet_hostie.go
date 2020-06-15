@@ -35,7 +35,7 @@ type PuppetHostie struct {
 }
 
 // NewPuppetHostie new PuppetHostie struct
-func NewPuppetHostie(o *wechatyPuppet.Option) (*PuppetHostie, error) {
+func NewPuppetHostie(o wechatyPuppet.Option) (*PuppetHostie, error) {
 	if o.Token == "" {
 		o.Token = WechatyPuppetHostieToken
 	}
@@ -71,7 +71,7 @@ func (p *PuppetHostie) Start() (err error) {
 	log.Println("PuppetHostie Start()")
 	defer func() {
 		if err != nil {
-			err = fmt.Errorf("PuppetHostie Star() rejection: %w", err)
+			err = fmt.Errorf("PuppetHostie Start() rejection: %w", err)
 		}
 	}()
 
@@ -252,7 +252,7 @@ func (p *PuppetHostie) Logout() error {
 	if err != nil {
 		return fmt.Errorf("PuppetHostie Logout() err: %w", err)
 	}
-	go p.Emit(schemas.PuppetEventNameLogout, schemas.EventLogoutPayload{
+	go p.Emit(schemas.PuppetEventNameLogout, &schemas.EventLogoutPayload{
 		ContactId: p.SelfID(),
 	})
 	p.SetID("")
@@ -506,7 +506,7 @@ func (p *PuppetHostie) MessageSendText(conversationID string, text string, menti
 	response, err := p.grpcClient.MessageSendText(context.Background(), &pbwechaty.MessageSendTextRequest{
 		ConversationId: conversationID,
 		Text:           text,
-		MentonalIds:    nil,
+		MentonalIds:    mentionIDList,
 	})
 	if err != nil {
 		return "", err
