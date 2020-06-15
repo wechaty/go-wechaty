@@ -1,7 +1,7 @@
 package _interface
 
-// Wechaty interface
-type Wechaty interface {
+// IWechaty interface
+type IWechaty interface {
 	Room() IRoomFactory
 	Contact() IContactFactory
 	Message() IMessageFactory

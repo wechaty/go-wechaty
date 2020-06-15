@@ -8,5 +8,5 @@ import (
 type IAccessory interface {
   GetPuppet() wechatyPuppet.IPuppetAbstract
 
-  GetWechaty() Wechaty
+  GetWechaty() IWechaty
 }
