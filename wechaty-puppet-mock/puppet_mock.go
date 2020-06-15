@@ -12,7 +12,7 @@ type PuppetMock struct {
 	*wechatyPuppet.Puppet
 }
 
-func NewPuppetMock(option *wechatyPuppet.Option) (*PuppetMock, error) {
+func NewPuppetMock(option wechatyPuppet.Option) (*PuppetMock, error) {
 	puppetAbstract, err := wechatyPuppet.NewPuppet(option)
 	if err != nil {
 		return nil, err

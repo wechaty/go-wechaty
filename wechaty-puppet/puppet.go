@@ -93,7 +93,7 @@ type IPuppetAbstract interface {
 
 // Puppet puppet abstract struct
 type Puppet struct {
-	*Option
+	Option
 
 	id string
 	// puppet implementation puppet_hostie or puppet_mock
@@ -108,7 +108,7 @@ type Puppet struct {
 }
 
 // NewPuppet instance
-func NewPuppet(option *Option) (*Puppet, error) {
+func NewPuppet(option Option) (*Puppet, error) {
 	cacheMessage, err := lru.New(1024)
 	if err != nil {
 		return nil, err
@@ -572,7 +572,7 @@ func (p *Puppet) MessageForward(conversationID string, messageID string) (string
 		newMsgID, err = p.puppetImplementation.MessageSendText(conversationID, payload.Text)
 	case schemas.MessageTypeMiniProgram:
 		newMsgID, err = p.messageForwardMiniProgram(conversationID, messageID)
-	case schemas.MessageTypeUrl:
+	case schemas.MessageTypeURL:
 		newMsgID, err = p.messageForwardURL(conversationID, messageID)
 	case schemas.MessageTypeContact:
 		newMsgID, err = p.messageForwardContact(conversationID, messageID)

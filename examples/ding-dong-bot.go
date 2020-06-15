@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	var bot = wechaty.NewWechaty(wechaty.WithPuppetOption(&wp.Option{
+	var bot = wechaty.NewWechaty(wechaty.WithPuppetOption(wp.Option{
 		Token: "",
 	}))
 
