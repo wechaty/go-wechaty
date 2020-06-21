@@ -302,6 +302,15 @@ make test
 
 ## Contributors
 
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/0)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/0)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/1)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/1)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/2)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/2)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/3)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/3)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/4)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/4)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/5)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/5)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/6)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/6)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/7)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/7)
+
 1. [@SilkageNet](https://github.com/SilkageNet) - Bojie LI (李博杰)
 
 ## Authors
