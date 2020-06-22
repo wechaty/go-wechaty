@@ -377,7 +377,7 @@ func (m *Message) ToContact() (_interface.IContact, error) {
 }
 
 func (m *Message) ToUrlLink() (*UrlLink, error) {
-	if m.Type() != schemas.MessageTypeUrl {
+	if m.Type() != schemas.MessageTypeURL {
 		return nil, errors.New("message not a Url Link")
 	}
 	urlPayload, err := m.GetPuppet().MessageURL(m.id)
@@ -396,4 +396,9 @@ func (m *Message) ToMiniProgram() (*MiniProgram, error) {
 		return nil, err
 	}
 	return NewMiniProgram(miniProgramPayload), nil
+}
+
+// ID message id
+func (m *Message) ID() string {
+	return m.id
 }
