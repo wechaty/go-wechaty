@@ -14,7 +14,7 @@ type Friendship struct {
 	payload *schemas.FriendshipPayload
 }
 
-// NewFriendship
+// NewFriendship ...
 func NewFriendship(id string, accessory _interface.IAccessory) *Friendship {
 	return &Friendship{
 		IAccessory: accessory,
