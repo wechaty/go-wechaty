@@ -1,11 +1,12 @@
 package factory
 
 import (
+	"log"
+	"sync"
+
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 	"github.com/wechaty/go-wechaty/wechaty/user"
-	"log"
-	"sync"
 )
 
 type ContactFactory struct {
@@ -13,13 +14,15 @@ type ContactFactory struct {
 	pool *sync.Map
 }
 
+// NewContactFactory ...
 func NewContactFactory(accessory _interface.IAccessory) *ContactFactory {
 	return &ContactFactory{
 		IAccessory: accessory,
-		pool:      &sync.Map{},
+		pool:       &sync.Map{},
 	}
 }
 
+// Load query param is string
 func (c *ContactFactory) Load(id string) _interface.IContact {
 	load, ok := c.pool.Load(id)
 	if !ok {
@@ -35,6 +38,7 @@ func (c *ContactFactory) Load(id string) _interface.IContact {
 	}
 }
 
+// LoadSelf query param is string
 func (c *ContactFactory) LoadSelf(id string) _interface.IContactSelf {
 	load, ok := c.pool.Load(id)
 	if ok {
@@ -93,10 +97,11 @@ func (c *ContactFactory) FindAll(query interface{}) []_interface.IContact {
 	return contacts
 }
 
+// NewTagFactory ...
 func NewTagFactory(accessory _interface.IAccessory) *TagFactory {
 	return &TagFactory{
 		IAccessory: accessory,
-		pool:      &sync.Map{},
+		pool:       &sync.Map{},
 	}
 }
 

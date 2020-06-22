@@ -21,15 +21,14 @@
 
 package user
 
-import (
-	"github.com/wechaty/go-wechaty/wechaty/interface"
-)
+import _interface "github.com/wechaty/go-wechaty/wechaty/interface"
 
 type Tag struct {
 	_interface.IAccessory
 	id string
 }
 
+// NewTag ...
 func NewTag(id string, accessory _interface.IAccessory) *Tag {
 	return &Tag{accessory, id}
 }

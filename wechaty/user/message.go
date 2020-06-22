@@ -3,15 +3,16 @@ package user
 import (
 	"errors"
 	"fmt"
-	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
-	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
-	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-	"github.com/wechaty/go-wechaty/wechaty/config"
-	"github.com/wechaty/go-wechaty/wechaty/interface"
 	"regexp"
 	"sort"
 	"strings"
 	"time"
+
+	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+	"github.com/wechaty/go-wechaty/wechaty/config"
+	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type Message struct {
@@ -21,10 +22,11 @@ type Message struct {
 	payload *schemas.MessagePayload
 }
 
+// NewMessage ...
 func NewMessage(id string, accessory _interface.IAccessory) _interface.IMessage {
 	return &Message{
 		IAccessory: accessory,
-		id:        id,
+		id:         id,
 	}
 }
 

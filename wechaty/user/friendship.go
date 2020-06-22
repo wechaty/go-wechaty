@@ -3,8 +3,9 @@ package user
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-	"github.com/wechaty/go-wechaty/wechaty/interface"
+	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type Friendship struct {
@@ -13,10 +14,11 @@ type Friendship struct {
 	payload *schemas.FriendshipPayload
 }
 
+// NewFriendship
 func NewFriendship(id string, accessory _interface.IAccessory) *Friendship {
 	return &Friendship{
 		IAccessory: accessory,
-		id:        id,
+		id:         id,
 	}
 }
 

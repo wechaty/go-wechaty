@@ -3,9 +3,10 @@ package user
 import (
 	"encoding/json"
 	"fmt"
-	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 	"log"
 	"time"
+
+	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type RoomInvitation struct {
@@ -13,10 +14,11 @@ type RoomInvitation struct {
 	id string
 }
 
+// NewRoomInvitation ...
 func NewRoomInvitation(id string, accessory _interface.IAccessory) *RoomInvitation {
 	return &RoomInvitation{
 		IAccessory: accessory,
-		id:        id,
+		id:         id,
 	}
 }
 

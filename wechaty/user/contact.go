@@ -23,11 +23,12 @@ package user
 
 import (
 	"fmt"
+	"log"
+
 	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"github.com/wechaty/go-wechaty/wechaty/config"
-	"github.com/wechaty/go-wechaty/wechaty/interface"
-	"log"
+	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type Contact struct {
@@ -37,10 +38,11 @@ type Contact struct {
 	payload *schemas.ContactPayload
 }
 
+// NewContact ...
 func NewContact(id string, accessory _interface.IAccessory) *Contact {
 	return &Contact{
 		IAccessory: accessory,
-		Id:        id,
+		Id:         id,
 	}
 }
 
