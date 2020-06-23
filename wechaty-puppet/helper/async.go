@@ -76,11 +76,9 @@ func (a *async) Result() []AsyncResult {
 		a.tasks = make([]Task, 0)
 	}()
 
-	result := make([]AsyncResult, taskNum)
-	idx := 0
+	result := make([]AsyncResult, 0, taskNum)
 	for v := range resultChan {
-		result[idx] = v
-		idx++
+		result = append(result, v)
 	}
 	return result
 }
