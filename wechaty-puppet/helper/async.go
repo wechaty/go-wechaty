@@ -31,6 +31,7 @@ type (
 	Task func() (interface{}, error)
 )
 
+// NewAsync ...
 func NewAsync(maxWorkerNum int) IAsync {
 	if maxWorkerNum <= 0 {
 		maxWorkerNum = DefaultWorkerNum
@@ -79,7 +80,7 @@ func (a *async) Result() []AsyncResult {
 	idx := 0
 	for v := range resultChan {
 		result[idx] = v
-		idx += 1
+		idx++
 	}
 	return result
 }
