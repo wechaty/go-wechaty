@@ -227,14 +227,14 @@ func (w *Wechaty) initPuppetAccessory() {
 		puppet:  w.puppet,
 		wechaty: w,
 	}
-	w.message = &factory.MessageFactory{Accessory: accessory}
+	w.message = &factory.MessageFactory{IAccessory: accessory}
 	w.contact = factory.NewContactFactory(accessory)
 	w.room = factory.NewRoomFactory(accessory)
 	w.tag = factory.NewTagFactory(accessory)
-	w.friendship = &factory.FriendshipFactory{Accessory: accessory}
-	w.image = &factory.ImageFactory{Accessory: accessory}
+	w.friendship = &factory.FriendshipFactory{IAccessory: accessory}
+	w.image = &factory.ImageFactory{IAccessory: accessory}
 	w.urlLink = &factory.UrlLinkFactory{}
-	w.roomInvitation = &factory.RoomInvitationFactory{Accessory: accessory}
+	w.roomInvitation = &factory.RoomInvitationFactory{IAccessory: accessory}
 }
 
 // Start ...

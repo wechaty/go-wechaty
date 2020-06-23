@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+
 	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
@@ -10,10 +11,11 @@ type ContactSelf struct {
 	*Contact
 }
 
-func NewContactSelf(id string, accessory _interface.Accessory) *ContactSelf {
+// NewContactSelf ...
+func NewContactSelf(id string, accessory _interface.IAccessory) *ContactSelf {
 	return &ContactSelf{&Contact{
-		Accessory: accessory,
-		Id:        id,
+		IAccessory: accessory,
+		Id:         id,
 	}}
 }
 

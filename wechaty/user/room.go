@@ -2,25 +2,27 @@ package user
 
 import (
 	"fmt"
+	"log"
+	"strings"
+
 	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"github.com/wechaty/go-wechaty/wechaty/config"
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
-	"log"
-	"strings"
 )
 
 type Room struct {
 	id      string
 	payLoad *schemas.RoomPayload
-	_interface.Accessory
+	_interface.IAccessory
 }
 
-func NewRoom(id string, accessory _interface.Accessory) *Room {
+// NewRoom ...
+func NewRoom(id string, accessory _interface.IAccessory) *Room {
 	return &Room{
-		id:        id,
-		Accessory: accessory,
+		id:         id,
+		IAccessory: accessory,
 	}
 }
 

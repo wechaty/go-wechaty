@@ -17,7 +17,7 @@ func (a *Accessory) GetPuppet() wechatypuppet.IPuppetAbstract {
 }
 
 // GetWechaty ...
-func (a *Accessory) GetWechaty() _interface.Wechaty {
+func (a *Accessory) GetWechaty() _interface.IWechaty {
   return a.wechaty
 }
 

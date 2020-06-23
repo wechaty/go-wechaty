@@ -3,20 +3,22 @@ package user
 import (
 	"encoding/json"
 	"fmt"
-	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 	"log"
 	"time"
+
+	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type RoomInvitation struct {
-	_interface.Accessory
+	_interface.IAccessory
 	id string
 }
 
-func NewRoomInvitation(id string, accessory _interface.Accessory) *RoomInvitation {
+// NewRoomInvitation ...
+func NewRoomInvitation(id string, accessory _interface.IAccessory) *RoomInvitation {
 	return &RoomInvitation{
-		Accessory: accessory,
-		id:        id,
+		IAccessory: accessory,
+		id:         id,
 	}
 }
 

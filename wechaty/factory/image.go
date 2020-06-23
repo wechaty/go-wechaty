@@ -6,9 +6,9 @@ import (
 )
 
 type ImageFactory struct {
-	_interface.Accessory
+	_interface.IAccessory
 }
 
 func (i *ImageFactory) Create(id string) _interface.IImage {
-	return user.NewImages(id, i.Accessory)
+	return user.NewImages(id, i.IAccessory)
 }

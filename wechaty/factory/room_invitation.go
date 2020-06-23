@@ -8,11 +8,11 @@ import (
 )
 
 type RoomInvitationFactory struct {
-	_interface.Accessory
+	_interface.IAccessory
 }
 
 func (r *RoomInvitationFactory) Load(id string) _interface.IRoomInvitation {
-	return user.NewRoomInvitation(id, r.Accessory)
+	return user.NewRoomInvitation(id, r.IAccessory)
 }
 
 func (r *RoomInvitationFactory) FromJSON(s string) (_interface.IRoomInvitation, error) {
