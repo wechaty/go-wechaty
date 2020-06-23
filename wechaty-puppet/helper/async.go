@@ -43,7 +43,6 @@ func NewAsync(maxWorkerNum int) IAsync {
 
 func (a *async) AddTask(task Task) {
 	a.tasks = append(a.tasks, task)
-
 }
 
 func (a *async) Result() []AsyncResult {
