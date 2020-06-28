@@ -23,24 +23,26 @@ package user
 
 import (
 	"fmt"
+	"log"
+
 	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"github.com/wechaty/go-wechaty/wechaty/config"
-	"github.com/wechaty/go-wechaty/wechaty/interface"
-	"log"
+	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type Contact struct {
-	_interface.Accessory
+	_interface.IAccessory
 
 	Id      string
 	payload *schemas.ContactPayload
 }
 
-func NewContact(id string, accessory _interface.Accessory) *Contact {
+// NewContact ...
+func NewContact(id string, accessory _interface.IAccessory) *Contact {
 	return &Contact{
-		Accessory: accessory,
-		Id:        id,
+		IAccessory: accessory,
+		Id:         id,
 	}
 }
 

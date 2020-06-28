@@ -12,7 +12,7 @@ type Option struct {
   // puppet instance
   puppet wp.IPuppetAbstract
   // puppet option
-  puppetOption *wp.Option
+  puppetOption wp.Option
   // io token
   ioToken string
   // memory card
@@ -37,7 +37,7 @@ func WithPuppet(puppet wp.IPuppetAbstract) OptionFn {
 }
 
 // WithPuppetOption with puppet option
-func WithPuppetOption(puppetOption *wp.Option) OptionFn {
+func WithPuppetOption(puppetOption wp.Option) OptionFn {
   return func(opt *Option) {
     opt.puppetOption = puppetOption
   }

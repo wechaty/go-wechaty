@@ -7,6 +7,7 @@
 ![Go Wechaty](https://wechaty.github.io/go-wechaty/images/go-wechaty.png)
 
 [![Go Wechaty Getting Started](https://img.shields.io/badge/Go%20Wechaty-Getting%20Started-7de)](https://github.com/wechaty/go-wechaty-getting-started)
+[![Wechaty in Go](https://img.shields.io/badge/Wechaty-Go-7de)](https://github.com/wechaty/go-wechaty)
 
 ## Connecting Chatbots
 
@@ -285,15 +286,34 @@ make test
 
 ## Related Projects
 
-- [Wechaty](https://github.com/wechaty/wechaty) - WeChat Bot SDK for Individual Account in TypeScript (JavaScript)
-- [Python Wechaty](https://github.com/wechaty/python-wechaty) - Python WeChat Bot SDK for Individual Account.
-- [Java Wechaty](https://github.com/wechaty/java-wechaty) - Java WeChat Bot SDK for Individual Account.
+- [Wechaty](https://github.com/wechaty/wechaty) - Conversatioanl AI Chatot SDK for Wechaty Individual Accounts (TypeScript)
+- [Python Wechaty](https://github.com/wechaty/python-wechaty) - Python WeChaty Conversational AI Chatbot SDK for Wechat Individual Accounts (Python)
+- [Go Wechaty](https://github.com/wechaty/go-wechaty) - Go WeChaty Conversational AI Chatbot SDK for Wechat Individual Accounts (Go)
+- [Java Wechaty](https://github.com/wechaty/java-wechaty) - Java WeChaty Conversational AI Chatbot SDK for Wechat Individual Accounts (Java)
+- [Scala Wechaty](https://github.com/wechaty/scala-wechaty) - Scala WeChaty Conversational AI Chatbot SDK for WechatyIndividual Accounts (Scala)
+
+## Badge
+
+[![Wechaty in Go](https://img.shields.io/badge/Wechaty-Go-7de)](https://github.com/wechaty/go-wechaty)
+
+```md
+[![Wechaty in Go](https://img.shields.io/badge/Wechaty-Go-7de)](https://github.com/wechaty/go-wechaty)
+```
 
 ## Contributors
 
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/0)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/0)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/1)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/1)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/2)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/2)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/3)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/3)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/4)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/4)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/5)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/5)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/6)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/6)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/7)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/7)
+
 1. [@SilkageNet](https://github.com/SilkageNet) - Bojie LI (李博杰)
 
-## Commiters
+## Authors
 
 - [@dchaofei](https://github.com/dchaofei) - Chaofei DING (丁超飞)
 - [@dingdayu](https://github.com/dingdayu) - Xiaoyu DING (丁小雨) 

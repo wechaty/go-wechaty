@@ -3,36 +3,30 @@ package user
 import (
 	"errors"
 	"fmt"
-	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
-	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
-	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-	"github.com/wechaty/go-wechaty/wechaty/config"
-	"github.com/wechaty/go-wechaty/wechaty/interface"
 	"regexp"
 	"sort"
 	"strings"
 	"time"
+
+	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+	"github.com/wechaty/go-wechaty/wechaty/config"
+	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
-//type MessageQueryFilter struct {
-//	From Contact
-//	Text string // todo:: RegExp
-//	Room Room
-//	Type schemas.MessageType
-//	To   Contact
-//}
-
 type Message struct {
-	_interface.Accessory
+	_interface.IAccessory
 
 	id      string
 	payload *schemas.MessagePayload
 }
 
-func NewMessage(id string, accessory _interface.Accessory) _interface.IMessage {
+// NewMessage ...
+func NewMessage(id string, accessory _interface.IAccessory) _interface.IMessage {
 	return &Message{
-		Accessory: accessory,
-		id:        id,
+		IAccessory: accessory,
+		id:         id,
 	}
 }
 
@@ -383,11 +377,28 @@ func (m *Message) ToContact() (_interface.IContact, error) {
 }
 
 func (m *Message) ToUrlLink() (*UrlLink, error) {
-	// TODO
-	return nil, errors.New("TODO")
+	if m.Type() != schemas.MessageTypeURL {
+		return nil, errors.New("message not a Url Link")
+	}
+	urlPayload, err := m.GetPuppet().MessageURL(m.id)
+	if err != nil {
+		return nil, err
+	}
+	return NewUrlLink(urlPayload), nil
 }
 
 func (m *Message) ToMiniProgram() (*MiniProgram, error) {
-	// TODO
-	return nil, errors.New("TODO")
+	if m.Type() != schemas.MessageTypeMiniProgram {
+		return nil, errors.New("message not a MiniProgram")
+	}
+	miniProgramPayload, err := m.GetPuppet().MessageMiniProgram(m.id)
+	if err != nil {
+		return nil, err
+	}
+	return NewMiniProgram(miniProgramPayload), nil
+}
+
+// ID message id
+func (m *Message) ID() string {
+	return m.id
 }

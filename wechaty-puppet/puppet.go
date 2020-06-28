@@ -87,11 +87,13 @@ type IPuppetAbstract interface {
 	RoomMemberPayload(roomID, memberID string) (*schemas.RoomMemberPayload, error)
 	MessageForward(conversationID string, messageID string) (string, error)
 	RoomSearch(query *schemas.RoomQueryFilter) ([]string, error)
+	RoomInvitationPayload(roomInvitationID string) (*schemas.RoomInvitationPayload, error)
+	SetRoomInvitationPayload(payload *schemas.RoomInvitationPayload)
 }
 
 // Puppet puppet abstract struct
 type Puppet struct {
-	*Option
+	Option
 
 	id string
 	// puppet implementation puppet_hostie or puppet_mock
@@ -106,7 +108,7 @@ type Puppet struct {
 }
 
 // NewPuppet instance
-func NewPuppet(option *Option) (*Puppet, error) {
+func NewPuppet(option Option) (*Puppet, error) {
 	cacheMessage, err := lru.New(1024)
 	if err != nil {
 		return nil, err
@@ -534,6 +536,25 @@ func (p *Puppet) RoomMemberPayload(roomID, memberID string) (*schemas.RoomMember
 	return payload, nil
 }
 
+// RoomInvitationPayload ...
+func (p *Puppet) RoomInvitationPayload(roomInvitationID string) (*schemas.RoomInvitationPayload, error) {
+	cachePayload, ok := p.cacheRoomInvitationPayload.Get(roomInvitationID)
+	if ok {
+		return cachePayload.(*schemas.RoomInvitationPayload), nil
+	}
+	payload, err := p.puppetImplementation.RoomInvitationRawPayload(roomInvitationID)
+	if err != nil {
+		return nil, err
+	}
+	p.cacheRoomInvitationPayload.Add(roomInvitationID, payload)
+	return payload, nil
+}
+
+// SetRoomInvitationPayload ...
+func (p *Puppet) SetRoomInvitationPayload(payload *schemas.RoomInvitationPayload) {
+	p.cacheRoomInvitationPayload.Add(payload.Id, payload)
+}
+
 // MessageForward ...
 func (p *Puppet) MessageForward(conversationID string, messageID string) (string, error) {
 	payload, err := p.MessagePayload(messageID)
@@ -551,7 +572,7 @@ func (p *Puppet) MessageForward(conversationID string, messageID string) (string
 		newMsgID, err = p.puppetImplementation.MessageSendText(conversationID, payload.Text)
 	case schemas.MessageTypeMiniProgram:
 		newMsgID, err = p.messageForwardMiniProgram(conversationID, messageID)
-	case schemas.MessageTypeUrl:
+	case schemas.MessageTypeURL:
 		newMsgID, err = p.messageForwardURL(conversationID, messageID)
 	case schemas.MessageTypeContact:
 		newMsgID, err = p.messageForwardContact(conversationID, messageID)

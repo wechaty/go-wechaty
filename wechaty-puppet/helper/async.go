@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"math"
 	"runtime"
 	"sync"
 )
@@ -22,34 +23,39 @@ type (
 	}
 
 	async struct {
-		wg        sync.WaitGroup
-		tasks     []Task
-		workerNum int
+		tasks        []Task
+		wg           sync.WaitGroup
+		maxWorkerNum int
 	}
 
 	// Task task func
 	Task func() (interface{}, error)
 )
 
-func NewAsync(workerNum int) IAsync {
-	if workerNum <= 0 {
-		workerNum = DefaultWorkerNum
+// NewAsync ...
+func NewAsync(maxWorkerNum int) IAsync {
+	if maxWorkerNum <= 0 {
+		maxWorkerNum = DefaultWorkerNum
 	}
 	return &async{
-		wg:        sync.WaitGroup{},
-		workerNum: workerNum,
+		maxWorkerNum: maxWorkerNum,
+		wg:           sync.WaitGroup{},
 	}
 }
 
 func (a *async) AddTask(task Task) {
-	a.wg.Add(1)
 	a.tasks = append(a.tasks, task)
 }
 
 func (a *async) Result() []AsyncResult {
 	taskChan := make(chan Task)
 	resultChan := make(chan AsyncResult)
-	for i := 0; i < a.workerNum; i++ {
+
+	taskNum := len(a.tasks)
+	workerNum := int(math.Min(float64(taskNum), float64(a.maxWorkerNum)))
+	a.wg.Add(taskNum)
+
+	for i := 0; i < workerNum; i++ {
 		go func() {
 			for task := range taskChan {
 				result := AsyncResult{}
@@ -67,9 +73,10 @@ func (a *async) Result() []AsyncResult {
 		a.wg.Wait()
 		close(resultChan)
 		close(taskChan)
+		a.tasks = nil
 	}()
 
-	result := make([]AsyncResult, 0, len(a.tasks))
+	result := make([]AsyncResult, 0, taskNum)
 	for v := range resultChan {
 		result = append(result, v)
 	}

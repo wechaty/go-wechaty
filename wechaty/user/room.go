@@ -2,25 +2,27 @@ package user
 
 import (
 	"fmt"
+	"log"
+	"strings"
+
 	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"github.com/wechaty/go-wechaty/wechaty/config"
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
-	"log"
-	"strings"
 )
 
 type Room struct {
 	id      string
 	payLoad *schemas.RoomPayload
-	_interface.Accessory
+	_interface.IAccessory
 }
 
-func NewRoom(id string, accessory _interface.Accessory) *Room {
+// NewRoom ...
+func NewRoom(id string, accessory _interface.IAccessory) *Room {
 	return &Room{
-		id:        id,
-		Accessory: accessory,
+		id:         id,
+		IAccessory: accessory,
 	}
 }
 
@@ -86,7 +88,11 @@ func (r *Room) MemberAll(query interface{}) ([]_interface.IContact, error) {
 	}
 	var contactList []_interface.IContact
 	for _, id := range idList {
-		contactList = append(contactList, r.GetWechaty().Contact().Load(id))
+		contact := r.GetWechaty().Contact().Load(id)
+		if err := contact.Ready(false); err != nil {
+			return nil, err
+		}
+		contactList = append(contactList, contact)
 	}
 	return contactList, nil
 }
@@ -170,9 +176,10 @@ func (r *Room) sayText(text string, mentionList ..._interface.IContact) (string,
 			if alias == "" {
 				alias = contact.Name()
 			}
+			alias = strings.ReplaceAll(alias, " ", atSeparator)
 			mentionAlias = append(mentionAlias, "@"+alias)
 		}
-		text = strings.Join(mentionAlias, atSeparator) + text
+		text = strings.Join(mentionAlias, atSeparator) + " " + text
 	}
 	return r.GetPuppet().MessageSendText(r.id, text, mentionIDList...)
 }
