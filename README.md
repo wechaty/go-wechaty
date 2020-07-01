@@ -62,7 +62,7 @@ import (
 func main() {
 	_ = wechaty.NewWechaty().
 		OnScan(func(qrCode, status string) {
-			fmt.Printf("Scan QR Code to login: %s\nhttps://api.qrserver.com/v1/create-qr-code/?data=%s\n", status, qrCode)
+			fmt.Printf("Scan QR Code to login: %s\nhttps://wechaty.github.io/qrcode/%s\n", status, qrCode)
 		}).
 		OnLogin(func(user string) { fmt.Printf("User %s logined\n", user) }).
 		OnMessage(func(message string) { fmt.Printf("Message: %s\n", message) }).

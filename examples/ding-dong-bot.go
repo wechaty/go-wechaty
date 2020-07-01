@@ -18,7 +18,7 @@ func main() {
 	}))
 
 	bot.OnScan(func(qrCode string, status schemas.ScanStatus, data string) {
-		fmt.Printf("Scan QR Code to login: %v\nhttps://api.qrserver.com/v1/create-qr-code/?data=%s\n", status, qrCode)
+		fmt.Printf("Scan QR Code to login: %v\nhttps://wechaty.github.io/qrcode/%s\n", status, qrCode)
 	}).OnLogin(func(user *user.ContactSelf) {
 		fmt.Printf("User %s logined\n", user.Name())
 	}).OnMessage(onMessage).OnLogout(func(user *user.ContactSelf, reason string) {
