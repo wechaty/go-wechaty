@@ -8,11 +8,11 @@ import (
 )
 
 type FriendshipFactory struct {
-	_interface.Accessory
+	_interface.IAccessory
 }
 
 func (m *FriendshipFactory) Load(id string) _interface.IFriendship {
-	return user.NewFriendship(id, m.Accessory)
+	return user.NewFriendship(id, m.IAccessory)
 }
 
 // Search search a Friend by phone or weixin.

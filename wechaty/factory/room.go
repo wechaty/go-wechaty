@@ -2,23 +2,25 @@ package factory
 
 import (
 	"errors"
+	"log"
+	"sync"
+
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 	"github.com/wechaty/go-wechaty/wechaty/user"
-	"log"
-	"sync"
 )
 
 type RoomFactory struct {
-	_interface.Accessory
+	_interface.IAccessory
 	pool *sync.Map
 }
 
-func NewRoomFactory(accessory _interface.Accessory) *RoomFactory {
+// NewRoomFactory ...
+func NewRoomFactory(accessory _interface.IAccessory) *RoomFactory {
 	return &RoomFactory{
-		Accessory: accessory,
-		pool:      &sync.Map{},
+		IAccessory: accessory,
+		pool:       &sync.Map{},
 	}
 }
 
@@ -38,6 +40,7 @@ func (r *RoomFactory) Create(contactList []_interface.IContact, topic string) (_
 	return r.Load(roomID), nil
 }
 
+// FindAll query param is string or *schemas.RoomQueryFilter
 func (r *RoomFactory) FindAll(query *schemas.RoomQueryFilter) []_interface.IRoom {
 	roomIDList, err := r.GetPuppet().RoomSearch(query)
 	if err != nil {
@@ -89,12 +92,13 @@ func (r *RoomFactory) Find(query interface{}) _interface.IRoom {
 	return nil
 }
 
+// Load query param is string
 func (r *RoomFactory) Load(id string) _interface.IRoom {
 	load, ok := r.pool.Load(id)
 	if ok {
 		return load.(*user.Room)
 	}
-	room := user.NewRoom(id, r.Accessory)
+	room := user.NewRoom(id, r.IAccessory)
 	r.pool.Store(id, room)
 	return room
 }
