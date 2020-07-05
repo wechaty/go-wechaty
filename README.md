@@ -314,6 +314,7 @@ Read more from our Multi-language Wechaty Beta Release event from our blog:
 [![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/7)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/7)
 
 1. [@SilkageNet](https://github.com/SilkageNet) - Bojie LI (李博杰)
+1. [@huan](https://github.com/huan) - Huan LI (李卓桓)
 
 ## Authors
 
