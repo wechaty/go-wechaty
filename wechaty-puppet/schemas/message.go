@@ -1,5 +1,8 @@
 package schemas
 
+import "regexp"
+
+//go:generate stringer -type=MessageType
 type MessageType uint8
 
 const (
@@ -13,11 +16,12 @@ const (
 	MessageTypeText        MessageType = 7
 	MessageTypeLocation    MessageType = 8
 	MessageTypeMiniProgram MessageType = 9
-	MessageTypeTransfer    MessageType = 10
-	MessageTypeRedEnvelope MessageType = 11
-	MessageTypeRecalled    MessageType = 12
-	MessageTypeUrl         MessageType = 13
-	MessageTypeVideo       MessageType = 14
+	MessageTypeGroupNote   MessageType = 10
+	MessageTypeTransfer    MessageType = 11
+	MessageTypeRedEnvelope MessageType = 12
+	MessageTypeRecalled    MessageType = 13
+	MessageTypeURL         MessageType = 14
+	MessageTypeVideo       MessageType = 15
 )
 
 type WeChatAppMessageType int
@@ -98,13 +102,14 @@ type MessagePayload struct {
 	MessagePayloadRoom
 }
 
-type MessageUserQueryFilter struct {
-	FromId string
-	Id     string
-	RoomId string
-	Text   string // todo:: RegExp
-	ToId   string
-	Type   MessageType
+type MessageQueryFilter struct {
+	FromId     string
+	Id         string
+	RoomId     string
+	Text       string
+	TextRegExp *regexp.Regexp
+	ToId       string
+	Type       MessageType
 }
 
-type MessagePayloadFilterFunction func(payload MessagePayload) bool
+type MessagePayloadFilterFunction func(payload *MessagePayload) bool

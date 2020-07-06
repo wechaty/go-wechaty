@@ -17,3 +17,7 @@ trim_trailing_whitespace = false
 [Makefile]
 indent_style = tab
 indent_size = 4
+
+[{*.go,go.mod,go.sum}]
+indent_style = tab
+indent_size = 4

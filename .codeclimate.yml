@@ -1,0 +1,47 @@
+version: "2"
+
+# For more configuration items, please refer to: https://docs.codeclimate.com/docs/maintainability#section-checks
+checks:
+  argument-count:       # 方法或函数最多参数个数，过多请考虑通过结构体传递
+    config:
+      threshold: 6
+  complex-logic:        # 难以理解的布尔逻辑，过多请考虑 switch 或拆分
+    config:
+      threshold: 4
+  file-lines:           # 文件最多行数，过多请拆分相关文件
+    config:
+      threshold: 1000
+  method-complexity:    # 函数和方法的逻辑复杂度
+    config:
+      threshold: 12
+  method-count:         # 结构体的方法限制
+    config:
+      threshold: 60
+  method-lines:         # 单个方法最多行数，过多请进行拆分
+    config:
+      threshold: 45
+  nested-control-flow:  # 深度嵌套的控制结构，请尽快返回结果，避免深度嵌套
+    config:
+      threshold: 6
+  return-statements:    # 函数或方法返回次数，过多请考虑拆分
+    config:
+      threshold: 12
+  similar-code:         # 相似代码检查
+    config:
+      threshold: 70
+  identical-code:       # 相同代码检查
+    config:
+      threshold: 25
+
+plugins:
+  # "Gofmt's style is no one's favorite, yet gofmt is everyone's favorite." - The Go Proverbs
+  gofmt:
+    enabled: true
+  golint:
+    enabled: true
+  govet:
+    enabled: true
+
+# Excluded folders or files
+exclude_patterns:
+  - examples

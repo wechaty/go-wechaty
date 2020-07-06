@@ -4,11 +4,9 @@ import (
   wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
 )
 
-// Accessory accessory interface
-type Accessory interface {
-  SetPuppet(puppet wechatyPuppet.Puppet)
-  GetPuppet() *wechatyPuppet.Puppet
+// IAccessory accessory interface
+type IAccessory interface {
+  GetPuppet() wechatyPuppet.IPuppetAbstract
 
-  SetWechaty(wechaty Wechaty)
-  GetWechaty() Wechaty
+  GetWechaty() IWechaty
 }

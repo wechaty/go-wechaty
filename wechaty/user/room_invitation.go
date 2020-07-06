@@ -1,74 +1,127 @@
 package user
 
 import (
-  "fmt"
-  "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-  _interface "github.com/wechaty/go-wechaty/wechaty/interface"
-  "log"
-  "time"
+	"encoding/json"
+	"fmt"
+	"log"
+	"time"
+
+	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type RoomInvitation struct {
-  _interface.Accessory
-  id string
+	_interface.IAccessory
+	id string
 }
 
-func NewRoomInvitation(id string, accessory _interface.Accessory) *RoomInvitation {
-  return &RoomInvitation{
-    Accessory: accessory,
-    id:        id,
-  }
+// NewRoomInvitation ...
+func NewRoomInvitation(id string, accessory _interface.IAccessory) *RoomInvitation {
+	return &RoomInvitation{
+		IAccessory: accessory,
+		id:         id,
+	}
 }
 
 func (ri *RoomInvitation) String() string {
-  id := "loading"
-  if ri.id != "" {
-    id = ri.id
-  }
-  return fmt.Sprintf("RoomInvitation#%s", id)
+	id := "loading"
+	if ri.id != "" {
+		id = ri.id
+	}
+	return fmt.Sprintf("RoomInvitation#%s", id)
 }
 
-func (ri *RoomInvitation) ToStringAsync() string {
-  payload := ri.getPayload()
-  return fmt.Sprintf("RoomInvitation#%s<%s,%s>", ri.id, payload.Topic, payload.InviterId)
+func (ri *RoomInvitation) ToStringAsync() (string, error) {
+	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("RoomInvitation#%s<%s,%s>", ri.id, payload.Topic, payload.InviterId), nil
 }
 
-func (ri *RoomInvitation) Accept() {
-  ri.GetPuppet().RoomInvitationAccept(ri.id)
-  inviter := ri.Inviter()
-  topic := ri.ToPic()
-  inviter.Ready(false)
-  log.Printf("RoomInvitation accept() with room(%s) & inviter(%s) ready()", topic, inviter)
+// Accept Room Invitation
+func (ri *RoomInvitation) Accept() error {
+	err := ri.GetPuppet().RoomInvitationAccept(ri.id)
+	if err != nil {
+		return err
+	}
+	inviter, err := ri.Inviter()
+	if err != nil {
+		return err
+	}
+	topic, err := ri.Topic()
+	if err != nil {
+		return err
+	}
+	log.Printf("RoomInvitation accept() with room(%s) & inviter(%s) ready()", topic, inviter)
+	return inviter.Ready(false)
 }
 
-func (ri *RoomInvitation) Inviter() *Contact {
-  return NewContact(ri.Accessory, ri.getPayload().InviterId)
+// Inviter get the inviter from room invitation
+func (ri *RoomInvitation) Inviter() (_interface.IContact, error) {
+	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
+	if err != nil {
+		return nil, err
+	}
+	return ri.GetWechaty().Contact().Load(payload.InviterId), nil
 }
 
-func (ri *RoomInvitation) ToPic() string {
-  return ri.getPayload().Topic
+// Topic get the room topic from room invitation
+func (ri *RoomInvitation) Topic() (string, error) {
+	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
+	if err != nil {
+		return "", err
+	}
+	return payload.Topic, nil
 }
 
-func (ri *RoomInvitation) MemberCount() int {
-  return ri.getPayload().MemberCount
+func (ri *RoomInvitation) MemberCount() (int, error) {
+	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
+	if err != nil {
+		return 0, err
+	}
+	return payload.MemberCount, nil
 }
 
-func (ri *RoomInvitation) MemberList() []*Contact {
-  payload := ri.getPayload()
-  contactList := make([]*Contact, 0, len(payload.MemberIdList))
-  for _, id := range payload.MemberIdList {
-    c := NewContact(ri.Accessory, id)
-    c.Ready(false)
-    contactList = append(contactList, c)
-  }
-  return contactList
+// MemberList list of Room Members that you known(is friend)
+func (ri *RoomInvitation) MemberList() ([]_interface.IContact, error) {
+	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
+	if err != nil {
+		return nil, err
+	}
+	contactList := make([]_interface.IContact, 0, len(payload.MemberIdList))
+	for _, id := range payload.MemberIdList {
+		c := ri.GetWechaty().Contact().Load(id)
+		if err := c.Ready(false); err != nil {
+			return nil, err
+		}
+		contactList = append(contactList, c)
+	}
+	return contactList, nil
 }
 
-func (ri *RoomInvitation) Date() time.Time {
-  return time.Unix(ri.getPayload().Timestamp, 0)
+// Date get the invitation time
+func (ri *RoomInvitation) Date() (time.Time, error) {
+	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return time.Unix(payload.Timestamp, 0), nil
 }
 
-func (ri *RoomInvitation) getPayload() *schemas.RoomInvitationPayload {
-  payload, _ := ri.GetPuppet().RoomInvitationPayload(ri.id)
-  return payload
+// Age returns the room invitation age in seconds
+func (ri *RoomInvitation) Age() (time.Duration, error) {
+	date, err := ri.Date()
+	if err != nil {
+		return 0, err
+	}
+	return date.Sub(time.Now()), nil
+}
+
+func (ri *RoomInvitation) ToJson() (string, error) {
+	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
+	if err != nil {
+		return "", err
+	}
+	marshal, err := json.Marshal(payload)
+	return string(marshal), err
 }

@@ -2,20 +2,18 @@
 
 ![Go Version](https://img.shields.io/github/go-mod/go-version/wechaty/go-wechaty)
 [![Go](https://github.com/wechaty/go-wechaty/workflows/Go/badge.svg)](https://github.com/wechaty/go-wechaty/actions?query=workflow%3AGo)
+[![Maintainability](https://api.codeclimate.com/v1/badges/dbae0a43d431b0fccee5/maintainability)](https://codeclimate.com/github/wechaty/go-wechaty/maintainability)
 
 ![Go Wechaty](https://wechaty.github.io/go-wechaty/images/go-wechaty.png)
+
+[![Go Wechaty Getting Started](https://img.shields.io/badge/Go%20Wechaty-Getting%20Started-7de)](https://github.com/wechaty/go-wechaty-getting-started)
+[![Wechaty in Go](https://img.shields.io/badge/Wechaty-Go-7de)](https://github.com/wechaty/go-wechaty)
 
 ## Connecting Chatbots
 
 [![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-brightgreen.svg)](https://github.com/Wechaty/wechaty)
 
 Wechaty is a RPA SDK for Wechat **Individual** Account that can help you create a chatbot in 6 lines of Go.
-
-## WORK IN PROGRESS
-
-Work in progress...
-
-Please come back after 4 weeks...
 
 ## Voice of the Developers
 
@@ -58,7 +56,7 @@ import (
 func main() {
 	_ = wechaty.NewWechaty().
 		OnScan(func(qrCode, status string) {
-			fmt.Printf("Scan QR Code to login: %s\nhttps://api.qrserver.com/v1/create-qr-code/?data=%s\n", status, qrCode)
+			fmt.Printf("Scan QR Code to login: %s\nhttps://wechaty.github.io/qrcode/%s\n", status, qrCode)
 		}).
 		OnLogin(func(user string) { fmt.Printf("User %s logined\n", user) }).
 		OnMessage(func(message string) { fmt.Printf("Message: %s\n", message) }).
@@ -252,9 +250,23 @@ make test
 - [The Go Blog - Publishing Go Modules](https://blog.golang.org/publishing-go-modules)
 - [Effective Go](https://golang.org/doc/effective_go.html)
 
+### Golang for Node.js Developer
+
+- [Golang for Node.js Developers - Examples of Golang examples compared to Node.js for learning](https://github.com/miguelmota/golang-for-nodejs-developers)
+- [Learning Go as a Node.js Developer](https://nemethgergely.com/learning-go-as-a-nodejs-developer/)
+- [Golang Tutorial for Node.js Developers](https://blog.risingstack.com/golang-tutorial-for-nodejs-developers-getting-started/)
+
 ## History
 
 ### master
+
+### v0.4 (Jun 19, 2020)
+
+Go Wechaty Scala Wechaty **BETA** Released!
+
+Read more from our Multi-language Wechaty Beta Release event from our blog:
+
+- [Multi Language Wechaty Beta Release Announcement!](https://wechaty.github.io/2020/06/19/multi-language-wechaty-beta-release/)
 
 ### v0.1 (Apr 03 2020)
 
@@ -276,18 +288,41 @@ make test
 
 ## Related Projects
 
-- [Wechaty](https://github.com/wechaty/wechaty) - WeChat Bot SDK for Individual Account in TypeScript
-- [Python Wechaty](https://github.com/wechaty/python-wechaty) - Python WeChat Bot SDK for Individual Account.
-- [Java Wechaty](https://github.com/wechaty/java-wechaty) - Java WeChat Bot SDK for Individual Account.
+- [Wechaty](https://github.com/wechaty/wechaty) - Conversatioanl AI Chatot SDK for Wechaty Individual Accounts (TypeScript)
+- [Python Wechaty](https://github.com/wechaty/python-wechaty) - Python WeChaty Conversational AI Chatbot SDK for Wechat Individual Accounts (Python)
+- [Go Wechaty](https://github.com/wechaty/go-wechaty) - Go WeChaty Conversational AI Chatbot SDK for Wechat Individual Accounts (Go)
+- [Java Wechaty](https://github.com/wechaty/java-wechaty) - Java WeChaty Conversational AI Chatbot SDK for Wechat Individual Accounts (Java)
+- [Scala Wechaty](https://github.com/wechaty/scala-wechaty) - Scala WeChaty Conversational AI Chatbot SDK for WechatyIndividual Accounts (Scala)
 
-## Author
+## Badge
 
-[Huan LI](https://github.com/huan) ([李卓桓](http://linkedin.com/in/zixia)) zixia@zixia.net
+[![Wechaty in Go](https://img.shields.io/badge/Wechaty-Go-7de)](https://github.com/wechaty/go-wechaty)
 
-[![Profile of Huan LI (李卓桓) on StackOverflow](https://stackexchange.com/users/flair/265499.png)](https://stackexchange.com/users/265499)
+```md
+[![Wechaty in Go](https://img.shields.io/badge/Wechaty-Go-7de)](https://github.com/wechaty/go-wechaty)
+```
+
+## Contributors
+
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/0)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/0)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/1)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/1)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/2)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/2)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/3)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/3)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/4)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/4)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/5)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/5)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/6)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/6)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/7)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/7)
+
+1. [@SilkageNet](https://github.com/SilkageNet) - Bojie LI (李博杰)
+1. [@huan](https://github.com/huan) - Huan LI (李卓桓)
+
+## Authors
+
+- [@dchaofei](https://github.com/dchaofei) - Chaofei DING (丁超飞)
+- [@dingdayu](https://github.com/dingdayu) - Xiaoyu DING (丁小雨) 
 
 ## Copyright & License
 
-- Code & Docs © 2020-now Huan LI \<zixia@zixia.net\>
+- Code & Docs © 2020 Wechaty Contributors <https://github.com/wechaty>
 - Code released under the Apache-2.0 License
 - Docs released under Creative Commons
