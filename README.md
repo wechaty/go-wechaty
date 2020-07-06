@@ -15,12 +15,6 @@
 
 Wechaty is a RPA SDK for Wechat **Individual** Account that can help you create a chatbot in 6 lines of Go.
 
-## WORK IN PROGRESS
-
-Work in progress...
-
-Please come back after 4 weeks...
-
 ## Voice of the Developers
 
 > "Wechaty is a great solution, I believe there would be much more users recognize it." [link](https://github.com/Wechaty/wechaty/pull/310#issuecomment-285574472)  
@@ -62,7 +56,7 @@ import (
 func main() {
 	_ = wechaty.NewWechaty().
 		OnScan(func(qrCode, status string) {
-			fmt.Printf("Scan QR Code to login: %s\nhttps://api.qrserver.com/v1/create-qr-code/?data=%s\n", status, qrCode)
+			fmt.Printf("Scan QR Code to login: %s\nhttps://wechaty.github.io/qrcode/%s\n", status, qrCode)
 		}).
 		OnLogin(func(user string) { fmt.Printf("User %s logined\n", user) }).
 		OnMessage(func(message string) { fmt.Printf("Message: %s\n", message) }).
@@ -266,6 +260,14 @@ make test
 
 ### master
 
+### v0.4 (Jun 19, 2020)
+
+Go Wechaty Scala Wechaty **BETA** Released!
+
+Read more from our Multi-language Wechaty Beta Release event from our blog:
+
+- [Multi Language Wechaty Beta Release Announcement!](https://wechaty.github.io/2020/06/19/multi-language-wechaty-beta-release/)
+
 ### v0.1 (Apr 03 2020)
 
 1. Welcome our second and third Go Wechaty contributors:
@@ -312,6 +314,7 @@ make test
 [![contributor](https://sourcerer.io/fame/huan/wechaty/go-wechaty/images/7)](https://sourcerer.io/fame/huan/wechaty/go-wechaty/links/7)
 
 1. [@SilkageNet](https://github.com/SilkageNet) - Bojie LI (李博杰)
+1. [@huan](https://github.com/huan) - Huan LI (李卓桓)
 
 ## Authors
 
