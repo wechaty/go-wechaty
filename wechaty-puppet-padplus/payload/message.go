@@ -1,4 +1,4 @@
-package schemas
+package payload
 
 type ImageType uint8
 
@@ -37,7 +37,7 @@ const (
 	WechatMessageTypeRecalled                            = 10002 // NOTIFY 服务通知
 )
 
-type GRPCMessagePayload struct {
+type MessagePayload struct {
 	AppMsgType          int    `json:"AppMsgType"`
 	Content             string `json:"Content"`
 	CreateTime          int    `json:"CreateTime"`
@@ -65,20 +65,6 @@ type GRPCMessagePayload struct {
 	WechatUserName      string `json:"wechatUserName"`
 }
 
-// 请求媒体信息
-type PadPlusRichMediaData struct {
-	Content      string `json:"content"`
-	MsgType      int    `json:"msgType"`
-	ContentType  string `json:"contentType"`
-	Src          string `json:"src"`
-	AppMsgType   int    `json:"appMsgType"`
-	FileName     string `json:"fileName"`
-	MsgId        string `json:"msgId"`
-	CreateTime   int    `json:"createTime"`
-	FromUserName string `json:"fromUserName"`
-	ToUserName   string `json:"toUserName"`
-}
-
 // 媒体信息响应结构体
 type PadPlusMediaData struct {
 	Content string `json:"content"`
@@ -86,4 +72,11 @@ type PadPlusMediaData struct {
 	Src     string `json:"src"`
 	Status  string `json:"status"`
 	Thumb   string `json:"thumb"`
+}
+
+// SendMessageResponse send message client request response
+type SendMessageResponse struct {
+	MsgId     string `json:"msgId"`
+	Timestamp int    `json:"timestamp"`
+	Success   bool   `json:"success"`
 }

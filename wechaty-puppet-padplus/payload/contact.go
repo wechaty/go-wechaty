@@ -1,7 +1,7 @@
-package schemas
+package payload
 
-// 群联系人
-type GRPCContactPayload struct {
+// Contact contact
+type Contact struct {
 	Alias           string
 	BigHeadImgUrl   string
 	ChatRoomOwner   string
@@ -34,8 +34,8 @@ type GRPCContactPayload struct {
 	wechatUserName  string
 }
 
-// 联系人
-type GRPCRoomPayload struct {
+// ContactRoom contact room
+type ContactRoom struct {
 	ContactType     int
 	ExtInfoExt      string
 	Sex             int

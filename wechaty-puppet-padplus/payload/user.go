@@ -1,23 +1,44 @@
-package schemas
+package payload
 
-// 获取登录二维码 ResponseType_LOGIN_QRCODE
-type PadPlusQrCode struct {
+import (
+	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+)
+
+// EventPadPlusQrCode ResponseType_LOGIN_QRCODE
+type EventPadPlusQrCode struct {
 	QrCode   string `json:"qrcode"`
 	QrCodeId string `json:"qrcodeId"`
 }
 
-type QrCodeStatus uint32
+// QrCodeStatus scan qr code status
+type QrCodeStatus uint8
 
-// 登录二维码状态
 const (
-	Waiting   QrCodeStatus = 0
-	Scanned   QrCodeStatus = 1
-	Confirmed QrCodeStatus = 2
-	Canceled  QrCodeStatus = 4
-	Expired   QrCodeStatus = 3
+	ScanStatusWaiting   QrCodeStatus = 0
+	ScanStatusScanned   QrCodeStatus = 1
+	ScanStatusConfirmed QrCodeStatus = 2
+	ScanStatusExpired   QrCodeStatus = 3
+	ScanStatusCanceled  QrCodeStatus = 4
 )
 
-// 登录二维码扫描状态 ResponseType_QRCODE_SCAN
+// ToPuppetStatus padplus scan status to puppet status
+func (q QrCodeStatus) ToPuppetStatus() schemas.ScanStatus {
+	switch q {
+	case ScanStatusWaiting:
+		return schemas.ScanStatusWaiting
+	case ScanStatusScanned:
+		return schemas.ScanStatusScanned
+	case ScanStatusConfirmed:
+		return schemas.ScanStatusConfirmed
+	case ScanStatusExpired:
+		return schemas.ScanStatusTimeout
+	case ScanStatusCanceled:
+		return schemas.ScanStatusCancel
+	}
+	return schemas.ScanStatusUnknown
+}
+
+// PadPlusQrCodeStatus 登录二维码扫描状态 ResponseType_QRCODE_SCAN
 type PadPlusQrCodeStatus struct {
 	HeadUrl  string       `json:"headUrl"`
 	NickName string       `json:"nickName"`
@@ -52,14 +73,14 @@ type GRPCLoginData struct {
 	UserName string `json:"user_name"`
 }
 
-// 扫描二维码事件
-type ScanData struct {
-	HeadUrl  string `json:"head_url"`
-	Msg      string `json:"msg"`
-	NickName string `json:"nick_name"`
-	QrCodeId string `json:"qrcode_id"`
-	Status   int    `json:"status"` // 1 不同步 2 同步消息
-	UserName string `json:"user_name"`
+// EventScanData 扫描二维码事件
+type EventScanData struct {
+	HeadUrl  string       `json:"head_url"`
+	Msg      string       `json:"msg"`
+	NickName string       `json:"nick_name"`
+	QrCodeId string       `json:"qrcode_id"`
+	Status   QrCodeStatus `json:"status"` // 1 不同步 2 同步消息
+	UserName string       `json:"user_name"`
 }
 
 type LogoutGRPCResponse struct {
@@ -69,7 +90,8 @@ type LogoutGRPCResponse struct {
 	MQType  int    `json:"mq_type"`
 }
 
-type GRPCQrCodeLogin struct {
+// QrCodeLogin 登录成功的事件
+type QrCodeLogin struct {
 	Alias      string `json:"alias"`
 	HeadImgUrl string `json:"headImgUrl"`
 	NickName   string `json:"nickName"`
