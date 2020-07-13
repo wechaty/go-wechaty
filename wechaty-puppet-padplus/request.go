@@ -37,7 +37,7 @@ func (p *PuppetPadPlus) Request(apiType pd.ApiType, data interface{}) (response 
 		Uin:       &p.Uin,
 	})
 	if err != nil {
-		log.Printf("Type: %s, err: %v", apiType, err)
+		log.Printf("Type: %s, res: %v, err: %v", apiType, resp, err)
 		return "", err
 	}
 	log.Printf("Type: %s, Result: %s", apiType, *resp.Result)
@@ -50,10 +50,28 @@ func (p *PuppetPadPlus) Login() (err error) {
 	return
 }
 
-// AutoLogin 自动登录
-func (p *PuppetPadPlus) AutoLogin() (err error) {
-	_, err = p.Request(pd.ApiType_INIT, nil)
-	return
+// AutoLogin auto login
+func (p *PuppetPadPlus) AutoLogin() error {
+	res, err := p.Request(pd.ApiType_INIT, nil)
+	var resp payload.AutoLoginResponse
+	p.unMarshal(res, &resp)
+	if resp.Online {
+		data := schemas.EventLoginPayload{
+			ContactId: resp.WechatUser.UserName,
+		}
+		p.contactPayload.Store(resp.WechatUser.UserName, payload.ContactPayload{
+			Alias:       resp.WechatUser.Alias,
+			ContactType: 0,
+			BigHeadUrl:  resp.WechatUser.HeadImgURL,
+			NickName:    resp.WechatUser.NickName,
+			UserName:    resp.WechatUser.UserName,
+			VerifyFlag:  0,
+			ContactFlag: 0,
+		})
+		p.Emit(schemas.PuppetEventNameLogin, &data)
+		return nil
+	}
+	return err
 }
 
 // MessageImage load image message
@@ -136,7 +154,7 @@ func (p *PuppetPadPlus) FriendshipAccept(friendshipID string) (err error) {
 
 // Logout logout
 func (p *PuppetPadPlus) Logout() (err error) {
-	log.Println("PuppetHostie Logout()")
+	log.Println("PuppetPadPlus Logout()")
 	if !p.isLogin() {
 		return errors.New("logout before login? ")
 	}
@@ -184,8 +202,15 @@ func (p *PuppetPadPlus) ContactAvatar(contactID string) (*file_box.FileBox, erro
 	panic("implement me")
 }
 
+// ContactRawPayload query contact
 func (p *PuppetPadPlus) ContactRawPayload(contactID string) (*schemas.ContactPayload, error) {
-	panic("implement me")
+	contact, err := p.contactPayload.Load(contactID)
+	if err != nil {
+		_, _ = p.Request(pd.ApiType_GET_CONTACT, map[string]string{"userName": contactID})
+		return nil, fmt.Errorf("PuppetPadPlus ContactRawPayload err: %w", err)
+	}
+
+	return contact.ToSchemasContactPayload(), nil
 }
 
 func (p *PuppetPadPlus) SetContactSelfName(name string) error {
@@ -222,23 +247,25 @@ func (p *PuppetPadPlus) MessageRawPayload(id string) (*schemas.MessagePayload, e
 	if err != nil {
 		return nil, err
 	}
-	if p, ok := pay.(schemas.MessagePayload); ok {
-		return &p, nil
-	}
-	return nil, errors.New("message to payload error")
+
+	return pay.ToSchemasContactPayload(), nil
 }
 
 // MessageSendText send text message
 func (p *PuppetPadPlus) MessageSendText(conversationID string, text string, mentionIDList ...string) (string, error) {
-	log.Printf("PuppetPadPlus messageSendText(%s, %s)\n", conversationID, text)
-
-	res, err := p.Request(pd.ApiType_SEND_MESSAGE, map[string]interface{}{"content": text, "fromUserName": p.SelfID(), "messageType": "text", "toUserName": conversationID, "mentionListStr": mentionIDList})
+	messageData := map[string]interface{}{"content": text, "fromUserName": p.SelfID(), "messageType": "text", "toUserName": conversationID, "mentionListStr": mentionIDList}
+	res, err := p.Request(pd.ApiType_SEND_MESSAGE, messageData)
+	fmt.Printf("PuppetPadPlus messageSendText(%+v)", messageData)
 	if err != nil {
 		return "", fmt.Errorf("PuppetPadPlus MessageSendText err: %w", err)
 	}
+
+	if res == "success" {
+		return "", err
+	}
+
 	var pay payload.SendMessageResponse
 	p.unMarshal(res, &pay)
-
 	return pay.MsgId, nil
 }
 
@@ -276,11 +303,11 @@ func (p *PuppetPadPlus) RoomTopic(roomID string) (string, error) {
 
 // RoomCreate create room
 func (p *PuppetPadPlus) RoomCreate(contactIDList []string, topic string) (string, error) {
-	log.Printf("PuppetHostie roomCreate(%s, %s)\n", contactIDList, topic)
+	log.Printf("PuppetPadPlus roomCreate(%s, %s)\n", contactIDList, topic)
 
 	res, err := p.Request(pd.ApiType_CREATE_ROOM, map[string]interface{}{"memberList": contactIDList, "topic": topic})
 	if err != nil {
-		return "", fmt.Errorf("PuppetHostie SetContactAlias err: %w", err)
+		return "", fmt.Errorf("PuppetPadPlus SetContactAlias err: %w", err)
 	}
 	var pay payload.CreateRoomResponse
 	p.unMarshal(res, &pay)

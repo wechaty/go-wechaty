@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"strings"
+	"time"
 
 	"google.golang.org/grpc"
 
@@ -18,18 +19,20 @@ import (
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
-const Endpoint = "padplus.juzibot.com:50051"
-
 // PuppetPadPlus struct
 type PuppetPadPlus struct {
 	*wechatyPuppet.Puppet
 
-	option         *wechatyPuppet.Option
-	grpcConn       *grpc.ClientConn
-	grpcClient     pd.PadPlusServerClient
-	eventStream    pd.PadPlusServer_InitClient
-	Uin            string
+	option      *wechatyPuppet.Option
+	grpcConn    *grpc.ClientConn
+	grpcClient  pd.PadPlusServerClient
+	eventStream pd.PadPlusServer_InitClient
+	Uin         string
+
 	messagePayload *cache.MessagePayload
+	contactPayload *cache.ContactPayload
+
+	selfContact *payload.ContactPayload
 }
 
 // NewPuppetPadPlus new PuppetHostie struct
@@ -48,6 +51,7 @@ func NewPuppetPadPlus(o *wechatyPuppet.Option) (*PuppetPadPlus, error) {
 	puppetPadPlus := &PuppetPadPlus{
 		Puppet:         puppetAbstract,
 		messagePayload: cache.NewMessagePayload(),
+		contactPayload: cache.NewContactPayload(),
 	}
 	puppetAbstract.SetPuppetImplementation(puppetPadPlus)
 	return puppetPadPlus, nil
@@ -55,7 +59,7 @@ func NewPuppetPadPlus(o *wechatyPuppet.Option) (*PuppetPadPlus, error) {
 
 // Start ...
 func (p *PuppetPadPlus) Start() (err error) {
-	log.Println("PuppetHostie Start()")
+	log.Println("PuppetPadPlus Start()")
 	defer func() {
 		if err != nil {
 			err = fmt.Errorf("PuppetHostie Start() rejection: %w", err)
@@ -82,6 +86,17 @@ func (p *PuppetPadPlus) Start() (err error) {
 			return err
 		}
 	}
+
+	go func() {
+		t := time.NewTicker(3 * time.Second)
+		defer t.Stop()
+
+		for {
+			<-t.C
+			_, _ = p.Request(pd.ApiType_HEARTBEAT, "")
+		}
+	}()
+
 	return nil
 }
 
@@ -96,7 +111,7 @@ func (p *PuppetPadPlus) Stop() {
 	if p.isLogin() {
 		p.Emit(schemas.EventLogoutPayload{
 			ContactId: p.Uin,
-			Data:      "PuppetHostie Stop()",
+			Data:      "PuppetPadPlus Stop()",
 		})
 		p.Uin = ""
 	}
@@ -173,7 +188,7 @@ func (p *PuppetPadPlus) stopGrpcClient() error {
 
 // stopGrpcStream stop GRPC Stream
 func (p *PuppetPadPlus) stopGrpcStream() error {
-	log.Println("PuppetHostie stopGrpcStream()")
+	log.Println("PuppetPadPlus stopGrpcStream()")
 
 	if p.eventStream == nil {
 		return errors.New("no event stream")
@@ -196,6 +211,8 @@ var pbEventType2PuppetEventName = map[pd.ResponseType]schemas.PuppetEventName{
 	pd.ResponseType_QRCODE_SCAN:    schemas.PuppetEventNameScan,   // scan qrcode
 	pd.ResponseType_ACCOUNT_LOGOUT: schemas.PuppetEventNameLogout, // logout
 
+	pd.ResponseType_MESSAGE_RECEIVE: schemas.PuppetEventNameMessage, // message
+
 	pd.ResponseType_QRCODE_LOGIN:  schemas.PuppetEventNameLogin,
 	pd.ResponseType_AUTO_LOGIN:    schemas.PuppetEventNameLogin,
 	pd.ResponseType_ACCOUNT_LOGIN: schemas.PuppetEventNameLogin,
@@ -204,9 +221,14 @@ var pbEventType2PuppetEventName = map[pd.ResponseType]schemas.PuppetEventName{
 var pbEventType2GeneratePayloadFunc = map[pd.ResponseType]func() interface{}{
 	pd.ResponseType_QRCODE_LOGIN: func() interface{} { return &payload.QrCodeLogin{} },
 
+	pd.ResponseType_MESSAGE_RECEIVE: func() interface{} { return &payload.MessagePayload{} },
+	pd.ResponseType_CONTACT_LIST:    func() interface{} { return &payload.ContactPayload{} },
+	pd.ResponseType_CONTACT_MODIFY:  func() interface{} { return &payload.RPCContactPayload{} },
+
 	pd.ResponseType_LOGIN_QRCODE:   func() interface{} { return &payload.EventPadPlusQrCode{} }, // login qr
 	pd.ResponseType_QRCODE_SCAN:    func() interface{} { return &payload.EventScanData{} },
 	pd.ResponseType_ACCOUNT_LOGOUT: func() interface{} { return &payload.LogoutGRPCResponse{} }, // logout
+	pd.ResponseType_AUTO_LOGIN:     func() interface{} { return &payload.AutoLoginResponse{} },  // logout
 }
 
 // eventPayload2PuppetPayload grpc payload to puppet payload
@@ -231,10 +253,21 @@ func (p *PuppetPadPlus) eventPayload2PuppetPayload(data interface{}) interface{}
 			ContactId: data.(*payload.LogoutGRPCResponse).Uin,
 			Data:      string(js),
 		}
+	case *payload.MessagePayload:
+		p.messagePayload.Store(data.(*payload.MessagePayload).MsgId, *data.(*payload.MessagePayload))
+		return &schemas.EventMessagePayload{
+			MessageId: data.(*payload.MessagePayload).MsgId,
+		}
 	case *payload.QrCodeLogin: // login
-		p.SetID(data.(*payload.QrCodeLogin).Uin)
-		fmt.Printf("unexpected type %T", t) // %T prints whatever type t has
-
+		p.SetID(data.(*payload.QrCodeLogin).UserName)
+		return &schemas.EventLoginPayload{
+			ContactId: data.(*payload.QrCodeLogin).UserName,
+		}
+	case *payload.AutoLoginResponse:
+		p.SetID(data.(*payload.AutoLoginResponse).WechatUser.UserName)
+		return &schemas.EventLoginPayload{
+			ContactId: data.(*payload.AutoLoginResponse).WechatUser.UserName,
+		}
 	}
 	return data
 }
@@ -244,9 +277,10 @@ func (p *PuppetPadPlus) eventPayload2PuppetPayload(data interface{}) interface{}
 // EXPIRED_TOKEN
 // INVALID_TOKEN
 func (p *PuppetPadPlus) onGrpcStreamEvent(resp *pd.StreamResponse) {
-	log.Printf("PuppetHostie onGrpcStreamEvent({type:%s payload:%+v})", *resp.ResponseType, *resp.Data)
-
-	log.Printf("Meessage: traceID: %s, requestID: %s, Uin: %s", resp.GetTraceId(), resp.GetRequestId(), resp.GetUin())
+	log.Printf("PuppetPadPlus onGrpcStreamEvent({type:%s payload:%+v})", *resp.ResponseType, *resp.Data)
+	if *resp.ResponseType != pd.ResponseType_CONTACT_LIST {
+		log.Printf("Meessage: traceID: %s, requestID: %s, Uin: %s", resp.GetTraceId(), resp.GetRequestId(), resp.GetUin())
+	}
 
 	if *resp.Data == "EXPIRED_TOKEN" || *resp.Data == "INVALID_TOKEN" {
 		log.Printf("'token error: %s !\n", *resp.Data)
@@ -254,60 +288,37 @@ func (p *PuppetPadPlus) onGrpcStreamEvent(resp *pd.StreamResponse) {
 	}
 
 	eventName, ok := pbEventType2PuppetEventName[*resp.ResponseType]
-	if !ok {
+	if !ok && *resp.ResponseType != pd.ResponseType_CONTACT_LIST {
 		log.Printf("'eventType %s unsupported! (code should not reach here)\n", *resp.ResponseType)
 		return
 	}
+
+	// unmarshal
 	data := pbEventType2GeneratePayloadFunc[*resp.ResponseType]()
 	p.unMarshal(*resp.Data, data)
+
+	// 内部事件
 	switch *resp.ResponseType {
 	case pd.ResponseType_QRCODE_LOGIN: // ok 登录成功事件
-		p.SetID(data.(*payload.QrCodeLogin).UserName)
+		// p.SetID(data.(*payload.QrCodeLogin).UserName)
+		p.contactPayload.Store(data.(*payload.QrCodeLogin).UserName, payload.ContactPayload{
+			Alias:       data.(*payload.QrCodeLogin).Alias,
+			ContactType: 3,
+			BigHeadUrl:  data.(*payload.QrCodeLogin).HeadImgUrl,
+			NickName:    data.(*payload.QrCodeLogin).NickName,
+			Sex:         payload.ContactGenderUnknown,
+			UserName:    data.(*payload.QrCodeLogin).UserName,
+		})
 	case pd.ResponseType_ACCOUNT_LOGOUT:
 		p.SetID("")
+	case pd.ResponseType_MESSAGE_RECEIVE: // 接收到消息
+	case pd.ResponseType_CONTACT_LIST: // 联系人
+		p.contactPayload.Store(data.(*payload.ContactPayload).UserName, *data.(*payload.ContactPayload))
+	case pd.ResponseType_CONTACT_MODIFY:
+		p.contactPayload.Store(data.(*payload.RPCContactPayload).UserName, *data.(*payload.RPCContactPayload).ToContactPayload())
 	}
-	p.Emit(eventName, p.eventPayload2PuppetPayload(data))
 
-	// switch *resp.ResponseType {
-	// case pd.ResponseType_MESSAGE_RECEIVE: // 收到消息
-	// 	//err = w.onMessage(*resp.Data)
-	// 	break
-	// case pd.ResponseType_MESSAGE_MEDIA_SRC: // 收到媒资源信息
-	// 	break
-	// case pd.ResponseType_QRCODE_SCAN: // 扫描二维码
-	// case pd.ResponseType_QRCODE_LOGIN: // 登录二维码
-	// 	var data padschemas.QrCodeLogin
-	// 	err := json.Unmarshal([]byte(*resp.Data), &data)
-	// 	if err != nil {
-	// 		return
-	// 	}
-	// 	p.option.Emit(schemas.PuppetEventNameScan, data)
-	// 	break
-	// case pd.ResponseType_CONTACT_LIST, pd.ResponseType_CONTACT_MODIFY: // 通讯录列表
-	// 	// 提取UserName
-	// 	var re = regexp.MustCompile(`(?U)"UserName":"(.*)"`)
-	// 	userName := re.FindString(*resp.Data)
-	// 	if len(userName) == 0 {
-	// 		var us map[string]interface{}
-	// 		err := json.Unmarshal([]byte(*resp.Data), &us)
-	// 		if err == nil {
-	// 			userName = us["UserName"].(string)
-	// 		}
-	// 	}
-	// 	if isRoomId(userName) {
-	// 		var contact padschemas.Contact
-	// 		err := json.Unmarshal([]byte(*resp.Data), &contact)
-	// 		if err != nil {
-	// 			return
-	// 		}
-	// 	} else {
-	// 		var contact padschemas.ContactRoom
-	// 		err := json.Unmarshal([]byte(*resp.Data), &contact)
-	// 		if err != nil {
-	// 			return
-	// 		}
-	// 	}
-	// }
+	p.Emit(eventName, p.eventPayload2PuppetPayload(data))
 	return
 }
 
@@ -315,7 +326,7 @@ func (p *PuppetPadPlus) onGrpcStreamEvent(resp *pd.StreamResponse) {
 func (p *PuppetPadPlus) unMarshal(data string, v interface{}) {
 	err := json.Unmarshal([]byte(data), v)
 	if err != nil {
-		log.Printf("PuppetHostie unMarshal err: %s\n", err)
+		log.Printf("PuppetPadPlus unMarshal err: %s, data: %s\n", err, data)
 	}
 }
 

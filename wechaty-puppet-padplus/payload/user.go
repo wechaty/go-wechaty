@@ -83,6 +83,7 @@ type EventScanData struct {
 	UserName string       `json:"user_name"`
 }
 
+// LogoutGRPCResponse logout request response
 type LogoutGRPCResponse struct {
 	Code    int    `json:"code"`
 	Uin     string `json:"uin"`
@@ -90,7 +91,7 @@ type LogoutGRPCResponse struct {
 	MQType  int    `json:"mq_type"`
 }
 
-// QrCodeLogin 登录成功的事件
+// QrCodeLogin login event payload
 type QrCodeLogin struct {
 	Alias      string `json:"alias"`
 	HeadImgUrl string `json:"headImgUrl"`
@@ -99,4 +100,19 @@ type QrCodeLogin struct {
 	Uin        string `json:"uin"`
 	UserName   string `json:"userName"`
 	VerifyFlag string `json:"verifyFlag"`
+}
+
+// AutoLoginResponse auto login request response
+type AutoLoginResponse struct {
+	Online     bool  `json:"online"`
+	Uin        int64 `json:"uin"`
+	WechatUser struct {
+		Alias      string `json:"alias"`
+		HeadImgURL string `json:"headImgUrl"`
+		NickName   string `json:"nickName"`
+		Uin        int64  `json:"uin"`
+		UserName   string `json:"userName"`
+		VerifyFlag int64  `json:"verifyFlag"`
+	} `json:"wechatUser"`
+	Message string `json:"message"`
 }
