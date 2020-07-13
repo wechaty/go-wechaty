@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/wechaty/go-wechaty/wechaty"
-	wp "github.com/wechaty/go-wechaty/wechaty-puppet"
-	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-	"github.com/wechaty/go-wechaty/wechaty/user"
 	"log"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/wechaty/go-wechaty/wechaty"
+	wp "github.com/wechaty/go-wechaty/wechaty-puppet"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+	"github.com/wechaty/go-wechaty/wechaty/user"
 )
 
 func main() {
