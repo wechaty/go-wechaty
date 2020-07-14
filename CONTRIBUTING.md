@@ -14,13 +14,13 @@ Click the Sign in with Github to agree button to sign the CLA. See an example [h
 
 ### Environment configuration
 
-You also need to submit to prepare the Go development environment.
+You also need to begin to prepare the Go development environment.
 
 1. download archive 
 2. extract archive
 3. configure the path to an environment variable
 
-Yes, it is so simple, you can check it [here]
+Yes, it is so simple, you can check it [here](https://golang.org/doc/install)
 
 ## Action
 
@@ -53,4 +53,4 @@ If you have two PRs that are merged and valid, you will be invited to join Team,
 
 ### Nomination
 
-After joining the github team, please submit an application in the issue below: [Wechaty Contributors Nomination]
+After joining the github team, please submit an application in the issue below: [Wechaty Contributors Nomination](https://github.com/wechaty/PMC/issues/16)
