@@ -47,6 +47,7 @@ type Wechaty struct {
 
 	puppet wp.IPuppetAbstract
 	events events.EventEmitter
+	pluginManager PluginManager
 
 	message        _interface.IMessageFactory
 	room           _interface.IRoomFactory
@@ -190,6 +191,11 @@ func (w *Wechaty) OnStop(f EventStop) *Wechaty {
 	return w
 }
 
+func (w *Wechaty)Use(plugin *Plugin) {
+	w.pluginManager.AddPlugin(plugin)
+}
+
+
 func (w *Wechaty) emit(name schemas.PuppetEventName, data ...interface{}) {
 	w.events.Emit(name, data...)
 }
@@ -237,6 +243,16 @@ func (w *Wechaty) initPuppetAccessory() {
 	w.roomInvitation = &factory.RoomInvitationFactory{IAccessory: accessory}
 }
 
+func (w *Wechaty) initPlugins(){
+	// register for all event names, pass them to plugin manager
+	for _, name := range schemas.GetEventNames() {
+		name := name
+		w.puppet.On(name, func(i ...interface{}){
+			w.pluginManager.Emit(name, i...)
+		})
+	}
+}
+
 // Start ...
 func (w *Wechaty) Start() error {
 
@@ -263,6 +279,8 @@ func (w *Wechaty) Start() error {
 		log.Println("memory card load err: ", err)
 		return err
 	}
+
+	w.initPlugins()
 
 	err = w.puppet.Start()
 	if err != nil {
