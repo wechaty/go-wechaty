@@ -316,7 +316,7 @@ Read more from our Multi-language Wechaty Beta Release event from our blog:
 1. [@SilkageNet](https://github.com/SilkageNet) - Bojie LI (李博杰)
 1. [@huan](https://github.com/huan) - Huan LI (李卓桓)
 
-## Authors
+## Creators
 
 - [@dchaofei](https://github.com/dchaofei) - Chaofei DING (丁超飞)
 - [@dingdayu](https://github.com/dingdayu) - Xiaoyu DING (丁小雨) 
