@@ -31,29 +31,14 @@ func (m *PluginManager) SetPriority(p *Plugin, priority int) {
 }
 
 func (m *PluginManager) sort() {
-	// TODO: sort
-	// TODO: sort when priority changed(immediately, and reset priorityCahnged field)
+	// TODO: 1. sort. 2. when to sort
 }
 
 func (m *PluginManager) AddPlugin(p *Plugin, w *Wechaty) {
-	findResult := m.GetPlugin(p.Name)
-	if findResult != nil {
-		// TODO: 如何处理
-		log.Fatal("a plugin name was used, please use a different name.")
-	}
 	p.Wechaty = w
 	p.Manager = m
 	m.plugins = append(m.plugins, p)
 	m.sort()
-}
-
-func (m *PluginManager) GetPlugin(name string) *Plugin {
-	for _, p := range m.plugins {
-		if p.Name == name {
-			return p
-		}
-	}
-	return nil
 }
 
 func (m *PluginManager) NextRound() {
@@ -78,7 +63,6 @@ func (m *PluginManager) Emit(name schemas.PuppetEventName, i ...interface{}) {
 }
 
 type Plugin struct {
-	Name            string // TODO: name是必要的吗？在创建变量的时候是可以获取plugin指针的
 	Enable          bool
 	Priority        int // TODO: a better type to describe Priority
 
@@ -90,14 +74,13 @@ type Plugin struct {
 	events          events.EventEmitter
 }
 
-func NewPlugin(name string) *Plugin {
+func NewPlugin() *Plugin {
 	return &Plugin{
-		Name:            name,
 		Enable:          true,
 		Priority:        0,
 		priorityChanged: false,
-		data:            nil,
-		events:          nil,
+		data:            make(map[string]interface{}),
+		events:          events.New(),
 		Wechaty:         nil,
 		Manager:		 nil,
 	}
@@ -248,7 +231,7 @@ func (p *Plugin) registerEvent(name schemas.PuppetEventName, f interface{}) {
 	p.events.On(name, func(data ...interface{}) {
 		defer func() {
 			if err := recover(); err != nil {
-				// TODO: ???
+				// TODO: 这个事件的错误处理是否应该放到wechaty实例处理?
 				p.events.Emit(schemas.PuppetEventNameError, fmt.Errorf("panic: event %s %v", name, err))
 			}
 		}()
