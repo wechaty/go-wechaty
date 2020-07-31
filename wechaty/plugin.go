@@ -17,6 +17,14 @@ type PluginManager struct {
 	plugins         []*Plugin
 }
 
+func NewPluginManager() PluginManager{
+	return PluginManager{
+		priorityChanged: false,
+		nextRound:       false,
+		plugins:         nil,
+	}
+}
+
 func (m *PluginManager) SetPriority(p *Plugin, priority int) {
 	m.priorityChanged = true
 	p.Priority = priority
