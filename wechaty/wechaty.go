@@ -223,6 +223,7 @@ func (w *Wechaty) initPuppet() error {
 		w.puppet = w.Option.puppet
 	}
 
+	// Plugins first
 	w.initPluginManager()
 
 	w.initPuppetEventBridge()
