@@ -17,7 +17,7 @@ type PluginManager struct {
 	plugins         []*Plugin
 }
 
-func NewPluginManager() PluginManager{
+func NewPluginManager() PluginManager {
 	return PluginManager{
 		priorityChanged: false,
 		nextRound:       false,
@@ -34,9 +34,10 @@ func (m *PluginManager) sort() {
 	// TODO: 1. sort. 2. when to sort
 }
 
-func (m *PluginManager) AddPlugin(p *Plugin, w *Wechaty) {
+func (m *PluginManager) AddPlugin(p *Plugin, w *Wechaty, checkBlock func() bool) {
 	p.Wechaty = w
 	p.Manager = m
+	p.CheckBlock = checkBlock
 	m.plugins = append(m.plugins, p)
 	m.sort()
 }
@@ -53,7 +54,13 @@ func (m *PluginManager) Emit(name schemas.PuppetEventName, i ...interface{}) {
 	}
 	for _, plugin := range m.plugins {
 		if plugin.Enable {
-			plugin.Emit(name, i...)
+			var block bool = false
+			if plugin.CheckBlock != nil {
+				block = plugin.CheckBlock()
+			}
+			if !block {
+				plugin.Emit(name, i...)
+			}
 		}
 		if m.nextRound {
 			m.nextRound = false
@@ -63,11 +70,12 @@ func (m *PluginManager) Emit(name schemas.PuppetEventName, i ...interface{}) {
 }
 
 type Plugin struct {
-	Enable          bool
-	Priority        int // TODO: a better type to describe Priority
+	Enable     bool
+	Priority   int // TODO: a better type to describe Priority
+	CheckBlock func() bool
 
-	Wechaty         *Wechaty
-	Manager			*PluginManager
+	Wechaty *Wechaty
+	Manager *PluginManager
 
 	priorityChanged bool
 	data            map[string]interface{}
@@ -82,7 +90,7 @@ func NewPlugin() *Plugin {
 		data:            make(map[string]interface{}),
 		events:          events.New(),
 		Wechaty:         nil,
-		Manager:		 nil,
+		Manager:         nil,
 	}
 }
 

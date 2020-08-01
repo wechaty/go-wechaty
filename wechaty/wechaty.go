@@ -192,8 +192,8 @@ func (w *Wechaty) OnStop(f EventStop) *Wechaty {
 	return w
 }
 
-func (w *Wechaty) Use(plugin *Plugin) *Wechaty {
-	w.pluginManager.AddPlugin(plugin, w)
+func (w *Wechaty) Use(plugin *Plugin, checkBlock func() bool) *Wechaty {
+	w.pluginManager.AddPlugin(plugin, w, checkBlock)
 	return w
 }
 
