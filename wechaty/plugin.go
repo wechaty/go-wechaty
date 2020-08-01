@@ -34,10 +34,9 @@ func (m *PluginManager) sort() {
 	// TODO: 1. sort. 2. when to sort
 }
 
-func (m *PluginManager) AddPlugin(p *Plugin, w *Wechaty, checkBlock func() bool) {
+func (m *PluginManager) AddPlugin(p *Plugin, w *Wechaty) {
 	p.Wechaty = w
 	p.Manager = m
-	p.CheckBlock = checkBlock
 	m.plugins = append(m.plugins, p)
 	m.sort()
 }
@@ -54,13 +53,7 @@ func (m *PluginManager) Emit(name schemas.PuppetEventName, i ...interface{}) {
 	}
 	for _, plugin := range m.plugins {
 		if plugin.Enable {
-			var block bool = false
-			if plugin.CheckBlock != nil {
-				block = plugin.CheckBlock()
-			}
-			if !block {
-				plugin.Emit(name, i...)
-			}
+			plugin.Emit(name, i...)
 		}
 		if m.nextRound {
 			m.nextRound = false
@@ -70,9 +63,8 @@ func (m *PluginManager) Emit(name schemas.PuppetEventName, i ...interface{}) {
 }
 
 type Plugin struct {
-	Enable     bool
-	Priority   int // TODO: a better type to describe Priority
-	CheckBlock func() bool
+	Enable   bool
+	Priority int // TODO: a better type to describe Priority
 
 	Wechaty *Wechaty
 	Manager *PluginManager
@@ -82,8 +74,8 @@ type Plugin struct {
 	events          events.EventEmitter
 }
 
-func NewPlugin() *Plugin {
-	return &Plugin{
+func NewPlugin(config func(*Plugin)) *Plugin {
+	p := &Plugin{
 		Enable:          true,
 		Priority:        0,
 		priorityChanged: false,
@@ -92,6 +84,10 @@ func NewPlugin() *Plugin {
 		Wechaty:         nil,
 		Manager:         nil,
 	}
+	if config != nil {
+		config(p)
+	}
+	return p
 }
 
 // TODO: test usage, type convert
