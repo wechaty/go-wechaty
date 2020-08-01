@@ -193,7 +193,7 @@ func (w *Wechaty) OnStop(f EventStop) *Wechaty {
 }
 
 func (w *Wechaty) Use(plugin *Plugin) *Wechaty {
-	w.pluginManager.AddPlugin(plugin, w)
+	w.pluginManager.addPlugin(plugin, w)
 	return w
 }
 
@@ -251,7 +251,7 @@ func (w *Wechaty) initPluginManager() {
 	for _, name := range schemas.GetEventNames() {
 		name := name
 		w.puppet.On(name, func(i ...interface{}) {
-			w.pluginManager.Emit(name, i...)
+			w.pluginManager.emit(name, i...)
 		})
 	}
 }

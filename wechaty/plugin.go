@@ -25,69 +25,88 @@ func NewPluginManager() PluginManager {
 	}
 }
 
-func (m *PluginManager) SetPriority(p *Plugin, priority int) {
-	m.priorityChanged = true
-	p.Priority = priority
+func (m *PluginManager) NextRound() {
+	m.nextRound = true
 }
 
 func (m *PluginManager) sort() {
 	// TODO: 1. sort. 2. when to sort
 }
 
-func (m *PluginManager) AddPlugin(p *Plugin, w *Wechaty) {
+func (m *PluginManager) addPlugin(p *Plugin, w *Wechaty) {
 	p.Wechaty = w
 	p.Manager = m
 	m.plugins = append(m.plugins, p)
 	m.sort()
 }
 
-func (m *PluginManager) NextRound() {
-	m.nextRound = true
-}
-
 // In the order of priority, emit every callback functions in every plugins.
-func (m *PluginManager) Emit(name schemas.PuppetEventName, i ...interface{}) {
+func (m *PluginManager) emit(name schemas.PuppetEventName, i ...interface{}) {
 	if m.priorityChanged {
 		m.sort()
 		m.priorityChanged = false
 	}
+
 	for _, plugin := range m.plugins {
-		if plugin.Enable {
-			plugin.Emit(name, i...)
+		if plugin.IsActive() {
+			plugin.emit(name, i...)
 		}
 		if m.nextRound {
 			m.nextRound = false
 			break
 		}
 	}
+
+	for _, plugin := range m.plugins {
+		plugin.disableOnce = false
+	}
+
 }
 
 type Plugin struct {
-	Enable   bool
-	Priority int // TODO: a better type to describe Priority
+	enable      bool
+	disableOnce bool
+	priority    int // TODO: a better type to describe Priority; how to get priority?
 
 	Wechaty *Wechaty
 	Manager *PluginManager
 
-	priorityChanged bool
-	data            map[string]interface{}
-	events          events.EventEmitter
+	data   map[string]interface{}
+	events events.EventEmitter
 }
 
 func NewPlugin(config func(*Plugin)) *Plugin {
 	p := &Plugin{
-		Enable:          true,
-		Priority:        0,
-		priorityChanged: false,
-		data:            make(map[string]interface{}),
-		events:          events.New(),
-		Wechaty:         nil,
-		Manager:         nil,
+		enable:      true,
+		disableOnce: false,
+		priority:    0,
+		data:        make(map[string]interface{}),
+		events:      events.New(),
+		Wechaty:     nil,
+		Manager:     nil,
 	}
 	if config != nil {
 		config(p)
 	}
 	return p
+}
+
+// TODO: 并行访问
+func (p *Plugin) SetEnable(enable bool) {
+	p.enable = enable
+}
+
+func (p *Plugin) IsActive() bool {
+	return p.enable && !p.disableOnce
+}
+
+func (p *Plugin) DisableOnce() {
+	p.disableOnce = true
+}
+
+func (p *Plugin) SetPriority(priority int) {
+	p.Manager.priorityChanged = true
+	p.priority = priority
 }
 
 // TODO: test usage, type convert
@@ -100,7 +119,7 @@ func (p *Plugin) SetData(name string, newData interface{}) {
 	p.data[name] = newData
 }
 
-func (p *Plugin) Emit(name schemas.PuppetEventName, i ...interface{}) {
+func (p *Plugin) emit(name schemas.PuppetEventName, i ...interface{}) {
 	// reference: wechaty.initPuppetEventBridge()
 	// TODO: when error occur, log messages will be printed more than twice.
 	// TODO: this part of code is heavily duplicated with wechaty.initPuppetEventBridge()
