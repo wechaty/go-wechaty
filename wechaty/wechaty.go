@@ -192,8 +192,9 @@ func (w *Wechaty) OnStop(f EventStop) *Wechaty {
 	return w
 }
 
-func (w *Wechaty)Use(plugin *Plugin) {
+func (w *Wechaty) Use(plugin *Plugin) *Wechaty {
 	w.pluginManager.AddPlugin(plugin, w)
+	return w
 }
 
 func (w *Wechaty) emit(name schemas.PuppetEventName, data ...interface{}) {
@@ -222,6 +223,8 @@ func (w *Wechaty) initPuppet() error {
 		w.puppet = w.Option.puppet
 	}
 
+	w.initPluginManager()
+
 	w.initPuppetEventBridge()
 	w.initPuppetAccessory()
 
@@ -243,11 +246,11 @@ func (w *Wechaty) initPuppetAccessory() {
 	w.roomInvitation = &factory.RoomInvitationFactory{IAccessory: accessory}
 }
 
-func (w *Wechaty) initPluginManager(){
+func (w *Wechaty) initPluginManager() {
 	// register for all event names, pass them to plugin Manager
 	for _, name := range schemas.GetEventNames() {
 		name := name
-		w.puppet.On(name, func(i ...interface{}){
+		w.puppet.On(name, func(i ...interface{}) {
 			w.pluginManager.Emit(name, i...)
 		})
 	}
@@ -279,8 +282,6 @@ func (w *Wechaty) Start() error {
 		log.Println("memory card load err: ", err)
 		return err
 	}
-
-	w.initPluginManager()
 
 	err = w.puppet.Start()
 	if err != nil {
