@@ -31,12 +31,12 @@ jobs:
 
     # Dispatch to update go-wechaty-getting-started deps.
     - name: Repository Dispatch
-      # uses: peter-evans/repository-dispatch@v1.1.1
-      run: echo ${{ secrets.REPO_ACCESS_TOKEN }}
-      # with:
-      #     token: ${{ secrets.REPO_ACCESS_TOKEN }}
-      #     repository: Nebell/go-wechaty-getting-started
-      #     event-type: updatedeps
+      uses: peter-evans/repository-dispatch@v1.1.1
+      # run: echo ${{ secrets.REPO_ACCESS_TOKEN }}
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: Nebell/go-wechaty-getting-started
+          event-type: updatedeps
   
   
 
