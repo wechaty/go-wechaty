@@ -32,7 +32,6 @@ jobs:
     # Dispatch to update go-wechaty-getting-started deps.
     - name: Repository Dispatch
       uses: peter-evans/repository-dispatch@v1.1.1
-      # run: echo ${{ secrets.REPO_ACCESS_TOKEN }}
       with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           repository: wechaty/go-wechaty-getting-started
