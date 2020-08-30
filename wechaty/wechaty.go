@@ -63,7 +63,7 @@ type Wechaty struct {
 // NewWechaty ...
 // instance by golang.
 func NewWechaty(optFns ...OptionFn) *Wechaty {
-	var w = &Wechaty{events: events.New(), Option: &Option{}, pluginManager: NewPluginManager()}
+	var w = &Wechaty{events: events.New(), Option: &Option{}, pluginManager: newPluginManager()}
 
 	for _, fn := range optFns {
 		fn(w.Option)
