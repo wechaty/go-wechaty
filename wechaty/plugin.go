@@ -37,7 +37,7 @@ func (m *PluginManager) emit(name schemas.PuppetEventName, i ...interface{}) {
 	}
 	for _, plugin := range m.plugins {
 		if context.IsActive(plugin) {
-			plugin.emit(context, name, i...)
+			plugin.emit(name, &context, i...)
 		}
 		if context.abort {
 			break
@@ -91,7 +91,7 @@ func (p *Plugin) SetEnable(value bool) {
 	p.enable = value
 }
 
-func (p *Plugin) emit(context PluginContext, name schemas.PuppetEventName, i ...interface{}) {
+func (p *Plugin) emit(name schemas.PuppetEventName, context *PluginContext, i ...interface{}) {
 	// reference: wechaty.initPuppetEventBridge()
 	// TODO: when error occur, log messages may be printed more than twice.
 	// TODO: some code will execute more than once.
