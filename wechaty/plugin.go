@@ -8,22 +8,19 @@ import (
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 	"log"
 	"reflect"
-	"sort"
 	"time"
 )
 
 // Manage all plugins.
 type PluginManager struct {
-	priorityChanged bool
-	nextRound       bool
-	plugins         []*Plugin
+	nextRound bool
+	plugins   []*Plugin
 }
 
 func NewPluginManager() PluginManager {
 	return PluginManager{
-		priorityChanged: false,
-		nextRound:       false,
-		plugins:         nil,
+		nextRound: false,
+		plugins:   nil,
 	}
 }
 
@@ -32,30 +29,15 @@ func (m *PluginManager) NextRound() {
 	m.nextRound = true
 }
 
-// Sort by priority.
-type PluginSlice []*Plugin
-func (s PluginSlice) Len() int { return len(s)}
-func (s PluginSlice) Less(i, j int) bool { return s[i].priority > s[j].priority}
-func (s PluginSlice) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
-func (m *PluginManager) sortPlugins() {
-	sort.Sort(PluginSlice(m.plugins))
-}
-
 func (m *PluginManager) addPlugin(p *Plugin, w *Wechaty) {
 	p.Wechaty = w
 	p.Manager = m
 	m.plugins = append(m.plugins, p)
-	m.sortPlugins()
 }
 
 // Control whether to run the plugin by its property.
 // In the order of priority, emit every callback functions in every plugins.
 func (m *PluginManager) emit(name schemas.PuppetEventName, i ...interface{}) {
-	if m.priorityChanged {
-		m.sortPlugins()
-		m.priorityChanged = false
-	}
-
 	for _, plugin := range m.plugins {
 		if plugin.IsActive() {
 			plugin.emit(name, i...)
@@ -73,14 +55,14 @@ func (m *PluginManager) emit(name schemas.PuppetEventName, i ...interface{}) {
 }
 
 type Plugin struct {
-	enable      bool
+	enable bool
 
 	// Disable the plugin, until next event starts
 	disableOnce bool
 
 	// A plugin with a bigger priority value will be called earlier.
 	// If two plugins have the same priority value, run the one which registered earlier first.
-	priority    int
+	priority int
 
 	Wechaty *Wechaty
 	Manager *PluginManager
@@ -112,15 +94,6 @@ func (p *Plugin) IsActive() bool {
 
 func (p *Plugin) DisableOnce() {
 	p.disableOnce = true
-}
-
-// The default priority value is 0.
-// A plugin with a bigger priority value will be called earlier.
-func (p *Plugin) SetPriority(priority int) {
-	if p.Manager != nil {
-		p.Manager.priorityChanged = true
-	}
-	p.priority = priority
 }
 
 func (p *Plugin) GetData(name string) interface{} {
