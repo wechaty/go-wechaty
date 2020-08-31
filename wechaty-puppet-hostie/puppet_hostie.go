@@ -814,6 +814,9 @@ func (p *PuppetHostie) FriendshipSearchPhone(phone string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if response.ContactId == nil {
+		return "", nil
+	}
 	return response.ContactId.Value, nil
 }
 
@@ -825,6 +828,9 @@ func (p *PuppetHostie) FriendshipSearchWeixin(weixin string) (string, error) {
 	})
 	if err != nil {
 		return "", err
+	}
+	if response.ContactId == nil {
+		return "", nil
 	}
 	return response.ContactId.Value, nil
 }
@@ -840,7 +846,11 @@ func (p *PuppetHostie) FriendshipRawPayload(id string) (*schemas.FriendshipPaylo
 	}
 	return &schemas.FriendshipPayload{
 		FriendshipPayloadReceive: schemas.FriendshipPayloadReceive{
-			FriendshipPayloadBase: schemas.FriendshipPayloadBase{},
+			FriendshipPayloadBase: schemas.FriendshipPayloadBase{
+				ContactId: response.ContactId,
+				Id: response.Id,
+				Hello: response.Hello,
+			},
 			Type:                  schemas.FriendshipType(response.Type),
 			Scene:                 schemas.FriendshipSceneType(response.Scene),
 			Stranger:              response.Stranger,
