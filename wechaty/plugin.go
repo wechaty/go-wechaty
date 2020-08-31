@@ -8,6 +8,7 @@ import (
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 	"log"
 	"reflect"
+	"sync"
 	"time"
 )
 
@@ -73,6 +74,7 @@ func (c *PluginContext) Abort() {
 
 type Plugin struct {
 	Wechaty *Wechaty
+	mu sync.Mutex
 	enable  bool
 	events  events.EventEmitter
 }
@@ -87,8 +89,9 @@ func NewPlugin() *Plugin {
 }
 
 func (p *Plugin) SetEnable(value bool) {
-	// TODO: lock
+	p.mu.Lock()
 	p.enable = value
+	p.mu.Unlock()
 }
 
 func (p *Plugin) emit(name schemas.PuppetEventName, context *PluginContext, i ...interface{}) {
