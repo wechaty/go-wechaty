@@ -72,6 +72,15 @@ func (c *PluginContext) Abort() {
 	c.abort = true
 }
 
+func (c *PluginContext) GetData(name string) interface{}{
+	return c.data[name]
+}
+
+
+func (c *PluginContext) SetData(name string, value interface{}){
+	c.data[name] = value
+}
+
 type Plugin struct {
 	Wechaty *Wechaty
 	mu sync.Mutex
