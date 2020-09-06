@@ -197,14 +197,6 @@ func (w *Wechaty) Use(plugin *Plugin) *Wechaty {
 	return w
 }
 
-// create a new plugin to manage other plugins
-func (w *Wechaty) ManagePlugin(f func(manager *Plugin)) *Wechaty {
-	plugin := NewPlugin()
-	f(plugin)
-	w.pluginManager.addPlugin(plugin, w)
-	return w
-}
-
 func (w *Wechaty) emit(name schemas.PuppetEventName, data ...interface{}) {
 	w.events.Emit(name, data...)
 }
@@ -231,10 +223,9 @@ func (w *Wechaty) initPuppet() error {
 		w.puppet = w.Option.puppet
 	}
 
-	// Plugins first
-	w.initPluginManager()
 
 	w.initPuppetEventBridge()
+	w.initPluginManager()
 	w.initPuppetAccessory()
 
 	return nil

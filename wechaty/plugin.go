@@ -249,91 +249,91 @@ func (p *Plugin) registerEvent(name schemas.PuppetEventName, f interface{}) {
 
 // reference: wechaty.go
 // OnScan ...
-func (p *Plugin) OnScan(f PluginEventScan) *Plugin {
+func (p *Plugin) OnScan(f EventScan) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameScan, f)
 	return p
 }
 
 // OnLogin ...
-func (p *Plugin) OnLogin(f PluginEventLogin) *Plugin {
+func (p *Plugin) OnLogin(f EventLogin) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameLogin, f)
 	return p
 }
 
 // OnMessage ...
-func (p *Plugin) OnMessage(f PluginEventMessage) *Plugin {
+func (p *Plugin) OnMessage(f EventMessage) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameMessage, f)
 	return p
 }
 
 // OnDong ...
-func (p *Plugin) OnDong(f PluginEventDong) *Plugin {
+func (p *Plugin) OnDong(f EventDong) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameDong, f)
 	return p
 }
 
 // OnError ...
-func (p *Plugin) OnError(f PluginEventError) *Plugin {
+func (p *Plugin) OnError(f EventError) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameError, f)
 	return p
 }
 
 // OnFriendship ...
-func (p *Plugin) OnFriendship(f PluginEventFriendship) *Plugin {
+func (p *Plugin) OnFriendship(f EventFriendship) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameFriendship, f)
 	return p
 }
 
 // OnHeartbeat ...
-func (p *Plugin) OnHeartbeat(f PluginEventHeartbeat) *Plugin {
+func (p *Plugin) OnHeartbeat(f EventHeartbeat) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameHeartbeat, f)
 	return p
 }
 
 // OnLogout ...
-func (p *Plugin) OnLogout(f PluginEventLogout) *Plugin {
+func (p *Plugin) OnLogout(f EventLogout) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameLogout, f)
 	return p
 }
 
 // OnReady ...
-func (p *Plugin) OnReady(f PluginEventReady) *Plugin {
+func (p *Plugin) OnReady(f EventReady) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameReady, f)
 	return p
 }
 
 // OnRoomInvite ...
-func (p *Plugin) OnRoomInvite(f PluginEventRoomInvite) *Plugin {
+func (p *Plugin) OnRoomInvite(f EventRoomInvite) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameRoomInvite, f)
 	return p
 }
 
 // OnRoomJoin ...
-func (p *Plugin) OnRoomJoin(f PluginEventRoomJoin) *Plugin {
+func (p *Plugin) OnRoomJoin(f EventRoomJoin) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameRoomJoin, f)
 	return p
 }
 
 // OnRoomLeave ...
-func (p *Plugin) OnRoomLeave(f PluginEventRoomLeave) *Plugin {
+func (p *Plugin) OnRoomLeave(f EventRoomLeave) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameRoomLeave, f)
 	return p
 }
 
 // OnRoomTopic ...
-func (p *Plugin) OnRoomTopic(f PluginEventRoomTopic) *Plugin {
+func (p *Plugin) OnRoomTopic(f EventRoomTopic) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameRoomTopic, f)
 	return p
 }
 
 // OnStart ...
-func (p *Plugin) OnStart(f PluginEventStart) *Plugin {
+func (p *Plugin) OnStart(f EventStart) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameStart, f)
 	return p
 }
 
 // OnStop ...
-func (p *Plugin) OnStop(f PluginEventStop) *Plugin {
+func (p *Plugin) OnStop(f EventStop) *Plugin {
 	p.registerEvent(schemas.PuppetEventNameStop, f)
 	return p
 }
