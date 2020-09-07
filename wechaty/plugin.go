@@ -1,50 +1,11 @@
 package wechaty
 
 import (
-	"errors"
 	"fmt"
-	"github.com/wechaty/go-wechaty/wechaty-puppet/events"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
-	"log"
 	"reflect"
 	"sync"
-	"time"
 )
-
-// Manage all plugins.
-type PluginManager struct {
-	plugins []*Plugin
-}
-
-func newPluginManager() PluginManager {
-	return PluginManager{
-		plugins: nil,
-	}
-}
-
-func (m *PluginManager) addPlugin(p *Plugin, w *Wechaty) {
-	p.Wechaty = w
-	m.plugins = append(m.plugins, p)
-}
-
-// Control whether to run the plugin by its property.
-// In the order of priority, emit every callback functions in every plugins.
-func (m *PluginManager) emit(name schemas.PuppetEventName, i ...interface{}) {
-	context := PluginContext{
-		abort:              false,
-		disableOncePlugins: nil,
-		data:               nil,
-	}
-	for _, plugin := range m.plugins {
-		if context.IsActive(plugin) {
-			plugin.emit(name, &context, i...)
-		}
-		if context.abort {
-			break
-		}
-	}
-}
 
 type PluginContext struct {
 	abort              bool
@@ -52,8 +13,14 @@ type PluginContext struct {
 	data               map[string]interface{}
 }
 
+func NewPluginContext() *PluginContext {
+	return &PluginContext{
+		abort: false,
+	}
+}
+
 func (c *PluginContext) IsActive(plugin *Plugin) bool {
-	if plugin.enable == false {
+	if plugin.IsEnable() == false {
 		return false
 	}
 	for _, p := range c.disableOncePlugins {
@@ -81,19 +48,23 @@ func (c *PluginContext) SetData(name string, value interface{}){
 	c.data[name] = value
 }
 
+type PluginEvent struct {
+	name schemas.PuppetEventName
+	f	interface{}
+}
+
 type Plugin struct {
 	Wechaty *Wechaty
-	mu sync.Mutex
+	mu sync.RWMutex
 	enable  bool
-	events  events.EventEmitter
+	events []PluginEvent
 }
 
 func NewPlugin() *Plugin {
-		p := &Plugin{
-			enable:  true,
-			events:  events.New(),
-		}
-		return p
+	p := &Plugin{
+		enable:  true,
+	}
+	return p
 }
 
 func (p *Plugin) SetEnable(value bool) {
@@ -102,241 +73,189 @@ func (p *Plugin) SetEnable(value bool) {
 	p.mu.Unlock()
 }
 
-func (p *Plugin) emit(name schemas.PuppetEventName, context *PluginContext, i ...interface{}) {
-	// reference: wechaty.initPuppetEventBridge()
-	// TODO: when error occur, log messages may be printed more than twice.
-	// TODO: some code will execute more than once.
-	switch name {
-	case schemas.PuppetEventNameDong:
-		p.events.Emit(name, context, i[0].(*schemas.EventDongPayload).Data)
-	case schemas.PuppetEventNameError:
-		p.events.Emit(name, context, errors.New(i[0].(*schemas.EventErrorPayload).Data))
-	case schemas.PuppetEventNameHeartbeat:
-		p.events.Emit(name, context, i[0].(*schemas.EventHeartbeatPayload).Data)
-	case schemas.PuppetEventNameLogin:
-		contact := p.Wechaty.contact.LoadSelf(i[0].(*schemas.EventLoginPayload).ContactId)
-		if err := contact.Ready(false); err != nil {
-			log.Printf("emit login contact.Ready err: %s\n", err.Error())
-			p.events.Emit(schemas.PuppetEventNameError, context, err)
-			return
-		}
-		p.events.Emit(name, context, contact)
-	case schemas.PuppetEventNameLogout:
-		payload := i[0].(*schemas.EventLogoutPayload)
-		contact := p.Wechaty.contact.LoadSelf(payload.ContactId)
-		if err := contact.Ready(false); err != nil {
-			log.Printf("emit logout contact.Ready err: %s\n", err.Error())
-			p.events.Emit(schemas.PuppetEventNameError, context, err)
-			return
-		}
-		p.events.Emit(name, context, contact, payload.Data)
-	case schemas.PuppetEventNameScan:
-		payload := i[0].(*schemas.EventScanPayload)
-		p.events.Emit(name, context, payload.QrCode, payload.Status, payload.Data)
-	case schemas.PuppetEventNameMessage:
-		messageID := i[0].(*schemas.EventMessagePayload).MessageId
-		message := p.Wechaty.message.Load(messageID)
-		if err := message.Ready(); err != nil {
-			log.Printf("emit message message.Ready() err: %s\n", err.Error())
-			p.events.Emit(schemas.PuppetEventNameError, context, err)
-			return
-		}
-		p.events.Emit(name, context, message)
-	case schemas.PuppetEventNameFriendship:
-		friendship := p.Wechaty.friendship.Load(i[0].(*schemas.EventFriendshipPayload).FriendshipID)
-		if err := friendship.Ready(); err != nil {
-			log.Printf("emit friendship friendship.Ready() err: %s\n", err.Error())
-			p.events.Emit(schemas.PuppetEventNameError, context, err)
-			return
-		}
-		p.events.Emit(name, context, friendship)
-	case schemas.PuppetEventNameRoomInvite:
-		roomInvitation := p.Wechaty.roomInvitation.Load(i[0].(*schemas.EventRoomInvitePayload).RoomInvitationId)
-		p.events.Emit(name, context, roomInvitation)
-	case schemas.PuppetEventNameRoomJoin:
-		payload := i[0].(*schemas.EventRoomJoinPayload)
-		room := p.Wechaty.room.Load(payload.RoomId)
-		if err := room.Sync(); err != nil {
-			log.Printf("emit roomjoin room.Sync() err: %s\n", err.Error())
-			p.events.Emit(schemas.PuppetEventNameError, context, err)
-			return
-		}
-		var inviteeList []_interface.IContact
-		for _, id := range payload.InviteeIdList {
-			c := p.Wechaty.contact.Load(id)
-			if err := c.Ready(false); err != nil {
-				log.Printf("emit roomjoin contact.Ready() err: %s\n", err.Error())
-				p.Wechaty.emit(schemas.PuppetEventNameError, context, err)
-				return
-			}
-			inviteeList = append(inviteeList, c)
-		}
-		inviter := p.Wechaty.contact.Load(payload.InviterId)
-		if err := inviter.Ready(false); err != nil {
-			log.Printf("emit roomjoin inviter.Ready() err: %s\n", err.Error())
-			p.events.Emit(schemas.PuppetEventNameError, context, err)
-			return
-		}
-		p.events.Emit(name, context, room, inviteeList, inviter, time.Unix(payload.Timestamp, 0))
-	case schemas.PuppetEventNameRoomLeave:
-		payload := i[0].(*schemas.EventRoomLeavePayload)
-		room := p.Wechaty.room.Load(payload.RoomId)
-		if err := room.Sync(); err != nil {
-			log.Printf("emit roomleave room.Sync() err: %s\n", err.Error())
-			p.events.Emit(schemas.PuppetEventNameError, context, err)
-			return
-		}
-		var leaverList []_interface.IContact
-		for _, id := range payload.RemoveeIdList {
-			c := p.Wechaty.contact.Load(id)
-			if err := c.Ready(false); err != nil {
-				log.Printf("emit roomleave contact.Ready() err: %s\n", err.Error())
-				p.events.Emit(schemas.PuppetEventNameError, context, err)
-				return
-			}
-			leaverList = append(leaverList, c)
-		}
-		remover := p.Wechaty.contact.Load(payload.RemoverId)
-		if err := remover.Ready(false); err != nil {
-			log.Printf("emit roomleave inviter.Ready() err: %s\n", err.Error())
-			p.events.Emit(schemas.PuppetEventNameError, context, err)
-			return
-		}
-		p.events.Emit(name, context, room, leaverList, remover, time.Unix(payload.Timestamp, 0))
-		selfID := p.Wechaty.puppet.SelfID()
-		for _, id := range payload.RemoveeIdList {
-			if id != selfID {
-				continue
-			}
-			p.Wechaty.puppet.RoomPayloadDirty(payload.RoomId)
-			_ = p.Wechaty.puppet.RoomMemberPayloadDirty(payload.RoomId)
-		}
-	case schemas.PuppetEventNameRoomTopic:
-		payload := i[0].(*schemas.EventRoomTopicPayload)
-		room := p.Wechaty.room.Load(payload.RoomId)
-		if err := room.Sync(); err != nil {
-			log.Printf("emit roomtopic room.Sync() err: %s\n", err.Error())
-			p.events.Emit(schemas.PuppetEventNameError, context, err)
-			return
-		}
-		changer := p.Wechaty.contact.Load(payload.ChangerId)
-		if err := changer.Ready(false); err != nil {
-			log.Printf("emit roomtopic changer.Ready() err: %s\n", err.Error())
-			p.events.Emit(schemas.PuppetEventNameError, context, err)
-			return
-		}
-		p.events.Emit(name, context, room, payload.NewTopic, payload.OldTopic, changer, time.Unix(payload.Timestamp, 0))
-	default:
+func (p *Plugin) IsEnable() bool {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	return p.enable
+}
 
+// TODO: reflect version
+func (p *Plugin) registerPluginEvent(wechaty *Wechaty) {
+	for _, pluginEvent := range p.events {
+		pluginEvent := pluginEvent
+		f := func(data ...interface{}) {
+			defer func() {
+				if err := recover(); err != nil {
+					wechaty.events.Emit(schemas.PuppetEventNameError, fmt.Errorf("panic: event %s %v", pluginEvent.name, err))
+				}
+			}()
+			values := make([]reflect.Value, 0, len(data))
+			for _, v := range data {
+				values = append(values, reflect.ValueOf(v))
+			}
+			// check whether the plugin can be used.
+			if values[0].Interface().(*PluginContext).IsActive(p) &&
+				values[0].Interface().(*PluginContext).abort != true {
+				_ = reflect.ValueOf(pluginEvent.f).Call(values)
+			}
+		}
+		wechaty.registerEvent(pluginEvent.name, f)
 	}
 }
 
-func (p *Plugin) registerEvent(name schemas.PuppetEventName, f interface{}) {
-	// TODO: use wechaty events
-	p.events.On(name, func(data ...interface{}) {
-		defer func() {
-			if err := recover(); err != nil {
-				p.Wechaty.events.Emit(schemas.PuppetEventNameError, fmt.Errorf("panic: event %s %v", name, err))
-			}
-		}()
-		values := make([]reflect.Value, 0, len(data))
-		for _, v := range data {
-			values = append(values, reflect.ValueOf(v))
-		}
 
-		// TODO: if active, call
-		// TODO: learn reflex
-		_ = reflect.ValueOf(f).Call(values)
+// TODO: reflect version
+func (p *Plugin) OnScan(f EventScan) *Plugin {
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameScan,
+		f: f,
 	})
+	return p
 }
 
-// reference: wechaty.go
+// TODO: normal version(temporary)
+func (p *Plugin) registerPluginEvent2(wechaty *Wechaty) {
+	for _, pluginEvent := range p.events {
+		wechaty.registerEvent(pluginEvent.name, pluginEvent.f)
+	}
+}
+
 // OnScan ...
-func (p *Plugin) OnScan(f EventScan) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameScan, f)
+// TODO: normal version(temporary)
+func (p *Plugin) OnScan2(f EventScan) *Plugin {
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameScan,
+		f: func(context *PluginContext, qrCode string, status schemas.ScanStatus, data string){
+			if context.IsActive(p) && !context.abort {
+				f(context, qrCode, status, data)
+			}
+		},
+	})
 	return p
 }
 
 // OnLogin ...
 func (p *Plugin) OnLogin(f EventLogin) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameLogin, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameLogin,
+		f: f,
+	})
 	return p
 }
 
 // OnMessage ...
 func (p *Plugin) OnMessage(f EventMessage) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameMessage, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameMessage,
+		f: f,
+	})
 	return p
 }
 
 // OnDong ...
 func (p *Plugin) OnDong(f EventDong) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameDong, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameDong,
+		f: f,
+	})
 	return p
 }
 
 // OnError ...
 func (p *Plugin) OnError(f EventError) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameError, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameError,
+		f: f,
+	})
 	return p
 }
 
 // OnFriendship ...
 func (p *Plugin) OnFriendship(f EventFriendship) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameFriendship, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameFriendship,
+		f: f,
+	})
 	return p
 }
 
 // OnHeartbeat ...
 func (p *Plugin) OnHeartbeat(f EventHeartbeat) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameHeartbeat, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameHeartbeat,
+		f: f,
+	})
 	return p
 }
 
 // OnLogout ...
 func (p *Plugin) OnLogout(f EventLogout) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameLogout, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameLogout,
+		f: f,
+	})
 	return p
 }
 
 // OnReady ...
 func (p *Plugin) OnReady(f EventReady) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameReady, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameReady,
+		f: f,
+	})
 	return p
 }
 
 // OnRoomInvite ...
 func (p *Plugin) OnRoomInvite(f EventRoomInvite) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameRoomInvite, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameRoomInvite,
+		f: f,
+	})
 	return p
 }
 
 // OnRoomJoin ...
 func (p *Plugin) OnRoomJoin(f EventRoomJoin) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameRoomJoin, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameRoomJoin,
+		f: f,
+	})
 	return p
 }
 
 // OnRoomLeave ...
 func (p *Plugin) OnRoomLeave(f EventRoomLeave) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameRoomLeave, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameRoomLeave,
+		f: f,
+	})
 	return p
 }
 
 // OnRoomTopic ...
 func (p *Plugin) OnRoomTopic(f EventRoomTopic) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameRoomTopic, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameRoomTopic,
+		f: f,
+	})
 	return p
 }
 
 // OnStart ...
 func (p *Plugin) OnStart(f EventStart) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameStart, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameStart,
+		f: f,
+	})
 	return p
 }
 
 // OnStop ...
 func (p *Plugin) OnStop(f EventStop) *Plugin {
-	p.registerEvent(schemas.PuppetEventNameStop, f)
+	p.events = append(p.events, PluginEvent{
+		name: schemas.PuppetEventNameStop,
+		f: f,
+	})
 	return p
 }
