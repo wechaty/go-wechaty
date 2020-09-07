@@ -89,12 +89,11 @@ type Plugin struct {
 }
 
 func NewPlugin() *Plugin {
-	p := &Plugin{
-		enable:  true,
-		events:  events.New(),
-		Wechaty: nil,
-	}
-	return p
+		p := &Plugin{
+			enable:  true,
+			events:  events.New(),
+		}
+		return p
 }
 
 func (p *Plugin) SetEnable(value bool) {
@@ -233,6 +232,7 @@ func (p *Plugin) emit(name schemas.PuppetEventName, context *PluginContext, i ..
 }
 
 func (p *Plugin) registerEvent(name schemas.PuppetEventName, f interface{}) {
+	// TODO: use wechaty events
 	p.events.On(name, func(data ...interface{}) {
 		defer func() {
 			if err := recover(); err != nil {
@@ -243,6 +243,9 @@ func (p *Plugin) registerEvent(name schemas.PuppetEventName, f interface{}) {
 		for _, v := range data {
 			values = append(values, reflect.ValueOf(v))
 		}
+
+		// TODO: if active, call
+		// TODO: learn reflex
 		_ = reflect.ValueOf(f).Call(values)
 	})
 }
