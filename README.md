@@ -38,7 +38,7 @@ See more at [Wiki:Voice Of Developer](https://github.com/Wechaty/wechaty/wiki/Vo
 
 Wechaty is used in many ChatBot projects by thousands of developers. If you want to talk with other developers, just scan the following QR Code in WeChat with secret code _go wechaty_, join our **Wechaty Go Developers' Home**.
 
-![Wechaty Go Developers' Home](https://wechaty.github.io/wechaty/images/bot-qr-code.png)
+![Wechaty Friday.BOT QR Code](https://wechaty.js.org/img/friday-qrcode.svg)
 
 Scan now, because other Wechaty Go developers want to talk with you too! (secret code: _go wechaty_)
 
@@ -316,7 +316,7 @@ Read more from our Multi-language Wechaty Beta Release event from our blog:
 1. [@SilkageNet](https://github.com/SilkageNet) - Bojie LI (李博杰)
 1. [@huan](https://github.com/huan) - Huan LI (李卓桓)
 
-## Authors
+## Creators
 
 - [@dchaofei](https://github.com/dchaofei) - Chaofei DING (丁超飞)
 - [@dingdayu](https://github.com/dingdayu) - Xiaoyu DING (丁小雨) 
