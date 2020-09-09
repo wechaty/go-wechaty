@@ -24,10 +24,10 @@ func TestWechaty_Emit(t *testing.T) {
   wechaty := NewWechaty()
   got := ""
   expect := "test"
-  wechaty.OnHeartbeat(func(context *PluginContext, data string) {
+  wechaty.OnHeartbeat(func(context *Context, data string) {
     got = data
   })
-  wechaty.emit(schemas.PuppetEventNameHeartbeat, NewPluginContext(), expect)
+  wechaty.emit(schemas.PuppetEventNameHeartbeat, NewContext(), expect)
   if got != expect {
     log.Fatalf("got %s expect %s", got, expect)
   }
@@ -37,10 +37,10 @@ func TestWechaty_On(t *testing.T) {
   wechaty := NewWechaty()
   got := ""
   expect := "ding"
-  wechaty.OnDong(func(context *PluginContext, data string) {
+  wechaty.OnDong(func(context *Context, data string) {
     got = data
   })
-  wechaty.emit(schemas.PuppetEventNameDong, NewPluginContext(), expect)
+  wechaty.emit(schemas.PuppetEventNameDong, NewContext(), expect)
   if got != expect {
     log.Fatalf("got %s expect %s", got, expect)
   }

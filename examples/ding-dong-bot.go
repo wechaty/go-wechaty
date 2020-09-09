@@ -17,11 +17,11 @@ func main() {
 		Token: "",
 	}))
 
-	bot.OnScan(func(ctx *wechaty.PluginContext, qrCode string, status schemas.ScanStatus, data string) {
+	bot.OnScan(func(ctx *wechaty.Context, qrCode string, status schemas.ScanStatus, data string) {
 		fmt.Printf("Scan QR Code to login: %v\nhttps://wechaty.github.io/qrcode/%s\n", status, qrCode)
-	}).OnLogin(func(ctx *wechaty.PluginContext, user *user.ContactSelf) {
+	}).OnLogin(func(ctx *wechaty.Context, user *user.ContactSelf) {
 		fmt.Printf("User %s logined\n", user.Name())
-	}).OnMessage(onMessage).OnLogout(func(ctx *wechaty.PluginContext, user *user.ContactSelf, reason string) {
+	}).OnMessage(onMessage).OnLogout(func(ctx *wechaty.Context, user *user.ContactSelf, reason string) {
 		fmt.Printf("User %s logouted: %s\n", user, reason)
 	})
 
@@ -39,7 +39,7 @@ func main() {
 	}
 }
 
-func onMessage(ctx *wechaty.PluginContext, message *user.Message) {
+func onMessage(ctx *wechaty.Context, message *user.Message) {
 	log.Println(message)
 
 	if message.Self() {

@@ -7,52 +7,6 @@ import (
 	"sync"
 )
 
-type PluginContext struct {
-	abort              bool
-	disableOncePlugins []*Plugin
-	data               map[string]interface{}
-}
-
-func NewPluginContext() *PluginContext {
-	return &PluginContext{
-		abort: false,
-	}
-}
-
-func (c *PluginContext) IsActive(plugin *Plugin) bool {
-	if plugin.IsEnable() == false {
-		return false
-	}
-	for _, p := range c.disableOncePlugins {
-		if p == plugin {
-			return false
-		}
-	}
-	return true
-}
-
-func (c *PluginContext) DisableOnce(plugin *Plugin) {
-	c.disableOncePlugins = append(c.disableOncePlugins, plugin)
-}
-
-func (c *PluginContext) Abort() {
-	c.abort = true
-}
-
-func (c *PluginContext) GetData(name string) interface{}{
-	return c.data[name]
-}
-
-
-func (c *PluginContext) SetData(name string, value interface{}){
-	c.data[name] = value
-}
-
-type PluginEvent struct {
-	name schemas.PuppetEventName
-	f	interface{}
-}
-
 type Plugin struct {
 	Wechaty *Wechaty
 	mu sync.RWMutex
@@ -94,8 +48,8 @@ func (p *Plugin) registerPluginEvent(wechaty *Wechaty) {
 				values = append(values, reflect.ValueOf(v))
 			}
 			// check whether the plugin can be used.
-			if values[0].Interface().(*PluginContext).IsActive(p) &&
-				values[0].Interface().(*PluginContext).abort != true {
+			if values[0].Interface().(*Context).IsActive(p) &&
+				values[0].Interface().(*Context).abort != true {
 				_ = reflect.ValueOf(pluginEvent.f).Call(values)
 			}
 		}
@@ -125,7 +79,7 @@ func (p *Plugin) registerPluginEvent2(wechaty *Wechaty) {
 func (p *Plugin) OnScan2(f EventScan) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameScan,
-		f: func(context *PluginContext, qrCode string, status schemas.ScanStatus, data string){
+		f: func(context *Context, qrCode string, status schemas.ScanStatus, data string){
 			if context.IsActive(p) && !context.abort {
 				f(context, qrCode, status, data)
 			}
