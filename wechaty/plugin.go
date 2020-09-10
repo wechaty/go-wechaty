@@ -7,6 +7,13 @@ import (
 	"sync"
 )
 
+// PluginEvent stores the event name and the callback function.
+type PluginEvent struct {
+	name schemas.PuppetEventName
+	f    interface{} // callback function
+}
+
+// Plugin ...
 type Plugin struct {
 	Wechaty *Wechaty
 	mu      sync.RWMutex
@@ -14,6 +21,7 @@ type Plugin struct {
 	events  []PluginEvent
 }
 
+// NewPlugin ...
 func NewPlugin() *Plugin {
 	p := &Plugin{
 		enable: true,
@@ -21,19 +29,20 @@ func NewPlugin() *Plugin {
 	return p
 }
 
+// SetEnable enable or disable a plugin.
 func (p *Plugin) SetEnable(value bool) {
 	p.mu.Lock()
 	p.enable = value
 	p.mu.Unlock()
 }
 
+// IsEnable returns whether the plugin is activated.
 func (p *Plugin) IsEnable() bool {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
 	return p.enable
 }
 
-// TODO: reflect version
 func (p *Plugin) registerPluginEvent(wechaty *Wechaty) {
 	for _, pluginEvent := range p.events {
 		pluginEvent := pluginEvent
@@ -57,32 +66,11 @@ func (p *Plugin) registerPluginEvent(wechaty *Wechaty) {
 	}
 }
 
-// TODO: reflect version
+// OnScan ...
 func (p *Plugin) OnScan(f EventScan) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameScan,
 		f:    f,
-	})
-	return p
-}
-
-// TODO: normal version(temporary)
-func (p *Plugin) registerPluginEvent2(wechaty *Wechaty) {
-	for _, pluginEvent := range p.events {
-		wechaty.registerEvent(pluginEvent.name, pluginEvent.f)
-	}
-}
-
-// OnScan ...
-// TODO: normal version(temporary)
-func (p *Plugin) OnScan2(f EventScan) *Plugin {
-	p.events = append(p.events, PluginEvent{
-		name: schemas.PuppetEventNameScan,
-		f: func(context *Context, qrCode string, status schemas.ScanStatus, data string) {
-			if context.IsActive(p) && !context.abort {
-				f(context, qrCode, status, data)
-			}
-		},
 	})
 	return p
 }

@@ -194,6 +194,8 @@ func (w *Wechaty) OnStop(f EventStop) *Wechaty {
 	return w
 }
 
+// Use ...
+// Load a plugin.
 func (w *Wechaty) Use(plugin *Plugin) *Wechaty {
 	w.plugins = append(w.plugins, plugin)
 	return w
@@ -485,6 +487,7 @@ func (w *Wechaty) RoomInvitation() _interface.IRoomInvitationFactory {
 	return w.roomInvitation
 }
 
+// Context ...
 type Context struct {
 	context.Context
 
@@ -495,6 +498,7 @@ type Context struct {
 	data               map[string]interface{}
 }
 
+// NewContext ...
 func NewContext() *Context {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Context{
@@ -504,6 +508,7 @@ func NewContext() *Context {
 	}
 }
 
+// IsActive returns whether the plugin is active now.
 func (c *Context) IsActive(plugin *Plugin) bool {
 	if plugin.IsEnable() == false {
 		return false
@@ -516,28 +521,29 @@ func (c *Context) IsActive(plugin *Plugin) bool {
 	return true
 }
 
+// DisableOnce disable a plugin for the current event.
+// The plugin will be active again(if it is enable).
 func (c *Context) DisableOnce(plugin *Plugin) {
 	c.disableOncePlugins = append(c.disableOncePlugins, plugin)
 }
 
+// Abort stops execute all follow-up plugins,
+// then waits for next event.
 func (c *Context) Abort() {
 	c.abort = true
 	c.cancel()
 }
 
+// GetData ...
 func (c *Context) GetData(name string) interface{} {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.data[name]
 }
 
+// SetData ...
 func (c *Context) SetData(name string, value interface{}) {
 	c.mu.Lock()
 	c.data[name] = value
 	c.mu.Unlock()
-}
-
-type PluginEvent struct {
-	name schemas.PuppetEventName
-	f    interface{}
 }
