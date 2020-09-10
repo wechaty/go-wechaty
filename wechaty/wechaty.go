@@ -488,19 +488,19 @@ func (w *Wechaty) RoomInvitation() _interface.IRoomInvitationFactory {
 type Context struct {
 	context.Context
 
-	cancel	func()
+	cancel             func()
 	abort              bool
 	disableOncePlugins []*Plugin
-	mu	sync.RWMutex
+	mu                 sync.RWMutex
 	data               map[string]interface{}
 }
 
 func NewContext() *Context {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Context{
-		abort: false,
+		abort:   false,
 		Context: ctx,
-		cancel: cancel,
+		cancel:  cancel,
 	}
 }
 
@@ -525,14 +525,13 @@ func (c *Context) Abort() {
 	c.cancel()
 }
 
-func (c *Context) GetData(name string) interface{}{
+func (c *Context) GetData(name string) interface{} {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.data[name]
 }
 
-
-func (c *Context) SetData(name string, value interface{}){
+func (c *Context) SetData(name string, value interface{}) {
 	c.mu.Lock()
 	c.data[name] = value
 	c.mu.Unlock()
@@ -540,5 +539,5 @@ func (c *Context) SetData(name string, value interface{}){
 
 type PluginEvent struct {
 	name schemas.PuppetEventName
-	f	interface{}
+	f    interface{}
 }

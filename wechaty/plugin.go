@@ -9,14 +9,14 @@ import (
 
 type Plugin struct {
 	Wechaty *Wechaty
-	mu sync.RWMutex
+	mu      sync.RWMutex
 	enable  bool
-	events []PluginEvent
+	events  []PluginEvent
 }
 
 func NewPlugin() *Plugin {
 	p := &Plugin{
-		enable:  true,
+		enable: true,
 	}
 	return p
 }
@@ -57,12 +57,11 @@ func (p *Plugin) registerPluginEvent(wechaty *Wechaty) {
 	}
 }
 
-
 // TODO: reflect version
 func (p *Plugin) OnScan(f EventScan) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameScan,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -79,7 +78,7 @@ func (p *Plugin) registerPluginEvent2(wechaty *Wechaty) {
 func (p *Plugin) OnScan2(f EventScan) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameScan,
-		f: func(context *Context, qrCode string, status schemas.ScanStatus, data string){
+		f: func(context *Context, qrCode string, status schemas.ScanStatus, data string) {
 			if context.IsActive(p) && !context.abort {
 				f(context, qrCode, status, data)
 			}
@@ -92,7 +91,7 @@ func (p *Plugin) OnScan2(f EventScan) *Plugin {
 func (p *Plugin) OnLogin(f EventLogin) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameLogin,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -101,7 +100,7 @@ func (p *Plugin) OnLogin(f EventLogin) *Plugin {
 func (p *Plugin) OnMessage(f EventMessage) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameMessage,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -110,7 +109,7 @@ func (p *Plugin) OnMessage(f EventMessage) *Plugin {
 func (p *Plugin) OnDong(f EventDong) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameDong,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -119,7 +118,7 @@ func (p *Plugin) OnDong(f EventDong) *Plugin {
 func (p *Plugin) OnError(f EventError) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameError,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -128,7 +127,7 @@ func (p *Plugin) OnError(f EventError) *Plugin {
 func (p *Plugin) OnFriendship(f EventFriendship) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameFriendship,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -137,7 +136,7 @@ func (p *Plugin) OnFriendship(f EventFriendship) *Plugin {
 func (p *Plugin) OnHeartbeat(f EventHeartbeat) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameHeartbeat,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -146,7 +145,7 @@ func (p *Plugin) OnHeartbeat(f EventHeartbeat) *Plugin {
 func (p *Plugin) OnLogout(f EventLogout) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameLogout,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -155,7 +154,7 @@ func (p *Plugin) OnLogout(f EventLogout) *Plugin {
 func (p *Plugin) OnReady(f EventReady) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameReady,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -164,7 +163,7 @@ func (p *Plugin) OnReady(f EventReady) *Plugin {
 func (p *Plugin) OnRoomInvite(f EventRoomInvite) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameRoomInvite,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -173,7 +172,7 @@ func (p *Plugin) OnRoomInvite(f EventRoomInvite) *Plugin {
 func (p *Plugin) OnRoomJoin(f EventRoomJoin) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameRoomJoin,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -182,7 +181,7 @@ func (p *Plugin) OnRoomJoin(f EventRoomJoin) *Plugin {
 func (p *Plugin) OnRoomLeave(f EventRoomLeave) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameRoomLeave,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -191,7 +190,7 @@ func (p *Plugin) OnRoomLeave(f EventRoomLeave) *Plugin {
 func (p *Plugin) OnRoomTopic(f EventRoomTopic) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameRoomTopic,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -200,7 +199,7 @@ func (p *Plugin) OnRoomTopic(f EventRoomTopic) *Plugin {
 func (p *Plugin) OnStart(f EventStart) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameStart,
-		f: f,
+		f:    f,
 	})
 	return p
 }
@@ -209,7 +208,7 @@ func (p *Plugin) OnStart(f EventStart) *Plugin {
 func (p *Plugin) OnStop(f EventStop) *Plugin {
 	p.events = append(p.events, PluginEvent{
 		name: schemas.PuppetEventNameStop,
-		f: f,
+		f:    f,
 	})
 	return p
 }
