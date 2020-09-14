@@ -511,25 +511,27 @@ func (c *Context) IsActive(plugin *Plugin) bool {
 	return true
 }
 
-// DisableOnce disable a plugin for the current event.
+// DisableOnce disables a plugin temperarily.
 // The plugin will be active again(if it is enable).
 func (c *Context) DisableOnce(plugin *Plugin) {
 	c.disableOncePlugins = append(c.disableOncePlugins, plugin)
 }
 
-// Abort stops execute all follow-up plugins,
-// then waits for next event.
+// Abort stops executing all follow-up plugins
+// and terminates goroutuines which listen to Context.Done() (See go programming language context.Context. https://golang.org/pkg/context/)
 func (c *Context) Abort() {
 	c.abort = true
 	c.cancel()
 }
 
-// GetData ...
+// GetData returns temperary data
+// which only exists in the current context.
 func (c *Context) GetData(name string) interface{} {
 	return c.data[name]
 }
 
-// SetData ...
+// SetData sets temperary data
+// which only exists in the current context.
 func (c *Context) SetData(name string, value interface{}) {
 	c.data[name] = value
 }
