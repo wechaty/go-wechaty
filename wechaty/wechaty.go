@@ -47,8 +47,6 @@ type Wechaty struct {
 	// cuid
 	id string
 
-	plugins []*Plugin
-
 	puppet wp.IPuppetAbstract
 	events events.EventEmitter
 
@@ -194,10 +192,9 @@ func (w *Wechaty) OnStop(f EventStop) *Wechaty {
 	return w
 }
 
-// Use ...
-// Load a plugin.
+// Use loads a plugin.
 func (w *Wechaty) Use(plugin *Plugin) *Wechaty {
-	w.plugins = append(w.plugins, plugin)
+	plugin.registerPluginEvent(w)
 	return w
 }
 
@@ -250,11 +247,6 @@ func (w *Wechaty) initPuppetAccessory() {
 
 // Start ...
 func (w *Wechaty) Start() error {
-
-	// Register plugin events in the end.
-	for _, plugin := range w.plugins {
-		plugin.registerPluginEvent(w)
-	}
 
 	var err error
 
