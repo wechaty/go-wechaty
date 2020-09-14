@@ -36,7 +36,6 @@ import (
 	"github.com/wechaty/go-wechaty/wechaty/interface"
 	"log"
 	"reflect"
-	"sync"
 	"time"
 )
 
@@ -486,7 +485,6 @@ type Context struct {
 	cancel             func()
 	abort              bool
 	disableOncePlugins []*Plugin
-	mu                 sync.RWMutex
 	data               map[string]interface{}
 }
 
@@ -528,14 +526,10 @@ func (c *Context) Abort() {
 
 // GetData ...
 func (c *Context) GetData(name string) interface{} {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
 	return c.data[name]
 }
 
 // SetData ...
 func (c *Context) SetData(name string, value interface{}) {
-	c.mu.Lock()
 	c.data[name] = value
-	c.mu.Unlock()
 }

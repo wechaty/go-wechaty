@@ -93,8 +93,6 @@ func TestWechatyPluginSetEnable(t *testing.T) {
 	}
 }
 
-// p1 -> p2 deadlock
-// TODO: no output ???
 func TestPluginPassingData(t *testing.T) {
 	testData := "hello"
 
