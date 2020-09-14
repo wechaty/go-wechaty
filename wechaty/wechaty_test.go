@@ -1,6 +1,7 @@
 package wechaty
 
 import (
+	"context"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"log"
 	"testing"
@@ -98,21 +99,31 @@ func TestPluginPassingData(t *testing.T) {
 
 	p1 := NewPlugin()
 	p1.OnHeartbeat(func(context *Context, data string) {
-		t.Log("set")
 		context.SetData("helloStr", testData)
 	})
 
 	p2 := NewPlugin()
 	p2.OnHeartbeat(func(context *Context, data string) {
-		t.Log("get")
-		t.Log(context.GetData("helloStr").(string))
 		if testData != context.GetData("helloStr").(string) {
-			t.Fatal("SetData / GetData not working.")
+			t.Fatal("SetData() / GetData() not working.")
 		}
 	})
 
 	wechaty := NewWechaty()
 	wechaty.Use(p1).Use(p2)
 	wechaty.emit(schemas.PuppetEventNameHeartbeat, NewContext(), "Data")
-	t.Log("end")
+}
+
+func TestPluginAbort(t *testing.T) {
+	plugin := NewPlugin()
+	plugin.OnHeartbeat(func(context *Context, data string) {
+		t.Fatal("Context.Abort() not working.")
+	})
+
+	wechaty := NewWechaty()
+	wechaty.OnHeartbeat(func(context *Context, data string) {
+		context.Abort()
+	})
+	wechaty.Use(plugin)
+	wechaty.emit(schemas.PuppetEventNameHeartbeat, NewContext(), "Data")
 }
