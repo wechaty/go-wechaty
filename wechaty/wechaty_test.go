@@ -1,7 +1,6 @@
 package wechaty
 
 import (
-	"context"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"log"
 	"testing"
