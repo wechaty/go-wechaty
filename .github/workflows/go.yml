@@ -1,9 +1,6 @@
 name: Go
 
-on: 
-  push: 
-    tags: 
-      - '*'
+on: [push, pull_request]
 
 jobs:
   build:
@@ -34,6 +31,7 @@ jobs:
 
     # Dispatch to update go-wechaty-getting-started deps.
     - name: Repository Dispatch
+      if: contains(github.ref, 'tags')
       uses: peter-evans/repository-dispatch@v1.1.1
       with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
