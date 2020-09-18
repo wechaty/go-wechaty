@@ -28,3 +28,4 @@ jobs:
 
     - name: Build
       run: go build -o ding-dong -v ./examples/ding-dong-bot.go
+      

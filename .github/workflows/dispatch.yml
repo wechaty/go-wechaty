@@ -1,0 +1,23 @@
+name: Send Dispatch
+
+on: 
+  push:
+    tags:
+      - '*'
+  release:
+    types: [ published, created, edited ]
+
+
+jobs:
+  send:
+    name: Send Dispatch
+    runs-on: ubuntu-latest
+    steps:
+
+    # Dispatch to update go-wechaty-getting-started deps. 
+    - name: Repository Dispatch
+      uses: peter-evans/repository-dispatch@v1.1.1
+      with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          repository: wechaty/go-wechaty-getting-started
+          event-type: updatedeps
