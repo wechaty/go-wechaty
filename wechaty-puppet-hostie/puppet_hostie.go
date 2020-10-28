@@ -161,7 +161,7 @@ func (p *PuppetHostie) startGrpcClient() error {
 		}
 		endpoint = hostieEndPoint.Target()
 	}
-	conn, err := grpc.Dial(endpoint, grpc.WithInsecure())
+	conn, err := grpc.Dial(endpoint, grpc.WithInsecure(), grpc.WithAuthority(p.Token))
 	if err != nil {
 		return err
 	}
