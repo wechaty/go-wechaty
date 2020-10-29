@@ -478,6 +478,17 @@ func (w *Wechaty) RoomInvitation() _interface.IRoomInvitationFactory {
 	return w.roomInvitation
 }
 
+// Puppet return puppet impl
+func (w *Wechaty) Puppet() wp.IPuppetAbstract {
+	return w.puppet
+}
+
+// UserSelf return contact self
+func (w *Wechaty) UserSelf() _interface.IContactSelf {
+	userID := w.puppet.SelfID()
+	return w.Contact().LoadSelf(userID)
+}
+
 // Context ...
 type Context struct {
 	context.Context

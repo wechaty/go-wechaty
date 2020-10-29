@@ -350,6 +350,10 @@ func (p *Puppet) ContactSearch(query interface{}, searchIDList []string) ([]stri
 		}
 	}
 
+	if query == nil {
+		return searchIDList, nil
+	}
+
 	switch v := query.(type) {
 	case string:
 		return p.contactSearchByQueryString(v, searchIDList)
