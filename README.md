@@ -326,3 +326,6 @@ Read more from our Multi-language Wechaty Beta Release event from our blog:
 - Code & Docs © 2020 Wechaty Contributors <https://github.com/wechaty>
 - Code released under the Apache-2.0 License
 - Docs released under Creative Commons
+
+## Thanks
+[![goland](/docs/images/goland.png)](https://www.jetbrains.com/?from=go-wechaty)
