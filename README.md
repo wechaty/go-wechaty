@@ -328,4 +328,4 @@ Read more from our Multi-language Wechaty Beta Release event from our blog:
 - Docs released under Creative Commons
 
 ## Thanks
-[![goland](/docs/images/goland.png)](https://www.jetbrains.com/?from=go-wechaty)
+<a href="https://www.jetbrains.com/?from=go-wechaty"><img src="/docs/images/goland.png" width = "75px" height = "75px" alt="goland.png" /></a>
