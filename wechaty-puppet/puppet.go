@@ -71,10 +71,7 @@ type IPuppetAbstract interface {
 	MessagePayload(messageID string) (payload *schemas.MessagePayload, err error)
 	FriendshipPayload(friendshipID string) (*schemas.FriendshipPayload, error)
 	SetFriendshipPayload(friendshipID string, newPayload *schemas.FriendshipPayload)
-	RoomPayloadDirty(roomID string)
-	RoomMemberPayloadDirty(roomID string) error
 	RoomPayload(roomID string) (payload *schemas.RoomPayload, err error)
-	ContactPayloadDirty(contactID string)
 	ContactPayload(contactID string) (*schemas.ContactPayload, error)
 	ContactSearch(query interface{}, searchIDList []string) ([]string, error)
 	FriendshipSearch(query *schemas.FriendshipSearchCondition) (string, error)
@@ -89,6 +86,7 @@ type IPuppetAbstract interface {
 	RoomSearch(query *schemas.RoomQueryFilter) ([]string, error)
 	RoomInvitationPayload(roomInvitationID string) (*schemas.RoomInvitationPayload, error)
 	SetRoomInvitationPayload(payload *schemas.RoomInvitationPayload)
+	DirtyPayload(payloadType schemas.PayloadType, id string) error
 }
 
 // Puppet puppet abstract struct
@@ -286,23 +284,6 @@ func (p *Puppet) SelfID() string {
 	return p.id
 }
 
-// RoomPayloadDirty ...
-func (p *Puppet) RoomPayloadDirty(roomID string) {
-	p.cacheRoomPayload.Remove(roomID)
-}
-
-// RoomMemberPayloadDirty ...
-func (p *Puppet) RoomMemberPayloadDirty(roomID string) error {
-	contactIds, err := p.puppetImplementation.RoomMemberList(roomID)
-	if err != nil {
-		return err
-	}
-	for _, id := range contactIds {
-		p.cacheRoomMemberPayload.Remove(p.cacheKeyRoomMember(roomID, id))
-	}
-	return nil
-}
-
 func (p *Puppet) cacheKeyRoomMember(roomID string, contactID string) string {
 	return contactID + "@@@" + roomID
 }
@@ -319,11 +300,6 @@ func (p *Puppet) RoomPayload(roomID string) (payload *schemas.RoomPayload, err e
 	}
 	p.cacheRoomPayload.Add(roomID, payload)
 	return payload, nil
-}
-
-// ContactPayloadDirty ...
-func (p *Puppet) ContactPayloadDirty(contactID string) {
-	p.cacheContactPayload.Remove(contactID)
 }
 
 // ContactPayload ...
@@ -421,7 +397,7 @@ func (p *Puppet) contactSearchByQueryFilter(query *schemas.ContactQueryFilter, s
 		async.AddTask(func() (interface{}, error) {
 			payload, err := p.ContactPayload(id)
 			if err != nil {
-				p.ContactPayloadDirty(id)
+				p.dirtyPayloadContact(id)
 			}
 			return payload, err
 		})
@@ -656,8 +632,8 @@ func (p *Puppet) RoomSearch(query *schemas.RoomQueryFilter) ([]string, error) {
 		async.AddTask(func() (interface{}, error) {
 			payload, err := p.RoomPayload(id)
 			if err != nil {
-				p.RoomPayloadDirty(id)
-				_ = p.RoomMemberPayloadDirty(id)
+				p.dirtyPayloadRoom(id)
+				p.dirtyPayloadRoomMember(id)
 				return nil, err
 			}
 			return payload, nil
@@ -704,4 +680,46 @@ func (p *Puppet) roomQueryFilterFactory(query *schemas.RoomQueryFilter) (schemas
 // RoomValidate ...
 func (p *Puppet) RoomValidate(roomID string) bool {
 	return true
+}
+
+func (p *Puppet) dirtyPayloadMessage(messageID string) {
+	p.cacheMessagePayload.Remove(messageID)
+}
+
+func (p *Puppet) dirtyPayloadContact(contactID string) {
+	p.cacheContactPayload.Remove(contactID)
+}
+
+func (p *Puppet) dirtyPayloadRoom(roomID string) {
+	p.cacheRoomPayload.Remove(roomID)
+}
+
+func (p *Puppet) dirtyPayloadRoomMember(roomID string) {
+	contactIds, _ := p.puppetImplementation.RoomMemberList(roomID)
+	for _, id := range contactIds {
+		p.cacheRoomMemberPayload.Remove(p.cacheKeyRoomMember(roomID, id))
+	}
+}
+
+func (p *Puppet) dirtyPayloadFriendship(friendshipID string) {
+	p.cacheFriendshipPayload.Remove(friendshipID)
+}
+
+// DirtyPayload ...
+func (p *Puppet) DirtyPayload(payloadType schemas.PayloadType, id string) error {
+	switch payloadType {
+	case schemas.PayloadTypeMessage:
+		p.dirtyPayloadMessage(id)
+	case schemas.PayloadTypeContact:
+		p.dirtyPayloadContact(id)
+	case schemas.PayloadTypeRoom:
+		p.dirtyPayloadRoom(id)
+	case schemas.PayloadTypeRoomMember:
+		p.dirtyPayloadRoomMember(id)
+	case schemas.PayloadTypeFriendship:
+		p.dirtyPayloadFriendship(id)
+	default:
+		return fmt.Errorf("unknown payload type: %v", payloadType)
+	}
+	return nil
 }

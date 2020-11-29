@@ -411,8 +411,8 @@ func (w *Wechaty) initPuppetEventBridge() {
 					if id != selfID {
 						continue
 					}
-					w.puppet.RoomPayloadDirty(payload.RoomId)
-					_ = w.puppet.RoomMemberPayloadDirty(payload.RoomId)
+					_ = w.puppet.DirtyPayload(schemas.PayloadTypeRoom, payload.RoomId)
+					_ = w.puppet.DirtyPayload(schemas.PayloadTypeRoomMember, payload.RoomId)
 				}
 			})
 		case schemas.PuppetEventNameRoomTopic:

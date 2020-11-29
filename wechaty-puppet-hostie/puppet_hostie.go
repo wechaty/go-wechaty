@@ -848,13 +848,13 @@ func (p *PuppetHostie) FriendshipRawPayload(id string) (*schemas.FriendshipPaylo
 		FriendshipPayloadReceive: schemas.FriendshipPayloadReceive{
 			FriendshipPayloadBase: schemas.FriendshipPayloadBase{
 				ContactId: response.ContactId,
-				Id: response.Id,
-				Hello: response.Hello,
+				Id:        response.Id,
+				Hello:     response.Hello,
 			},
-			Type:                  schemas.FriendshipType(response.Type),
-			Scene:                 schemas.FriendshipSceneType(response.Scene),
-			Stranger:              response.Stranger,
-			Ticket:                response.Ticket,
+			Type:     schemas.FriendshipType(response.Type),
+			Scene:    schemas.FriendshipSceneType(response.Scene),
+			Stranger: response.Stranger,
+			Ticket:   response.Ticket,
 		},
 	}, nil
 }
@@ -919,4 +919,22 @@ func (p *PuppetHostie) TagContactList(contactID string) ([]string, error) {
 		return nil, err
 	}
 	return response.Ids, nil
+}
+
+// DirtyPayload ...
+func (p *PuppetHostie) DirtyPayload(payloadType schemas.PayloadType, id string) error {
+	log.Printf("PuppetHostie DirtyPayload(%v, %v)\n", payloadType, id)
+	err := p.Puppet.DirtyPayload(payloadType, id)
+	if err != nil {
+		return err
+	}
+	request := &pbwechaty.DirtyPayloadRequest{
+		Type: pbwechaty.PayloadType(payloadType),
+		Id:   id,
+	}
+	_, err = p.grpcClient.DirtyPayload(context.Background(), request)
+	if err != nil {
+		return err
+	}
+	return nil
 }

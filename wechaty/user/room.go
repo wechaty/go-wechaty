@@ -33,8 +33,10 @@ func (r *Room) Ready(forceSync bool) (err error) {
 	}
 
 	if forceSync {
-		r.GetPuppet().RoomPayloadDirty(r.id)
-		if err := r.GetPuppet().RoomMemberPayloadDirty(r.id); err != nil {
+		if err := r.GetPuppet().DirtyPayload(schemas.PayloadTypeRoom, r.id); err != nil {
+			return err
+		}
+		if err := r.GetPuppet().DirtyPayload(schemas.PayloadTypeRoomMember, r.id); err != nil {
 			return err
 		}
 	}

@@ -53,7 +53,10 @@ func (c *Contact) Ready(forceSync bool) (err error) {
 	}
 
 	if forceSync {
-		c.GetPuppet().ContactPayloadDirty(c.Id)
+		err := c.GetPuppet().DirtyPayload(schemas.PayloadTypeContact, c.Id)
+		if err != nil {
+			return err
+		}
 	}
 
 	c.payload, err = c.GetPuppet().ContactPayload(c.Id)
@@ -191,10 +194,13 @@ func (c *Contact) SetAlias(newAlias string) {
 	if err != nil {
 		return
 	}
-	c.GetPuppet().ContactPayloadDirty(c.Id)
-	c.payload, err = c.GetPuppet().ContactPayload(c.Id)
-	fmt.Println(c.payload)
+	err = c.GetPuppet().DirtyPayload(schemas.PayloadTypeContact, c.Id)
 	if err != nil {
+		log.Println("SetAlias DirtyPayload err:", err)
+	}
+	c.payload, err = c.GetPuppet().ContactPayload(c.Id)
+	if err != nil {
+		log.Println("SetAlias ContactPayload err:", err)
 		return
 	}
 	if c.payload.Alias != newAlias {

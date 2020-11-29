@@ -152,6 +152,8 @@ func (m *Message) Say(textOrContactOrFileOrUrlOrMini interface{}) (_interface.IM
 		messageID, err = m.GetPuppet().MessageSendFile(conversationId, v)
 	case *UrlLink:
 		messageID, err = m.GetPuppet().MessageSendURL(conversationId, v.payload)
+	case *MiniProgram:
+		messageID, err = m.GetPuppet().MessageSendMiniProgram(conversationId, v.payload)
 	default:
 		return nil, fmt.Errorf("unknown msg: %v", textOrContactOrFileOrUrlOrMini)
 	}
