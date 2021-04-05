@@ -1,6 +1,7 @@
 package schemas
 
 //go:generate stringer -type=PayloadType
+
 // PayloadType ...
 type PayloadType int32
 
