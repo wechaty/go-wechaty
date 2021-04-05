@@ -23,13 +23,14 @@ func _() {
 	_ = x[PuppetEventNameHeartbeat-12]
 	_ = x[PuppetEventNameReady-13]
 	_ = x[PuppetEventNameReset-14]
-	_ = x[PuppetEventNameStop-15]
-	_ = x[PuppetEventNameStart-16]
+	_ = x[PuppetEventNameDirty-15]
+	_ = x[PuppetEventNameStop-16]
+	_ = x[PuppetEventNameStart-17]
 }
 
-const _PuppetEventName_name = "PuppetEventNameUnknownPuppetEventNameFriendshipPuppetEventNameLoginPuppetEventNameLogoutPuppetEventNameMessagePuppetEventNameRoomInvitePuppetEventNameRoomJoinPuppetEventNameRoomLeavePuppetEventNameRoomTopicPuppetEventNameScanPuppetEventNameDongPuppetEventNameErrorPuppetEventNameHeartbeatPuppetEventNameReadyPuppetEventNameResetPuppetEventNameStopPuppetEventNameStart"
+const _PuppetEventName_name = "PuppetEventNameUnknownPuppetEventNameFriendshipPuppetEventNameLoginPuppetEventNameLogoutPuppetEventNameMessagePuppetEventNameRoomInvitePuppetEventNameRoomJoinPuppetEventNameRoomLeavePuppetEventNameRoomTopicPuppetEventNameScanPuppetEventNameDongPuppetEventNameErrorPuppetEventNameHeartbeatPuppetEventNameReadyPuppetEventNameResetPuppetEventNameDirtyPuppetEventNameStopPuppetEventNameStart"
 
-var _PuppetEventName_index = [...]uint16{0, 22, 47, 67, 88, 110, 135, 158, 182, 206, 225, 244, 264, 288, 308, 328, 347, 367}
+var _PuppetEventName_index = [...]uint16{0, 22, 47, 67, 88, 110, 135, 158, 182, 206, 225, 244, 264, 288, 308, 328, 348, 367, 387}
 
 func (i PuppetEventName) String() string {
 	if i >= PuppetEventName(len(_PuppetEventName_index)-1) {
