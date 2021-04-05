@@ -408,8 +408,8 @@ func (p *PuppetHostie) SetContactSelfSignature(signature string) error {
 	return err
 }
 
-// MessageMiniProgram ...
-func (p *PuppetHostie) MessageMiniProgram(messageID string) (*schemas.MiniProgramPayload, error) {
+// MessageRawMiniProgramPayload ...
+func (p *PuppetHostie) MessageRawMiniProgramPayload(messageID string) (*schemas.MiniProgramPayload, error) {
 	log.Printf("PuppetHostie MessageMiniProgram(%s)\n", messageID)
 	response, err := p.grpcClient.MessageMiniProgram(context.Background(), &pbwechaty.MessageMiniProgramRequest{
 		Id: messageID,
