@@ -28,7 +28,7 @@ import (
 	"fmt"
 	"github.com/lucsky/cuid"
 	wp "github.com/wechaty/go-wechaty/wechaty-puppet"
-	puppethostie "github.com/wechaty/go-wechaty/wechaty-puppet-hostie"
+	puppetservice "github.com/wechaty/go-wechaty/wechaty-puppet-service"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/events"
 	mc "github.com/wechaty/go-wechaty/wechaty-puppet/memory-card"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
@@ -214,7 +214,7 @@ func (w *Wechaty) initPuppet() error {
 	// TODO: set puppet memory
 
 	if w.Option.puppet == nil {
-		puppet, err := puppethostie.NewPuppetHostie(w.puppetOption)
+		puppet, err := puppetservice.NewPuppetService(w.puppetOption)
 		if err != nil {
 			return err
 		}
