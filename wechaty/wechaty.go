@@ -432,6 +432,39 @@ func (w *Wechaty) initPuppetEventBridge() {
 				}
 				w.emit(name, NewContext(), room, payload.NewTopic, payload.OldTopic, changer, time.Unix(payload.Timestamp, 0))
 			})
+		case schemas.PuppetEventNameDirty:
+			/**
+			 * https://github.com/wechaty/go-wechaty/issues/72
+			 */
+			w.puppet.On(name, func(i ...interface{}) {
+				payload := i[0].(*schemas.EventDirtyPayload)
+				switch payload.PayloadType {
+				case schemas.PayloadTypeRoomMember,
+					schemas.PayloadTypeContact:
+					if err := w.contact.Load(payload.PayloadId).Sync(); err != nil {
+						log.Printf("emit dirty contact.Sync() err: %s\n", err.Error())
+						w.emit(schemas.PuppetEventNameError, NewContext(), err)
+						return
+					}
+				case schemas.PayloadTypeRoom:
+					if err := w.room.Load(payload.PayloadId).Sync(); err != nil {
+						log.Printf("emit dirty room.Sync() err: %s\n", err.Error())
+						w.emit(schemas.PuppetEventNameError, NewContext(), err)
+						return
+					}
+
+				case schemas.PayloadTypeFriendship:
+					// Friendship has no payload
+					return
+				case schemas.PayloadTypeMessage:
+					// Message does not need to dirty (?)
+					return
+				case schemas.PayloadTypeUnknown:
+					fallthrough
+				default:
+					log.Printf("unknown payload type:  %s\n", payload.PayloadType)
+				}
+			})
 		default:
 
 		}

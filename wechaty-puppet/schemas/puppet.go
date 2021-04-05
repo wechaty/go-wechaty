@@ -28,6 +28,7 @@ const (
 	PuppetEventNameHeartbeat
 	PuppetEventNameReady
 	PuppetEventNameReset
+	PuppetEventNameDirty
 
 	PuppetEventNameStop
 	PuppetEventNameStart
@@ -49,6 +50,7 @@ var eventNames = []PuppetEventName{
 	PuppetEventNameHeartbeat,
 	PuppetEventNameReady,
 	PuppetEventNameReset,
+	PuppetEventNameDirty,
 
 	PuppetEventNameStop,
 	PuppetEventNameStart,
@@ -74,6 +76,7 @@ var pbEventType2PuppetEventName = map[pbwechaty.EventType]PuppetEventName{
 	pbwechaty.EventType_EVENT_TYPE_SCAN:        PuppetEventNameScan,
 	pbwechaty.EventType_EVENT_TYPE_RESET:       PuppetEventNameReset,
 	pbwechaty.EventType_EVENT_TYPE_UNSPECIFIED: PuppetEventNameUnknown,
+	pbwechaty.EventType_EVENT_TYPE_DIRTY:       PuppetEventNameDirty,
 }
 
 // PbEventType2PuppetEventName grpc event map wechaty-puppet event name
@@ -96,6 +99,7 @@ var pbEventType2GeneratePayloadFunc = map[pbwechaty.EventType]func() interface{}
 	pbwechaty.EventType_EVENT_TYPE_ROOM_TOPIC:  func() interface{} { return &EventRoomTopicPayload{} },
 	pbwechaty.EventType_EVENT_TYPE_SCAN:        func() interface{} { return &EventScanPayload{} },
 	pbwechaty.EventType_EVENT_TYPE_RESET:       func() interface{} { return &EventResetPayload{} },
+	pbwechaty.EventType_EVENT_TYPE_DIRTY:       func() interface{} { return &EventDirtyPayload{} },
 }
 
 // PbEventType2GeneratePayloadFunc grpc event map wechaty-puppet event payload
