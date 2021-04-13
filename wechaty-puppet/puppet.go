@@ -95,7 +95,7 @@ type Puppet struct {
 	Option
 
 	id string
-	// puppet implementation puppet_hostie or puppet_mock
+	// puppet implementation puppet_service or puppet_mock
 	events.EventEmitter
 	puppetImplementation       IPuppetAbstract
 	cacheMessagePayload        *lru.Cache

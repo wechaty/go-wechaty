@@ -1,7 +1,7 @@
-package puppethostie
+package puppetservice
 
 // TODO 建议 mock http
-//func TestPuppetHostie_discoverHostieIP(t *testing.T) {
+//func TestPuppetService_discoverServiceIP(t *testing.T) {
 //	type fields struct {
 //		Puppet      *wechatyPuppet.Puppet
 //		grpcConn    *grpc.ClientConn
@@ -37,19 +37,19 @@ package puppethostie
 //	}
 //	for _, tt := range tests {
 //		t.Run(tt.name, func(t *testing.T) {
-//			p := &PuppetHostie{
+//			p := &PuppetService{
 //				Puppet:      tt.fields.Puppet,
 //				grpcConn:    tt.fields.grpcConn,
 //				grpcClient:  tt.fields.grpcClient,
 //				eventStream: tt.fields.eventStream,
 //			}
-//			gotS, err := p.discoverHostieIP()
+//			gotS, err := p.discoverServiceIP()
 //			if (err != nil) != tt.wantErr {
-//				t.Errorf("discoverHostieIP() error = %v, wantErr %v", err, tt.wantErr)
+//				t.Errorf("discoverServiceIP() error = %v, wantErr %v", err, tt.wantErr)
 //				return
 //			}
 //			if gotS != tt.wantS {
-//				t.Errorf("discoverHostieIP() gotS = %v, want %v", gotS, tt.wantS)
+//				t.Errorf("discoverServiceIP() gotS = %v, want %v", gotS, tt.wantS)
 //			}
 //		})
 //	}
