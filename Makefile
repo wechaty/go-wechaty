@@ -22,7 +22,7 @@ lint: golint
 golint:
 	~/go/bin/golint wechaty
 	~/go/bin/golint wechaty-puppet
-	~/go/bin/golint wechaty-puppet-hostie
+	~/go/bin/golint wechaty-puppet-service
 
 .PHONY: install
 install:
