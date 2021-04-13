@@ -235,3 +235,7 @@ func (p *PuppetMock) TagContactDelete(id string) (err error) {
 func (p *PuppetMock) TagContactList(contactID string) ([]string, error) {
 	panic("implement me")
 }
+
+func (p *PuppetMock) MessageRawMiniProgramPayload(messageID string) (*schemas.MiniProgramPayload, error) {
+	panic("implement me")
+}

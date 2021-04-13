@@ -432,9 +432,9 @@ func (p *PuppetService) SetContactSelfSignature(signature string) error {
 	return err
 }
 
-// MessageMiniProgram ...
-func (p *PuppetService) MessageMiniProgram(messageID string) (*schemas.MiniProgramPayload, error) {
-	log.Printf("PuppetService MessageMiniProgram(%s)\n", messageID)
+// MessageRawMiniProgramPayload ...
+func (p *PuppetService) MessageRawMiniProgramPayload(messageID string) (*schemas.MiniProgramPayload, error) {
+	log.Printf("PuppetHostie MessageMiniProgram(%s)\n", messageID)
 	response, err := p.grpcClient.MessageMiniProgram(context.Background(), &pbwechaty.MessageMiniProgramRequest{
 		Id: messageID,
 	})
