@@ -26,7 +26,7 @@ func _() {
 	_ = x[MessageTypeVideo-15]
 }
 
-const _MessageType_name = "MessageTypeUnknownMessageTypeAttachmentMessageTypeAudioMessageTypeContactMessageTypeChatHistoryMessageTypeEmoticonMessageTypeImageMessageTypeTextMessageTypeLocationMessageTypeMiniProgramMessageTypeGroupNoteMessageTypeTransferMessageTypeRedEnvelopeMessageTypeRecalledMessageTypeUrlMessageTypeVideo"
+const _MessageType_name = "MessageTypeUnknownMessageTypeAttachmentMessageTypeAudioMessageTypeContactMessageTypeChatHistoryMessageTypeEmoticonMessageTypeImageMessageTypeTextMessageTypeLocationMessageTypeMiniProgramMessageTypeGroupNoteMessageTypeTransferMessageTypeRedEnvelopeMessageTypeRecalledMessageTypeURLMessageTypeVideo"
 
 var _MessageType_index = [...]uint16{0, 18, 39, 55, 73, 95, 114, 130, 145, 164, 186, 206, 225, 247, 266, 280, 296}
 

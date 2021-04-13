@@ -61,6 +61,11 @@ type EventScanPayload struct {
 	QrCode string
 }
 
+type EventDirtyPayload struct {
+	PayloadType PayloadType
+	PayloadId   string
+}
+
 type BaseEventPayload struct {
 	Data string
 }
