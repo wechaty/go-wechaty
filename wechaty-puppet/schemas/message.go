@@ -87,6 +87,9 @@ type MessagePayloadBase struct {
 	Text      string
 	Timestamp uint64
 	Type      MessageType
+
+	// 小程序有些消息类型，wechaty服务端解析不处理，框架端解析。 xml type 36 是小程序
+	FixMiniApp bool
 }
 
 type MessagePayloadRoom struct {

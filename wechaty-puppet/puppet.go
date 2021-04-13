@@ -27,7 +27,6 @@ type iPuppet interface {
 	SetContactSelfName(name string) error
 	ContactSelfQRCode() (string, error)
 	SetContactSelfSignature(signature string) error
-	MessageMiniProgram(messageID string) (*schemas.MiniProgramPayload, error)
 	MessageContact(messageID string) (string, error)
 	MessageSendMiniProgram(conversationID string, miniProgramPayload *schemas.MiniProgramPayload) (string, error)
 	MessageRecall(messageID string) (bool, error)
@@ -63,6 +62,7 @@ type iPuppet interface {
 	TagContactRemove(id, contactID string) (err error)
 	TagContactDelete(id string) (err error)
 	TagContactList(contactID string) ([]string, error)
+	MessageRawMiniProgramPayload(messageID string) (*schemas.MiniProgramPayload, error)
 }
 
 // IPuppetAbstract puppet abstract class interface
@@ -87,6 +87,7 @@ type IPuppetAbstract interface {
 	RoomInvitationPayload(roomInvitationID string) (*schemas.RoomInvitationPayload, error)
 	SetRoomInvitationPayload(payload *schemas.RoomInvitationPayload)
 	DirtyPayload(payloadType schemas.PayloadType, id string) error
+	MessageMiniProgram(messageID string) (*schemas.MiniProgramPayload, error)
 }
 
 // Puppet puppet abstract struct
@@ -94,7 +95,7 @@ type Puppet struct {
 	Option
 
 	id string
-	// puppet implementation puppet_hostie or puppet_mock
+	// puppet implementation puppet_service or puppet_mock
 	events.EventEmitter
 	puppetImplementation       IPuppetAbstract
 	cacheMessagePayload        *lru.Cache
@@ -245,6 +246,10 @@ func (p *Puppet) MessagePayload(messageID string) (*schemas.MessagePayload, erro
 	payload, err := p.puppetImplementation.MessageRawPayload(messageID)
 	if err != nil {
 		return nil, err
+	}
+	// 有些消息，puppet 服务端没有解析出来，这里尝试解析
+	if payload.Type == schemas.MessageTypeUnknown {
+		helper.FixUnknownMessage(payload)
 	}
 	p.cacheMessagePayload.Add(messageID, payload)
 	return payload, nil
@@ -490,6 +495,9 @@ func (p *Puppet) roomMemberSearchByQueryFilter(roomID string, query *schemas.Roo
 		})
 	}
 	for _, v := range async.Result() {
+		if v.Err != nil {
+			continue
+		}
 		if query.RoomAlias == "" {
 			continue
 		}
@@ -722,4 +730,21 @@ func (p *Puppet) DirtyPayload(payloadType schemas.PayloadType, id string) error 
 		return fmt.Errorf("unknown payload type: %v", payloadType)
 	}
 	return nil
+}
+
+// MessageMiniProgram ...
+func (p *Puppet) MessageMiniProgram(messageID string) (*schemas.MiniProgramPayload, error) {
+	get, ok := p.cacheMessagePayload.Get(messageID)
+	if !ok {
+		return p.puppetImplementation.MessageRawMiniProgramPayload(messageID)
+	}
+	payload := get.(*schemas.MessagePayload)
+	if !payload.FixMiniApp {
+		return p.puppetImplementation.MessageRawMiniProgramPayload(messageID)
+	}
+	miniapp, err := helper.ParseMiniApp(payload)
+	if err != nil {
+		return nil, err
+	}
+	return miniapp, nil
 }

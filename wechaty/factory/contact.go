@@ -41,12 +41,17 @@ func (c *ContactFactory) Load(id string) _interface.IContact {
 // LoadSelf query param is string
 func (c *ContactFactory) LoadSelf(id string) _interface.IContactSelf {
 	load, ok := c.pool.Load(id)
-	if ok {
-		return load.(*user.ContactSelf)
+	if !ok {
+		contact := user.NewContactSelf(id, c.IAccessory)
+		c.pool.Store(id, contact)
+		return contact
 	}
-	contact := user.NewContactSelf(id, c.IAccessory)
-	c.pool.Store(id, contact)
-	return contact
+	switch load.(type) {
+	case *user.ContactSelf:
+		return load.(*user.ContactSelf)
+	default:
+		return &user.ContactSelf{Contact: load.(*user.Contact)}
+	}
 }
 
 // Find query params is string or *schemas.ContactQueryFilter

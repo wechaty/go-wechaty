@@ -68,7 +68,7 @@ func main() {
 
 We already have Wechaty in TypeScript, It will be not too hard to translate the TypeScript(TS) to Go because [wechaty](https://github.com/wechaty/wechaty) has only 3,000 lines of the TS code, they are well designed and de-coupled by the [wechaty-puppet](https://github.com/wechaty/wechaty-puppet/) abstraction. So after we have translated those 3,000 lines of TypeScript code, we will almost be done.
 
-As we have already a ecosystem of Wechaty in TypeScript, so we will not have to implement everything in Go, especially, in the Feb 2020, we have finished the [@chatie/grpc](https://github.com/chatie/grpc) service abstracting module with the [wechaty-puppet-hostie](https://github.com/wechaty/wechaty-puppet-hostie) implmentation.
+As we have already a ecosystem of Wechaty in TypeScript, so we will not have to implement everything in Go, especially, in the Feb 2020, we have finished the [@chatie/grpc](https://github.com/chatie/grpc) service abstracting module with the [wechaty-puppet-service](https://github.com/wechaty/wechaty-puppet-service) implmentation.
 
 The following diagram shows out that we can reuse almost everything in TypeScript, and what we need to do is only the block located at the top right of the diagram: `Wechaty (Go)`.
 
@@ -80,9 +80,9 @@ The following diagram shows out that we can reuse almost everything in TypeScrip
   +--------------------------+ +--------------------------+
 
   +-------------------------------------------------------+
-  |                 Wechaty Puppet Hostie                 |
+  |                 Wechaty Puppet Service                |
   |                                                       |
-  |                (wechaty-puppet-hostie)                |
+  |                (wechaty-puppet-service)               |
   +-------------------------------------------------------+
 
 +---------------------  @chatie/grpc  ----------------------+
@@ -213,8 +213,8 @@ If you are interested in the translation and want to look at how it works, it wi
     - [ ] Code
     - [ ] Unit Tests
     - [ ] Documentation
-1. [ ] Class WechatyPuppetHostie
-    - TS SLOC(909): <https://github.com/wechaty/wechaty-puppet-hostie/blob/master/src/client/puppet-hostie.ts>
+1. [ ] Class WechatyPuppetService
+    - TS SLOC(909): <https://github.com/wechaty/wechaty-puppet-service/blob/master/src/client/puppet-service.ts>
     - [ ] Code
     - [ ] Unit Tests
     - [ ] Documentation
