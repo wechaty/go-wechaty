@@ -35,6 +35,8 @@ import (
 	"github.com/wechaty/go-wechaty/wechaty/factory"
 	"github.com/wechaty/go-wechaty/wechaty/interface"
 	"log"
+	"os"
+	"os/signal"
 	"reflect"
 	"time"
 )
@@ -282,6 +284,20 @@ func (w *Wechaty) Start() error {
 	go w.emit(schemas.PuppetEventNameStart, NewContext())
 
 	return nil
+}
+
+// DaemonStart 守护进程运行
+func (w *Wechaty) DaemonStart() {
+	if err := w.Start(); err != nil {
+		panic(err)
+	}
+	var quitSig = make(chan os.Signal)
+	signal.Notify(quitSig, os.Interrupt, os.Kill)
+
+	select {
+	case <-quitSig:
+		log.Fatal("exit.by.signal")
+	}
 }
 
 func (w *Wechaty) initPuppetEventBridge() {
