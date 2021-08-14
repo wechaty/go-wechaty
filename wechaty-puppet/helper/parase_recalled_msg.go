@@ -1,7 +1,7 @@
 package helper
 
 import (
-    "encoding/xml"
+	"encoding/xml"
 )
 
 //<sysmsg type="revokemsg">
@@ -15,27 +15,27 @@ import (
 
 // RecalledMsg 撤回消息的 xml 结构体
 type RecalledMsg struct {
-    XMLName   xml.Name `xml:"sysmsg"`
-    Text      string   `xml:",chardata"`
-    Type      string   `xml:"type,attr"`
-    Revokemsg struct {
-        Text       string `xml:",chardata"`
-        Session    string `xml:"session"`
-        Msgid      string `xml:"msgid"`
-        Newmsgid   string `xml:"newmsgid"`
-        Replacemsg string `xml:"replacemsg"`
-    } `xml:"revokemsg"`
+	XMLName   xml.Name `xml:"sysmsg"`
+	Text      string   `xml:",chardata"`
+	Type      string   `xml:"type,attr"`
+	Revokemsg struct {
+		Text       string `xml:",chardata"`
+		Session    string `xml:"session"`
+		Msgid      string `xml:"msgid"`
+		Newmsgid   string `xml:"newmsgid"`
+		Replacemsg string `xml:"replacemsg"`
+	} `xml:"revokemsg"`
 }
 
-// ParseRecalledId 从 xml 中解析撤回的原始消息id
-func ParseRecalledId(raw string) string {
-    msg := &RecalledMsg{}
-    err := xml.Unmarshal([]byte(raw), msg)
-    if err != nil {
-        return raw
-    }
-    if msg.Revokemsg.Newmsgid != "" {
-        return msg.Revokemsg.Newmsgid
-    }
-    return raw
+// ParseRecalledID 从 xml 中解析撤回的原始消息id
+func ParseRecalledID(raw string) string {
+	msg := &RecalledMsg{}
+	err := xml.Unmarshal([]byte(raw), msg)
+	if err != nil {
+		return raw
+	}
+	if msg.Revokemsg.Newmsgid != "" {
+		return msg.Revokemsg.Newmsgid
+	}
+	return raw
 }
