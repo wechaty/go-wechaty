@@ -1,0 +1,52 @@
+package wechatypuppet
+
+import (
+	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+	"regexp"
+)
+
+var numRegex = regexp.MustCompile(`^\d+$`)
+
+var rawMsgAdapter = RawMsgAdapter{}
+var unknownMsgAdapter = UnknownMsgAdapter{}
+var recalledMsgAdapter = RecalledMsgAdapter{}
+
+type MsgAdapter interface {
+	Handle(payload *schemas.MessagePayload)
+}
+
+// NewMsgAdapter 各种 puppet 返回的消息有出入，这里做统一
+func NewMsgAdapter(msgType schemas.MessageType) MsgAdapter {
+	switch msgType {
+	case schemas.MessageTypeUnknown:
+		return unknownMsgAdapter
+	case schemas.MessageTypeRecalled:
+		return recalledMsgAdapter
+	}
+	return rawMsgAdapter
+}
+
+type RawMsgAdapter struct{}
+
+func (r RawMsgAdapter) Handle(msg *schemas.MessagePayload) {
+	return
+}
+
+type UnknownMsgAdapter struct{}
+
+func (u UnknownMsgAdapter) Handle(payload *schemas.MessagePayload) {
+	// 有些消息，puppet 服务端没有解析出来，这里尝试解析
+	helper.FixUnknownMessage(payload)
+}
+
+type RecalledMsgAdapter struct{}
+
+func (r RecalledMsgAdapter) Handle(payload *schemas.MessagePayload) {
+	if numRegex.MatchString(payload.Text) {
+		return
+	}
+	// padlocal 返回的是 xml，需要解析出 msgId
+	// https://github.com/wechaty/go-wechaty/issues/87
+	payload.Text = helper.ParseRecalledId(payload.Text)
+}

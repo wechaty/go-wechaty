@@ -247,10 +247,10 @@ func (p *Puppet) MessagePayload(messageID string) (*schemas.MessagePayload, erro
 	if err != nil {
 		return nil, err
 	}
-	// 有些消息，puppet 服务端没有解析出来，这里尝试解析
-	if payload.Type == schemas.MessageTypeUnknown {
-		helper.FixUnknownMessage(payload)
-	}
+
+	// 对 puppet 实现方返回的消息做统一处理
+	NewMsgAdapter(payload.Type).Handle(payload)
+
 	p.cacheMessagePayload.Add(messageID, payload)
 	return payload, nil
 }
