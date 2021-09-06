@@ -1,6 +1,7 @@
 package puppetservice
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -489,13 +490,33 @@ func (p *PuppetService) MessageRecall(messageID string) (bool, error) {
 // MessageFile ...
 func (p *PuppetService) MessageFile(id string) (*file_box.FileBox, error) {
 	log.Printf("PuppetService MessageFile(%s)\n", id)
-	response, err := p.grpcClient.MessageFile(context.Background(), &pbwechaty.MessageFileRequest{
+	response, err := p.grpcClient.MessageFileStream(context.Background(), &pbwechaty.MessageFileStreamRequest{
 		Id: id,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return file_box.FromJSON(response.Filebox)
+
+	recv, err := response.Recv()
+	if err != nil {
+		return nil, err
+	}
+	name := recv.FileBoxChunk.GetName()
+	if name == "" {
+		return nil, errors.New("no name")
+	}
+	buffer := bytes.NewBuffer(nil)
+	for {
+		recv, err := response.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		buffer.Write(recv.FileBoxChunk.GetData())
+	}
+	return file_box.FromStream(buffer.Bytes(), name), nil
 }
 
 // MessageRawPayload ...
@@ -545,7 +566,6 @@ func (p *PuppetService) MessageSendText(conversationID string, text string, ment
 func (p *PuppetService) MessageSendFile(conversationID string, fileBox *file_box.FileBox) (string, error) {
 	log.Printf("PuppetService MessageSendFile(%s)\n", conversationID)
 	jsonString, err := fileBox.ToJSON()
-	fmt.Println(jsonString)
 	if err != nil {
 		return "", err
 	}

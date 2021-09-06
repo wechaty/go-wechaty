@@ -106,9 +106,20 @@ func FromQRCode(qrCode string) *FileBox {
 	}, newFileBoxQRCode(qrCode))
 }
 
+func FromStream(bytes []byte, name string) *FileBox {
+	return newFileBox(&FileBoxOptionsCommon{
+		Name:     name,
+		BoxType:  FileBoxTypeStream,
+	}, newFileBoxStream(bytes))
+}
+
 func (fb *FileBox) ToJSON() (string, error) {
 	boxType := fb.boxType
 	if fb.boxType == FileBoxTypeFile {
+		boxType = FileBoxTypeBase64
+	}
+	// TODO 临时处理，后期优化掉
+	if fb.boxType == FileBoxTypeStream {
 		boxType = FileBoxTypeBase64
 	}
 	jsonMap := map[string]interface{}{
