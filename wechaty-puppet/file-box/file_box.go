@@ -106,10 +106,11 @@ func FromQRCode(qrCode string) *FileBox {
 	}, newFileBoxQRCode(qrCode))
 }
 
+// FromStream from file bytes
 func FromStream(bytes []byte, name string) *FileBox {
 	return newFileBox(&FileBoxOptionsCommon{
-		Name:     name,
-		BoxType:  FileBoxTypeStream,
+		Name:    name,
+		BoxType: FileBoxTypeStream,
 	}, newFileBoxStream(bytes))
 }
 
