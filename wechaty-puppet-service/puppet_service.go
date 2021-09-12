@@ -557,54 +557,6 @@ func (p *PuppetService) MessageSendFile(conversationID string, fileBox *filebox.
 	return p.messageSendFileNonStream(conversationID, fileBox)
 }
 
-//func (p *PuppetService) messageSendFileStream(conversationID string, fileBox *filebox.FileBox) (string, error) {
-//	stream, err := p.grpcClient.MessageSendFileStream(context.Background())
-//	if err != nil {
-//		return "", err
-//	}
-//
-//	writer, err := ToMessageSendFileWriter(stream, conversationID, fileBox)
-//	if err != nil {
-//		log.Println("1这里err")
-//		return "", err
-//	}
-//
-//	reader, err := fileBox.ToBytes()
-//	if err != nil {
-//		return "", err
-//	}
-//	r := bytes.NewReader(reader)
-//	for {
-//		p := make([]byte, 4000000)
-//		l, err := r.Read(p)
-//		if err == io.EOF {
-//			log.Println("读完了")
-//			break
-//		}
-//		if err != nil {
-//			return "", err
-//		}
-//		fmt.Println("读到的大小",l)
-//		_, err = writer.Write(p[0:l])
-//		if err == io.EOF {
-//			fmt.Println("这里发生了EOF")
-//			break
-//		}
-//		if err != nil {
-//			return "", err
-//		}
-//	}
-//
-//	response, err := stream.CloseAndRecv()
-//	if err != nil {
-//		return "", err
-//	}
-//	if response.Id != nil {
-//		return response.Id.Value, nil
-//	}
-//	return "", nil
-//}
-
 func (p *PuppetService) messageSendFileStream(conversationID string, fileBox *filebox.FileBox) (string, error) {
 	stream, err := p.grpcClient.MessageSendFileStream(context.Background())
 	if err != nil {

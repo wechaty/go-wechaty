@@ -8,8 +8,11 @@ import (
     "io"
 )
 
+// ErrNoName err no name
 var ErrNoName = errors.New("no name")
 
+
+// NewFileBoxFromMessageFileStream ...
 func NewFileBoxFromMessageFileStream(client pbwechaty.Puppet_MessageFileStreamClient) (*filebox.FileBox, error) {
     recv, err := client.Recv()
     if err != nil {
@@ -66,12 +69,14 @@ func NewMessageFile(client pbwechaty.Puppet_MessageFileStreamClient) *MessageFil
     }
 }
 
+// MessageSendFile 把 grpc 流包装到 io.Writer 接口
 type MessageSendFile struct {
     client pbwechaty.Puppet_MessageSendFileStreamClient
     fileBox *filebox.FileBox
     count int
 }
 
+// Write 把 grpc 流包装到 io.Writer 接口
 func (m *MessageSendFile) Write(p []byte) (n int, err error) {
     if len(p) == 0 {
         return 0, nil
@@ -90,6 +95,7 @@ func (m *MessageSendFile) Write(p []byte) (n int, err error) {
     return len(p), nil
 }
 
+// ToMessageSendFileWriter 把 grpc 流包装到 io.Writer 接口
 func ToMessageSendFileWriter(client pbwechaty.Puppet_MessageSendFileStreamClient, conversationID string, fileBox *filebox.FileBox) (io.Writer, error) {
     // 发送 conversationID
     {
