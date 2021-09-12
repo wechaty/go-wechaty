@@ -3,7 +3,7 @@ package user
 import (
 	"errors"
 
-	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
@@ -20,7 +20,7 @@ func NewContactSelf(id string, accessory _interface.IAccessory) *ContactSelf {
 }
 
 // SetAvatar SET the avatar for a bot
-func (c *ContactSelf) SetAvatar(box *file_box.FileBox) error {
+func (c *ContactSelf) SetAvatar(box *filebox.FileBox) error {
 	if c.Id != c.GetPuppet().SelfID() {
 		return errors.New("set avatar only available for user self")
 	}

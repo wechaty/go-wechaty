@@ -1,7 +1,7 @@
 package _interface
 
 import (
-	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"time"
 )
@@ -41,7 +41,7 @@ type IMessage interface {
 	MentionSelf() bool
 	Forward(contactOrRoomId string) error
 	// ToFileBox extract the Media File from the Message, and put it into the FileBox.
-	ToFileBox() (*file_box.FileBox, error)
+	ToFileBox() (*filebox.FileBox, error)
 	// ToImage extract the Image File from the Message, so that we can use different image sizes.
 	ToImage() (IImage, error)
 	// ToContact Get Share Card of the Message

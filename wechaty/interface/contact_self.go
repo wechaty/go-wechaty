@@ -1,6 +1,6 @@
 package _interface
 
-import file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+import "github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 
 type IContactSelfFactory interface {
 	IContactFactory
@@ -8,7 +8,7 @@ type IContactSelfFactory interface {
 
 type IContactSelf interface {
 	IContact
-	SetAvatar(box *file_box.FileBox) error
+	SetAvatar(box *filebox.FileBox) error
 	// QRCode get bot qrcode
 	QRCode() (string, error)
 	SetName(name string) error

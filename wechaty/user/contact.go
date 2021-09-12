@@ -25,7 +25,7 @@ import (
 	"fmt"
 	"log"
 
-	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"github.com/wechaty/go-wechaty/wechaty/config"
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
@@ -110,7 +110,7 @@ func (c *Contact) Say(something interface{}) (msg _interface.IMessage, err error
 		msgID, err = c.GetPuppet().MessageSendText(c.Id, v)
 	case *Contact:
 		msgID, err = c.GetPuppet().MessageSendContact(c.Id, v.Id)
-	case *file_box.FileBox:
+	case *filebox.FileBox:
 		msgID, err = c.GetPuppet().MessageSendFile(c.Id, v)
 	case *UrlLink:
 		msgID, err = c.GetPuppet().MessageSendURL(c.Id, v.payload)
@@ -157,7 +157,7 @@ func (c *Contact) City() string {
 }
 
 // Avatar get avatar picture file stream
-func (c *Contact) Avatar() *file_box.FileBox {
+func (c *Contact) Avatar() *filebox.FileBox {
 	avatar, err := c.GetPuppet().ContactAvatar(c.Id)
 	if err != nil {
 		log.Printf("Contact Avatar() exception: %s\n", err)

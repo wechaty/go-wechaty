@@ -9,5 +9,5 @@ var HttpClient = http.Client{
 	Transport:     nil,
 	CheckRedirect: nil,
 	Jar:           nil,
-	Timeout:       30 * time.Second,
+	Timeout:       5 * time.Second,
 }

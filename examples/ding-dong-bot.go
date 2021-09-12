@@ -64,7 +64,7 @@ func onMessage(ctx *wechaty.Context, message *user.Message) {
 	log.Println("REPLY: dong")
 
 	//	// 2. reply image(qrcode image)
-	//	fileBox, _ := file_box.NewFileBoxFromUrl("https://wechaty.github.io/wechaty/images/bot-qr-code.png", "", nil)
+	//	fileBox, _ := filebox.NewFileBoxFromUrl("https://wechaty.github.io/wechaty/images/bot-qr-code.png", "", nil)
 	//	_, err = message.SayFile(fileBox)
 	//	if err != nil {
 	//		log.Println(err)

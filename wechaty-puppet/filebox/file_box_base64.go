@@ -1,7 +1,9 @@
-package file_box
+package filebox
 
 import (
 	"encoding/base64"
+	"io"
+	"strings"
 )
 
 type fileBoxBase64 struct {
@@ -12,10 +14,10 @@ func newFileBoxBase64(base64Data string) *fileBoxBase64 {
 	return &fileBoxBase64{base64Data: base64Data}
 }
 
-func (fb *fileBoxBase64) toJSONMap() (map[string]interface{}, error) {
+func (fb *fileBoxBase64) toJSONMap() map[string]interface{} {
 	return map[string]interface{}{
 		"base64": fb.base64Data,
-	}, nil
+	}
 }
 
 func (fb *fileBoxBase64) toBytes() ([]byte, error) {
@@ -24,4 +26,9 @@ func (fb *fileBoxBase64) toBytes() ([]byte, error) {
 		return nil, err
 	}
 	return dec, nil
+}
+
+func (fb *fileBoxBase64) toReader() (io.Reader, error) {
+	reader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(fb.base64Data))
+	return reader, nil
 }

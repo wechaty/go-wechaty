@@ -2,7 +2,7 @@ package wechaty_puppet_mock
 
 import (
 	wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
-	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
@@ -36,7 +36,7 @@ func (p *PuppetMock) Start() error {
 	return nil
 }
 
-func (p PuppetMock) MessageImage(messageID string, imageType schemas.ImageType) (*file_box.FileBox, error) {
+func (p PuppetMock) MessageImage(messageID string, imageType schemas.ImageType) (*filebox.FileBox, error) {
 	panic("implement me")
 }
 
@@ -64,7 +64,7 @@ func (p PuppetMock) MessageSendContact(conversationID string, contactID string) 
 	panic("implement me")
 }
 
-func (p PuppetMock) MessageSendFile(conversationID string, fileBox *file_box.FileBox) (string, error) {
+func (p PuppetMock) MessageSendFile(conversationID string, fileBox *filebox.FileBox) (string, error) {
 	panic("implement me")
 }
 
@@ -104,11 +104,11 @@ func (p *PuppetMock) ContactQRCode(contactID string) (string, error) {
 	panic("implement me")
 }
 
-func (p *PuppetMock) SetContactAvatar(contactID string, fileBox *file_box.FileBox) error {
+func (p *PuppetMock) SetContactAvatar(contactID string, fileBox *filebox.FileBox) error {
 	panic("implement me")
 }
 
-func (p *PuppetMock) ContactAvatar(contactID string) (*file_box.FileBox, error) {
+func (p *PuppetMock) ContactAvatar(contactID string) (*filebox.FileBox, error) {
 	panic("implement me")
 }
 
@@ -140,7 +140,7 @@ func (p *PuppetMock) MessageRecall(messageID string) (bool, error) {
 	panic("implement me")
 }
 
-func (p *PuppetMock) MessageFile(id string) (*file_box.FileBox, error) {
+func (p *PuppetMock) MessageFile(id string) (*filebox.FileBox, error) {
 	panic("implement me")
 }
 
@@ -164,7 +164,7 @@ func (p *PuppetMock) RoomDel(roomID, contactID string) error {
 	panic("implement me")
 }
 
-func (p *PuppetMock) RoomAvatar(roomID string) (*file_box.FileBox, error) {
+func (p *PuppetMock) RoomAvatar(roomID string) (*filebox.FileBox, error) {
 	panic("implement me")
 }
 

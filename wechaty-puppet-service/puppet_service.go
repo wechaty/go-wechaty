@@ -1,11 +1,11 @@
 package puppetservice
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"io"
 	"log"
 
@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc"
 
 	wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
-	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
@@ -79,7 +79,7 @@ please use new environment name<WECHATY_PUPPET_SERVICE_ENDPOINT> to avoid unnece
 }
 
 // MessageImage ...
-func (p *PuppetService) MessageImage(messageID string, imageType schemas.ImageType) (*file_box.FileBox, error) {
+func (p *PuppetService) MessageImage(messageID string, imageType schemas.ImageType) (*filebox.FileBox, error) {
 	log.Printf("PuppetService MessageImage(%s, %s)\n", messageID, imageType)
 	response, err := p.grpcClient.MessageImage(context.Background(), &pbwechaty.MessageImageRequest{
 		Id:   messageID,
@@ -88,7 +88,7 @@ func (p *PuppetService) MessageImage(messageID string, imageType schemas.ImageTy
 	if err != nil {
 		return nil, err
 	}
-	return file_box.FromJSON(response.Filebox)
+	return filebox.FromJSON(response.Filebox)
 }
 
 // Start ...
@@ -349,7 +349,7 @@ func (p *PuppetService) ContactQRCode(contactID string) (string, error) {
 }
 
 // SetContactAvatar ...
-func (p *PuppetService) SetContactAvatar(contactID string, fileBox *file_box.FileBox) error {
+func (p *PuppetService) SetContactAvatar(contactID string, fileBox *filebox.FileBox) error {
 	log.Printf("PuppetService SetContactAvatar(%s)\n", contactID)
 	jsonString, err := fileBox.ToJSON()
 	if err != nil {
@@ -368,7 +368,7 @@ func (p *PuppetService) SetContactAvatar(contactID string, fileBox *file_box.Fil
 }
 
 // ContactAvatar ...
-func (p *PuppetService) ContactAvatar(contactID string) (*file_box.FileBox, error) {
+func (p *PuppetService) ContactAvatar(contactID string) (*filebox.FileBox, error) {
 	log.Printf("PuppetService ContactAvatar(%s)\n", contactID)
 	response, err := p.grpcClient.ContactAvatar(context.Background(), &pbwechaty.ContactAvatarRequest{
 		Id: contactID,
@@ -376,7 +376,7 @@ func (p *PuppetService) ContactAvatar(contactID string) (*file_box.FileBox, erro
 	if err != nil {
 		return nil, err
 	}
-	return file_box.FromJSON(response.Filebox.Value)
+	return filebox.FromJSON(response.Filebox.Value)
 }
 
 // ContactRawPayload ...
@@ -488,7 +488,7 @@ func (p *PuppetService) MessageRecall(messageID string) (bool, error) {
 }
 
 // MessageFile ...
-func (p *PuppetService) MessageFile(id string) (*file_box.FileBox, error) {
+func (p *PuppetService) MessageFile(id string) (*filebox.FileBox, error) {
 	log.Printf("PuppetService MessageFile(%s)\n", id)
 	response, err := p.grpcClient.MessageFileStream(context.Background(), &pbwechaty.MessageFileStreamRequest{
 		Id: id,
@@ -496,27 +496,7 @@ func (p *PuppetService) MessageFile(id string) (*file_box.FileBox, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	recv, err := response.Recv()
-	if err != nil {
-		return nil, err
-	}
-	name := recv.FileBoxChunk.GetName()
-	if name == "" {
-		return nil, errors.New("no name")
-	}
-	buffer := bytes.NewBuffer(nil)
-	for {
-		recv, err := response.Recv()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-		buffer.Write(recv.FileBoxChunk.GetData())
-	}
-	return file_box.FromStream(buffer.Bytes(), name), nil
+	return NewFileBoxFromMessageFileStream(response)
 }
 
 // MessageRawPayload ...
@@ -562,8 +542,66 @@ func (p *PuppetService) MessageSendText(conversationID string, text string, ment
 	return "", nil
 }
 
+var fileBoxStreamTypes = helper.ArrayInt{
+	filebox.TypeBase64,
+	filebox.TypeFile,
+	filebox.TypeStream,
+}
+
 // MessageSendFile ...
-func (p *PuppetService) MessageSendFile(conversationID string, fileBox *file_box.FileBox) (string, error) {
+func (p *PuppetService) MessageSendFile(conversationID string, fileBox *filebox.FileBox) (string, error) {
+	log.Printf("PuppetService MessageSendFile(%s)\n", conversationID)
+	if fileBoxStreamTypes.InArray(int(fileBox.Type())) {
+		return p.messageSendFileStream(conversationID, fileBox)
+	}
+	return p.messageSendFileNonStream(conversationID, fileBox)
+}
+
+func (p *PuppetService) messageSendFileStream(conversationID string, fileBox *filebox.FileBox) (string, error) {
+	stream, err := p.grpcClient.MessageSendFileStream(context.Background())
+	if err != nil {
+		return "", err
+	}
+
+	writer, err := ToMessageSendFileWriter(stream, conversationID, fileBox)
+	if err != nil {
+		return "", err
+	}
+
+	reader, err := fileBox.ToReader()
+	if err != nil {
+		return "", err
+	}
+
+	b := make([]byte, 4000000)
+	for {
+		l, err := reader.Read(b)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return "", err
+		}
+		_, err = writer.Write(b[0:l])
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return "", err
+		}
+	}
+
+	response, err := stream.CloseAndRecv()
+	if err != nil {
+		return "", err
+	}
+	if response.Id != nil {
+		return response.Id.Value, nil
+	}
+	return "", nil
+}
+
+func (p *PuppetService) messageSendFileNonStream(conversationID string, fileBox *filebox.FileBox) (string, error) {
 	log.Printf("PuppetService MessageSendFile(%s)\n", conversationID)
 	jsonString, err := fileBox.ToJSON()
 	if err != nil {
@@ -671,7 +709,7 @@ func (p *PuppetService) RoomDel(roomID, contactID string) error {
 }
 
 // RoomAvatar ...
-func (p *PuppetService) RoomAvatar(roomID string) (*file_box.FileBox, error) {
+func (p *PuppetService) RoomAvatar(roomID string) (*filebox.FileBox, error) {
 	log.Printf("PuppetService RoomAvatar(%s)\n", roomID)
 	response, err := p.grpcClient.RoomAvatar(context.Background(), &pbwechaty.RoomAvatarRequest{
 		Id: roomID,
@@ -679,7 +717,7 @@ func (p *PuppetService) RoomAvatar(roomID string) (*file_box.FileBox, error) {
 	if err != nil {
 		return nil, err
 	}
-	return file_box.FromJSON(response.Filebox)
+	return filebox.FromJSON(response.Filebox)
 }
 
 // RoomAdd ...

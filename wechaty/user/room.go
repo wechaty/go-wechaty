@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"github.com/wechaty/go-wechaty/wechaty/config"
@@ -151,7 +151,7 @@ func (r *Room) Say(something interface{}, mentionList ..._interface.IContact) (m
 		msgID, err = r.sayText(v, mentionList...)
 	case *Contact:
 		msgID, err = r.GetPuppet().MessageSendContact(r.id, v.Id)
-	case *file_box.FileBox:
+	case *filebox.FileBox:
 		msgID, err = r.GetPuppet().MessageSendFile(r.id, v)
 	case *UrlLink:
 		msgID, err = r.GetPuppet().MessageSendURL(r.id, v.payload)
@@ -271,6 +271,6 @@ func (r *Room) Owner() _interface.IContact {
 }
 
 // Avatar get avatar from the room.
-func (r *Room) Avatar() (*file_box.FileBox, error) {
+func (r *Room) Avatar() (*filebox.FileBox, error) {
 	return r.GetPuppet().RoomAvatar(r.id)
 }
