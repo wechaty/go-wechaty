@@ -1,7 +1,7 @@
 package _interface
 
 import (
-	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
@@ -36,7 +36,7 @@ type IContact interface {
 	Province() string
 	City() string
 	// Avatar get avatar picture file stream
-	Avatar() *file_box.FileBox
+	Avatar() *filebox.FileBox
 	// Self Check if contact is self
 	Self() bool
 	// Weixin get the weixin number from a contact

@@ -1,7 +1,9 @@
-package file_box
+package filebox
 
 import (
+	"bytes"
 	"github.com/skip2/go-qrcode"
+	"io"
 )
 
 type fileBoxQRCode struct {
@@ -12,10 +14,10 @@ func newFileBoxQRCode(qrCode string) *fileBoxQRCode {
 	return &fileBoxQRCode{qrCode: qrCode}
 }
 
-func (fb *fileBoxQRCode) toJSONMap() (map[string]interface{}, error) {
+func (fb *fileBoxQRCode) toJSONMap() map[string]interface{} {
 	return map[string]interface{}{
 		"qrCode": fb.qrCode,
-	}, nil
+	}
 }
 
 func (fb *fileBoxQRCode) toBytes() ([]byte, error) {
@@ -24,4 +26,12 @@ func (fb *fileBoxQRCode) toBytes() ([]byte, error) {
 		return nil, err
 	}
 	return qr.PNG(256)
+}
+
+func (fb *fileBoxQRCode) toReader() (io.Reader, error) {
+	byteData, err := fb.toBytes()
+	if err != nil {
+		return nil, err
+	}
+	return bytes.NewReader(byteData), nil
 }

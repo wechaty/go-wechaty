@@ -1,7 +1,7 @@
 package _interface
 
 import (
-	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
@@ -56,5 +56,5 @@ type IRoom interface {
 	// Owner get room's owner from the room.
 	Owner() IContact
 	// Avatar get avatar from the room.
-	Avatar() (*file_box.FileBox, error)
+	Avatar() (*filebox.FileBox, error)
 }

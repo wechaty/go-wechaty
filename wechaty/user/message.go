@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	file_box "github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"github.com/wechaty/go-wechaty/wechaty/config"
@@ -148,7 +148,7 @@ func (m *Message) Say(textOrContactOrFileOrUrlOrMini interface{}) (_interface.IM
 		messageID, err = m.GetPuppet().MessageSendText(conversationId, v)
 	case *Contact:
 		messageID, err = m.GetPuppet().MessageSendContact(conversationId, v.Id)
-	case *file_box.FileBox:
+	case *filebox.FileBox:
 		messageID, err = m.GetPuppet().MessageSendFile(conversationId, v)
 	case *UrlLink:
 		messageID, err = m.GetPuppet().MessageSendURL(conversationId, v.payload)
@@ -345,8 +345,8 @@ func (m *Message) Forward(contactOrRoomId string) error {
 }
 
 // ToFileBox extract the Media File from the Message, and put it into the FileBox.
-func (m *Message) ToFileBox() (*file_box.FileBox, error) {
-	if m.Type() != schemas.MessageTypeImage {
+func (m *Message) ToFileBox() (*filebox.FileBox, error) {
+	if m.Type() == schemas.MessageTypeText {
 		return nil, errors.New("text message no file")
 	}
 	return m.GetPuppet().MessageFile(m.id)

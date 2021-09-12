@@ -5,14 +5,14 @@ import (
 	"fmt"
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/events"
-	"github.com/wechaty/go-wechaty/wechaty-puppet/file-box"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
 // iPuppet puppet concrete interface
 type iPuppet interface {
-	MessageImage(messageID string, imageType schemas.ImageType) (*file_box.FileBox, error)
+	MessageImage(messageID string, imageType schemas.ImageType) (*filebox.FileBox, error)
 	Start() (err error)
 	Stop()
 	Logout() error
@@ -21,8 +21,8 @@ type iPuppet interface {
 	ContactAlias(contactID string) (string, error)
 	ContactList() ([]string, error)
 	ContactQRCode(contactID string) (string, error)
-	SetContactAvatar(contactID string, fileBox *file_box.FileBox) error
-	ContactAvatar(contactID string) (*file_box.FileBox, error)
+	SetContactAvatar(contactID string, fileBox *filebox.FileBox) error
+	ContactAvatar(contactID string) (*filebox.FileBox, error)
 	ContactRawPayload(contactID string) (*schemas.ContactPayload, error)
 	SetContactSelfName(name string) error
 	ContactSelfQRCode() (string, error)
@@ -30,17 +30,17 @@ type iPuppet interface {
 	MessageContact(messageID string) (string, error)
 	MessageSendMiniProgram(conversationID string, miniProgramPayload *schemas.MiniProgramPayload) (string, error)
 	MessageRecall(messageID string) (bool, error)
-	MessageFile(id string) (*file_box.FileBox, error)
+	MessageFile(id string) (*filebox.FileBox, error)
 	MessageRawPayload(id string) (*schemas.MessagePayload, error)
 	MessageSendText(conversationID string, text string, mentionIDList ...string) (string, error)
-	MessageSendFile(conversationID string, fileBox *file_box.FileBox) (string, error)
+	MessageSendFile(conversationID string, fileBox *filebox.FileBox) (string, error)
 	MessageSendContact(conversationID string, contactID string) (string, error)
 	MessageSendURL(conversationID string, urlLinkPayload *schemas.UrlLinkPayload) (string, error)
 	MessageURL(messageID string) (*schemas.UrlLinkPayload, error)
 	RoomRawPayload(id string) (*schemas.RoomPayload, error)
 	RoomList() ([]string, error)
 	RoomDel(roomID, contactID string) error
-	RoomAvatar(roomID string) (*file_box.FileBox, error)
+	RoomAvatar(roomID string) (*filebox.FileBox, error)
 	RoomAdd(roomID, contactID string) error
 	SetRoomTopic(roomID string, topic string) error
 	RoomTopic(roomID string) (string, error)

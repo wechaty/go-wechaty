@@ -1,8 +1,10 @@
-package file_box
+package filebox
 
 import (
 	"encoding/base64"
+	"io"
 	"io/ioutil"
+	"os"
 )
 
 type fileBoxFile struct {
@@ -13,14 +15,8 @@ func newFileBoxFile(path string) *fileBoxFile {
 	return &fileBoxFile{path: path}
 }
 
-func (fb *fileBoxFile) toJSONMap() (map[string]interface{}, error) {
-	b, err := fb.toBase64()
-	if err != nil {
-		return nil, err
-	}
-	return map[string]interface{}{
-		"base64": b,
-	}, nil
+func (fb *fileBoxFile) toJSONMap() map[string]interface{} {
+	return nil
 }
 
 func (fb *fileBoxFile) toBytes() ([]byte, error) {
@@ -37,4 +33,8 @@ func (fb *fileBoxFile) toBase64() (string, error) {
 		return "", err
 	}
 	return base64.StdEncoding.EncodeToString(file), nil
+}
+
+func (fb *fileBoxFile) toReader() (io.Reader, error) {
+	return os.Open(fb.path)
 }
