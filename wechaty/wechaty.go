@@ -38,6 +38,7 @@ import (
 	"os"
 	"os/signal"
 	"reflect"
+	"runtime/debug"
 	"time"
 )
 
@@ -92,6 +93,8 @@ func (w *Wechaty) registerEvent(name schemas.PuppetEventName, f interface{}) {
 	w.events.On(name, func(data ...interface{}) {
 		defer func() {
 			if err := recover(); err != nil {
+				log.Println("panic: ", err)
+				log.Println(string(debug.Stack()))
 				w.emit(schemas.PuppetEventNameError, NewContext(), fmt.Errorf("panic: event %s %v", name, err))
 			}
 		}()

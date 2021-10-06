@@ -3,7 +3,9 @@ package wechaty
 import (
 	"fmt"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+	"log"
 	"reflect"
+	"runtime/debug"
 	"sync"
 )
 
@@ -49,6 +51,8 @@ func (p *Plugin) registerPluginEvent(wechaty *Wechaty) {
 		f := func(data ...interface{}) {
 			defer func() {
 				if err := recover(); err != nil {
+					log.Println("panic: ", err)
+					log.Println(string(debug.Stack()))
 					wechaty.events.Emit(schemas.PuppetEventNameError, fmt.Errorf("panic: event %s %v", pluginEvent.name, err))
 				}
 			}()
