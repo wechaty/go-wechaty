@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"time"
+
 	"github.com/wechaty/go-wechaty/wechaty"
 	wp "github.com/wechaty/go-wechaty/wechaty-puppet"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"github.com/wechaty/go-wechaty/wechaty/user"
-	"log"
-	"os"
-	"os/signal"
-	"time"
 )
 
 func main() {
@@ -25,18 +25,7 @@ func main() {
 		fmt.Printf("User %s logouted: %s\n", user, reason)
 	})
 
-	var err = bot.Start()
-	if err != nil {
-		panic(err)
-	}
-
-	var quitSig = make(chan os.Signal)
-	signal.Notify(quitSig, os.Interrupt, os.Kill)
-
-	select {
-	case <-quitSig:
-		log.Fatal("exit.by.signal")
-	}
+	bot.DaemonStart()
 }
 
 func onMessage(ctx *wechaty.Context, message *user.Message) {
@@ -44,10 +33,12 @@ func onMessage(ctx *wechaty.Context, message *user.Message) {
 
 	if message.Self() {
 		log.Println("Message discarded because its outgoing")
+		return
 	}
 
 	if message.Age() > 2*60*time.Second {
 		log.Println("Message discarded because its TOO OLD(than 2 minutes)")
+		return
 	}
 
 	if message.Type() != schemas.MessageTypeText || message.Text() != "#ding" {
@@ -55,20 +46,34 @@ func onMessage(ctx *wechaty.Context, message *user.Message) {
 		return
 	}
 
-	// 1. reply 'dong'
+	// 1. reply text 'dong'
 	_, err := message.Say("dong")
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	log.Println("REPLY: dong")
+	log.Println("REPLY with text: dong")
 
-	//	// 2. reply image(qrcode image)
-	//	fileBox, _ := filebox.NewFileBoxFromUrl("https://wechaty.github.io/wechaty/images/bot-qr-code.png", "", nil)
-	//	_, err = message.SayFile(fileBox)
-	//	if err != nil {
-	//		log.Println(err)
-	//		return
-	//	}
-	//	log.Printf("REPLY: %s\n", fileBox)
+	// 2. reply image(qrcode image)
+	fileBox, _ := filebox.FromUrl("https://wechaty.github.io/wechaty/images/bot-qr-code.png", "", nil)
+	_, err = message.Say(fileBox)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Printf("REPLY with image: %s\n", fileBox)
+
+	// 3. reply url link
+	urlLink := user.NewUrlLink(&schemas.UrlLinkPayload{
+		Description:  "Go Wechaty is a Conversational SDK for Chatbot Makers Written in Go",
+		ThumbnailUrl: "https://wechaty.js.org/img/icon.png",
+		Title:        "wechaty/go-wechaty",
+		Url:          "https://github.com/wechaty/go-wechaty",
+	})
+	_, err = message.Say(urlLink)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Printf("REPLY with urlLink: %s\n", urlLink)
 }
