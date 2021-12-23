@@ -29,11 +29,11 @@ type fileImplInterface interface {
 
 // FileBox struct
 type FileBox struct {
-	fileImpl  fileImplInterface
-	Name      string
-	metadata  map[string]interface{}
-	boxType   Type
-	mimeType  string
+	fileImpl fileImplInterface
+	Name     string
+	metadata map[string]interface{}
+	boxType  Type
+	mimeType string
 }
 
 func newFileBox(common *OptionsCommon, fileImpl fileImplInterface) *FileBox {
@@ -127,10 +127,10 @@ func (fb *FileBox) ToJSON() (string, error) {
 	jsonMap := map[string]interface{}{
 		"name":     fb.Name,
 		"metadata": fb.metadata,
-		"boxType":  fb.boxType,
+		"type":     fb.boxType,
 	}
 	switch fb.boxType {
-	case TypeUrl,TypeQRCode,TypeBase64:
+	case TypeUrl, TypeQRCode, TypeBase64:
 	default:
 		return "", ErrToJSON
 	}
