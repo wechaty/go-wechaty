@@ -5,17 +5,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
-	"io"
-	"log"
-
 	"github.com/golang/protobuf/ptypes/wrappers"
 	pbwechaty "github.com/wechaty/go-grpc/wechaty"
-	"google.golang.org/grpc"
-
 	wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
+	"io"
+	"log"
+	"time"
 )
 
 // ErrNoEndpoint err no endpoint
@@ -191,8 +191,39 @@ func (p *PuppetService) startGrpcClient() error {
 		return err
 	}
 	p.grpcConn = conn
+
+	go p.autoReconnectGrpcConn()
+
 	p.grpcClient = pbwechaty.NewPuppetClient(conn)
 	return nil
+}
+
+func (p *PuppetService) autoReconnectGrpcConn() {
+	interval := 2 * time.Second
+	if p.Option.GrpcReconnectInterval > 0 {
+		interval = p.Option.GrpcReconnectInterval
+	}
+	ticker := time.NewTicker(interval)
+	isClose := false
+	for {
+		select {
+		case <-ticker.C:
+			connState := p.grpcConn.GetState()
+			// 重新连接成功
+			if isClose && connectivity.Ready == connState {
+				isClose = false
+				log.Printf("PuppetService.autoReconnectGrpcConn grpc reconnection successful")
+				if err := p.startGrpcStream(); err != nil {
+					log.Printf("PuppetService.autoReconnectGrpcConn startGrpcStream err:%s", err.Error())
+				}
+			}
+
+			if p.grpcConn.GetState() == connectivity.TransientFailure {
+				isClose = true
+				log.Printf("PuppetService.autoReconnectGrpcConn grpc reconnection...")
+			}
+		}
+	}
 }
 
 func (p *PuppetService) startGrpcStream() (err error) {
@@ -220,6 +251,7 @@ func (p *PuppetService) startGrpcStream() (err error) {
 				log.Printf("PuppetService startGrpcStream() eventStream err %s", err)
 				reason := "startGrpcStream() eventStream err: " + err.Error()
 				p.Emit(schemas.PuppetEventNameReset, schemas.EventResetPayload{Data: reason})
+				p.eventStream = nil
 				break
 			}
 			go p.onGrpcStreamEvent(reply)
