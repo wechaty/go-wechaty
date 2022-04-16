@@ -321,7 +321,7 @@ func (m *Message) MentionText() string {
 	}
 
 	for _, v := range mentionNameList {
-		reg := regexp.MustCompile("@" + v + "(\u2005|\u0020|$)")
+		reg := regexp.MustCompile("@" + regexp.QuoteMeta(v) + "(\u2005|\u0020|$)")
 		text = reg.ReplaceAllString(text, "")
 	}
 	return strings.TrimSpace(text)
