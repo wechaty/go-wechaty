@@ -53,6 +53,7 @@ func (r *Room) Ready(forceSync bool) (err error) {
 
 	async := helper.NewAsync(helper.DefaultWorkerNum)
 	for _, id := range memberIDs {
+		id := id
 		async.AddTask(func() (interface{}, error) {
 			return nil, r.GetWechaty().Contact().Load(id).Ready(false)
 		})
