@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/golang/protobuf/ptypes/wrappers"
 	pbwechaty "github.com/wechaty/go-grpc/wechaty"
+	pbwechatypuppet "github.com/wechaty/go-grpc/wechaty/puppet"
 	wechatyPuppet "github.com/wechaty/go-wechaty/wechaty-puppet"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
@@ -18,8 +18,12 @@ import (
 	"time"
 )
 
-// ErrNoEndpoint err no endpoint
-var ErrNoEndpoint = errors.New("no endpoint")
+var (
+	// ErrNoEndpoint err no endpoint
+	ErrNoEndpoint = errors.New("no endpoint")
+	// ErrURLLinkPayloadNotFound ...
+	ErrURLLinkPayloadNotFound = errors.New("UrlLinkPayloadNotFound")
+)
 
 var pbEventType2PuppetEventName = schemas.PbEventType2PuppetEventName()
 
@@ -81,14 +85,14 @@ please use new environment name<WECHATY_PUPPET_SERVICE_ENDPOINT> to avoid unnece
 // MessageImage ...
 func (p *PuppetService) MessageImage(messageID string, imageType schemas.ImageType) (*filebox.FileBox, error) {
 	log.Printf("PuppetService MessageImage(%s, %s)\n", messageID, imageType)
-	response, err := p.grpcClient.MessageImage(context.Background(), &pbwechaty.MessageImageRequest{
+	response, err := p.grpcClient.MessageImage(context.Background(), &pbwechatypuppet.MessageImageRequest{
 		Id:   messageID,
-		Type: pbwechaty.ImageType(imageType),
+		Type: pbwechatypuppet.ImageType(imageType),
 	})
 	if err != nil {
 		return nil, err
 	}
-	return filebox.FromJSON(response.Filebox)
+	return filebox.FromJSON(response.FileBox)
 }
 
 // Start ...
@@ -108,7 +112,7 @@ func (p *PuppetService) Start() (err error) {
 	if err != nil {
 		return err
 	}
-	_, err = p.grpcClient.Start(context.Background(), &pbwechaty.StartRequest{})
+	_, err = p.grpcClient.Start(context.Background(), &pbwechatypuppet.StartRequest{})
 	if err != nil {
 		return err
 	}
@@ -136,7 +140,7 @@ func (p *PuppetService) Stop() {
 	}
 
 	if p.grpcClient != nil {
-		if _, err = p.grpcClient.Stop(context.Background(), &pbwechaty.StopRequest{}); err != nil {
+		if _, err = p.grpcClient.Stop(context.Background(), &pbwechatypuppet.StopRequest{}); err != nil {
 			return
 		}
 	}
@@ -235,7 +239,7 @@ func (p *PuppetService) startGrpcStream() (err error) {
 	if p.eventStream != nil {
 		return errors.New("event stream exists")
 	}
-	p.eventStream, err = p.grpcClient.Event(context.Background(), &pbwechaty.EventRequest{})
+	p.eventStream, err = p.grpcClient.Event(context.Background(), &pbwechatypuppet.EventRequest{})
 	if err != nil {
 		return err
 	}
@@ -260,15 +264,15 @@ func (p *PuppetService) startGrpcStream() (err error) {
 	return nil
 }
 
-func (p *PuppetService) onGrpcStreamEvent(event *pbwechaty.EventResponse) {
+func (p *PuppetService) onGrpcStreamEvent(event *pbwechatypuppet.EventResponse) {
 	log.Printf("PuppetService onGrpcStreamEvent({type:%s payload:%s})", event.Type, event.Payload)
 
-	if event.Type != pbwechaty.EventType_EVENT_TYPE_HEARTBEAT {
+	if event.Type != pbwechatypuppet.EventType_EVENT_TYPE_HEARTBEAT {
 		p.Emit(schemas.PuppetEventNameHeartbeat, &schemas.EventHeartbeatPayload{
 			Data: fmt.Sprintf("onGrpcStreamEvent(%s)", event.Type),
 		})
 	}
-	if event.Type == pbwechaty.EventType_EVENT_TYPE_UNSPECIFIED {
+	if event.Type == pbwechatypuppet.EventType_EVENT_TYPE_UNSPECIFIED {
 		log.Println("PuppetService onGrpcStreamEvent() got an EventType.EVENT_TYPE_UNSPECIFIED ")
 		return
 	}
@@ -280,13 +284,13 @@ func (p *PuppetService) onGrpcStreamEvent(event *pbwechaty.EventResponse) {
 	payload := pbEventType2GeneratePayloadFunc[event.Type]()
 	p.unMarshal(event.Payload, payload)
 	switch event.Type {
-	case pbwechaty.EventType_EVENT_TYPE_RESET:
+	case pbwechatypuppet.EventType_EVENT_TYPE_RESET:
 		log.Println("PuppetService onGrpcStreamEvent() got an EventType.EVENT_TYPE_RESET ?")
 		// the `reset` event should be dealed not send out
 		return
-	case pbwechaty.EventType_EVENT_TYPE_LOGIN:
+	case pbwechatypuppet.EventType_EVENT_TYPE_LOGIN:
 		p.SetID(payload.(*schemas.EventLoginPayload).ContactId)
-	case pbwechaty.EventType_EVENT_TYPE_LOGOUT:
+	case pbwechatypuppet.EventType_EVENT_TYPE_LOGOUT:
 		p.SetID("")
 	}
 	p.Emit(eventName, payload)
@@ -305,7 +309,7 @@ func (p *PuppetService) Logout() error {
 	if !p.logonoff() {
 		return errors.New("logout before login? ")
 	}
-	_, err := p.grpcClient.Logout(context.Background(), &pbwechaty.LogoutRequest{})
+	_, err := p.grpcClient.Logout(context.Background(), &pbwechatypuppet.LogoutRequest{})
 	if err != nil {
 		return fmt.Errorf("PuppetService Logout() err: %w", err)
 	}
@@ -319,7 +323,7 @@ func (p *PuppetService) Logout() error {
 // Ding ...
 func (p *PuppetService) Ding(data string) {
 	log.Printf("PuppetService Ding(%s)\n", data)
-	_, err := p.grpcClient.Ding(context.Background(), &pbwechaty.DingRequest{
+	_, err := p.grpcClient.Ding(context.Background(), &pbwechatypuppet.DingRequest{
 		Data: data,
 	})
 	if err != nil {
@@ -330,11 +334,9 @@ func (p *PuppetService) Ding(data string) {
 // SetContactAlias ...
 func (p *PuppetService) SetContactAlias(contactID string, alias string) error {
 	log.Printf("PuppetService, SetContactAlias(%s, %s)\n", contactID, alias)
-	_, err := p.grpcClient.ContactAlias(context.Background(), &pbwechaty.ContactAliasRequest{
-		Id: contactID,
-		Alias: &wrappers.StringValue{
-			Value: alias,
-		},
+	_, err := p.grpcClient.ContactAlias(context.Background(), &pbwechatypuppet.ContactAliasRequest{
+		Id:    contactID,
+		Alias: &alias,
 	})
 	if err != nil {
 		return fmt.Errorf("PuppetService SetContactAlias err: %w", err)
@@ -345,22 +347,19 @@ func (p *PuppetService) SetContactAlias(contactID string, alias string) error {
 // ContactAlias ...
 func (p *PuppetService) ContactAlias(contactID string) (string, error) {
 	log.Printf("PuppetService, 'ContactAlias(%s)\n", contactID)
-	response, err := p.grpcClient.ContactAlias(context.Background(), &pbwechaty.ContactAliasRequest{
+	response, err := p.grpcClient.ContactAlias(context.Background(), &pbwechatypuppet.ContactAliasRequest{
 		Id: contactID,
 	})
 	if err != nil {
 		return "", fmt.Errorf("PuppetService ContactAlias err: %w", err)
 	}
-	if response.Alias == nil {
-		return "", fmt.Errorf("can not get aliasWrapper")
-	}
-	return response.Alias.Value, nil
+	return response.Alias, nil
 }
 
 // ContactList ...
 func (p *PuppetService) ContactList() ([]string, error) {
 	log.Println("PuppetService ContactList()")
-	response, err := p.grpcClient.ContactList(context.Background(), &pbwechaty.ContactListRequest{})
+	response, err := p.grpcClient.ContactList(context.Background(), &pbwechatypuppet.ContactListRequest{})
 	if err != nil {
 		return nil, fmt.Errorf("PuppetService ContactList err: %w", err)
 	}
@@ -373,7 +372,7 @@ func (p *PuppetService) ContactQRCode(contactID string) (string, error) {
 	if contactID != p.SelfID() {
 		return "", errors.New("can not set avatar for others")
 	}
-	response, err := p.grpcClient.ContactSelfQRCode(context.Background(), &pbwechaty.ContactSelfQRCodeRequest{})
+	response, err := p.grpcClient.ContactSelfQRCode(context.Background(), &pbwechatypuppet.ContactSelfQRCodeRequest{})
 	if err != nil {
 		return "", err
 	}
@@ -387,11 +386,9 @@ func (p *PuppetService) SetContactAvatar(contactID string, fileBox *filebox.File
 	if err != nil {
 		return err
 	}
-	_, err = p.grpcClient.ContactAvatar(context.Background(), &pbwechaty.ContactAvatarRequest{
-		Id: contactID,
-		Filebox: &wrappers.StringValue{
-			Value: jsonString,
-		},
+	_, err = p.grpcClient.ContactAvatar(context.Background(), &pbwechatypuppet.ContactAvatarRequest{
+		Id:      contactID,
+		FileBox: &jsonString,
 	})
 	if err != nil {
 		return nil
@@ -402,19 +399,19 @@ func (p *PuppetService) SetContactAvatar(contactID string, fileBox *filebox.File
 // ContactAvatar ...
 func (p *PuppetService) ContactAvatar(contactID string) (*filebox.FileBox, error) {
 	log.Printf("PuppetService ContactAvatar(%s)\n", contactID)
-	response, err := p.grpcClient.ContactAvatar(context.Background(), &pbwechaty.ContactAvatarRequest{
+	response, err := p.grpcClient.ContactAvatar(context.Background(), &pbwechatypuppet.ContactAvatarRequest{
 		Id: contactID,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return filebox.FromJSON(response.Filebox.Value)
+	return filebox.FromJSON(response.FileBox)
 }
 
 // ContactRawPayload ...
 func (p *PuppetService) ContactRawPayload(contactID string) (*schemas.ContactPayload, error) {
 	log.Printf("PuppetService ContactRawPayload(%s)\n", contactID)
-	response, err := p.grpcClient.ContactPayload(context.Background(), &pbwechaty.ContactPayloadRequest{
+	response, err := p.grpcClient.ContactPayload(context.Background(), &pbwechatypuppet.ContactPayloadRequest{
 		Id: contactID,
 	})
 	if err != nil {
@@ -440,7 +437,7 @@ func (p *PuppetService) ContactRawPayload(contactID string) (*schemas.ContactPay
 // SetContactSelfName ...
 func (p *PuppetService) SetContactSelfName(name string) error {
 	log.Printf("PuppetService SetContactSelfName(%s)\n", name)
-	_, err := p.grpcClient.ContactSelfName(context.Background(), &pbwechaty.ContactSelfNameRequest{
+	_, err := p.grpcClient.ContactSelfName(context.Background(), &pbwechatypuppet.ContactSelfNameRequest{
 		Name: name,
 	})
 	return err
@@ -449,7 +446,7 @@ func (p *PuppetService) SetContactSelfName(name string) error {
 // ContactSelfQRCode ...
 func (p *PuppetService) ContactSelfQRCode() (string, error) {
 	log.Println("PuppetService ContactSelfQRCode()")
-	response, err := p.grpcClient.ContactSelfQRCode(context.Background(), &pbwechaty.ContactSelfQRCodeRequest{})
+	response, err := p.grpcClient.ContactSelfQRCode(context.Background(), &pbwechatypuppet.ContactSelfQRCodeRequest{})
 	if err != nil {
 		return "", err
 	}
@@ -459,7 +456,7 @@ func (p *PuppetService) ContactSelfQRCode() (string, error) {
 // SetContactSelfSignature ...
 func (p *PuppetService) SetContactSelfSignature(signature string) error {
 	log.Printf("PuppetService SetContactSelfSignature(%s)\n", signature)
-	_, err := p.grpcClient.ContactSelfSignature(context.Background(), &pbwechaty.ContactSelfSignatureRequest{
+	_, err := p.grpcClient.ContactSelfSignature(context.Background(), &pbwechatypuppet.ContactSelfSignatureRequest{
 		Signature: signature,
 	})
 	return err
@@ -467,22 +464,32 @@ func (p *PuppetService) SetContactSelfSignature(signature string) error {
 
 // MessageRawMiniProgramPayload ...
 func (p *PuppetService) MessageRawMiniProgramPayload(messageID string) (*schemas.MiniProgramPayload, error) {
-	log.Printf("PuppetHostie MessageMiniProgram(%s)\n", messageID)
-	response, err := p.grpcClient.MessageMiniProgram(context.Background(), &pbwechaty.MessageMiniProgramRequest{
+	log.Printf("PuppetService MessageMiniProgram(%s)\n", messageID)
+	response, err := p.grpcClient.MessageMiniProgram(context.Background(), &pbwechatypuppet.MessageMiniProgramRequest{
 		Id: messageID,
 	})
 	if err != nil {
 		return nil, err
 	}
-	payload := &schemas.MiniProgramPayload{}
-	p.unMarshal(response.MiniProgram, payload)
+
+	payload := &schemas.MiniProgramPayload{
+		Appid:       response.MiniProgram.Appid,
+		Description: response.MiniProgram.Description,
+		PagePath:    response.MiniProgram.PagePath,
+		ThumbUrl:    response.MiniProgram.ThumbUrl,
+		Title:       response.MiniProgram.Title,
+		Username:    response.MiniProgram.Username,
+		ThumbKey:    response.MiniProgram.ThumbKey,
+		ShareId:     response.MiniProgram.ShareId,
+		IconUrl:     response.MiniProgram.IconUrl,
+	}
 	return payload, nil
 }
 
 // MessageContact ...
 func (p *PuppetService) MessageContact(messageID string) (string, error) {
 	log.Printf("PuppetService MessageContact(%s)\n", messageID)
-	response, err := p.grpcClient.MessageContact(context.Background(), &pbwechaty.MessageContactRequest{
+	response, err := p.grpcClient.MessageContact(context.Background(), &pbwechatypuppet.MessageContactRequest{
 		Id: messageID,
 	})
 	if err != nil {
@@ -493,24 +500,31 @@ func (p *PuppetService) MessageContact(messageID string) (string, error) {
 
 // MessageSendMiniProgram ...
 func (p *PuppetService) MessageSendMiniProgram(conversationID string, miniProgramPayload *schemas.MiniProgramPayload) (string, error) {
-	log.Printf("PuppetService MessageSendMiniProgram(%s,%s)\n", conversationID, miniProgramPayload)
-	response, err := p.grpcClient.MessageSendMiniProgram(context.Background(), &pbwechaty.MessageSendMiniProgramRequest{
+	log.Printf("PuppetService MessageSendMiniProgram(%s,%#v)\n", conversationID, miniProgramPayload)
+	response, err := p.grpcClient.MessageSendMiniProgram(context.Background(), &pbwechatypuppet.MessageSendMiniProgramRequest{
 		ConversationId: conversationID,
-		MiniProgram:    miniProgramPayload.ToJson(),
+		MiniProgram: &pbwechatypuppet.MiniProgramPayload{
+			Appid:       miniProgramPayload.Appid,
+			Description: miniProgramPayload.Description,
+			PagePath:    miniProgramPayload.PagePath,
+			IconUrl:     miniProgramPayload.IconUrl,
+			ShareId:     miniProgramPayload.ShareId,
+			ThumbUrl:    miniProgramPayload.ThumbUrl,
+			Title:       miniProgramPayload.Title,
+			Username:    miniProgramPayload.Username,
+			ThumbKey:    miniProgramPayload.ThumbKey,
+		},
 	})
 	if err != nil {
 		return "", err
 	}
-	if response.Id != nil {
-		return response.Id.Value, nil
-	}
-	return "", nil
+	return response.Id, nil
 }
 
 // MessageRecall ...
 func (p *PuppetService) MessageRecall(messageID string) (bool, error) {
 	log.Printf("PuppetService MessageRecall(%s)\n", messageID)
-	response, err := p.grpcClient.MessageRecall(context.Background(), &pbwechaty.MessageRecallRequest{
+	response, err := p.grpcClient.MessageRecall(context.Background(), &pbwechatypuppet.MessageRecallRequest{
 		Id: messageID,
 	})
 	if err != nil {
@@ -522,7 +536,7 @@ func (p *PuppetService) MessageRecall(messageID string) (bool, error) {
 // MessageFile ...
 func (p *PuppetService) MessageFile(id string) (*filebox.FileBox, error) {
 	log.Printf("PuppetService MessageFile(%s)\n", id)
-	response, err := p.grpcClient.MessageFileStream(context.Background(), &pbwechaty.MessageFileStreamRequest{
+	response, err := p.grpcClient.MessageFileStream(context.Background(), &pbwechatypuppet.MessageFileStreamRequest{
 		Id: id,
 	})
 	if err != nil {
@@ -534,7 +548,7 @@ func (p *PuppetService) MessageFile(id string) (*filebox.FileBox, error) {
 // MessageRawPayload ...
 func (p *PuppetService) MessageRawPayload(id string) (*schemas.MessagePayload, error) {
 	log.Printf("PuppetService MessagePayload(%s)\n", id)
-	response, err := p.grpcClient.MessagePayload(context.Background(), &pbwechaty.MessagePayloadRequest{
+	response, err := p.grpcClient.MessagePayload(context.Background(), &pbwechatypuppet.MessagePayloadRequest{
 		Id: id,
 	})
 	if err != nil {
@@ -546,13 +560,13 @@ func (p *PuppetService) MessageRawPayload(id string) (*schemas.MessagePayload, e
 			MentionIdList: response.MentionIds,
 			FileName:      response.Filename,
 			Text:          response.Text,
-			Timestamp:     response.Timestamp,
+			Timestamp:     response.ReceiveTime.AsTime(),
 			Type:          schemas.MessageType(response.Type),
 		},
 		MessagePayloadRoom: schemas.MessagePayloadRoom{
-			FromId: response.FromId,
-			RoomId: response.RoomId,
-			ToId:   response.ToId,
+			TalkerId:   response.TalkerId,
+			RoomId:     response.RoomId,
+			ListenerId: response.ListenerId,
 		},
 	}, nil
 }
@@ -560,18 +574,15 @@ func (p *PuppetService) MessageRawPayload(id string) (*schemas.MessagePayload, e
 // MessageSendText ...
 func (p *PuppetService) MessageSendText(conversationID string, text string, mentionIDList ...string) (string, error) {
 	log.Printf("PuppetService messageSendText(%s, %s)\n", conversationID, text)
-	response, err := p.grpcClient.MessageSendText(context.Background(), &pbwechaty.MessageSendTextRequest{
+	response, err := p.grpcClient.MessageSendText(context.Background(), &pbwechatypuppet.MessageSendTextRequest{
 		ConversationId: conversationID,
 		Text:           text,
-		MentonalIds:    mentionIDList,
+		MentionalIds:   mentionIDList,
 	})
 	if err != nil {
 		return "", err
 	}
-	if response.Id != nil {
-		return response.Id.Value, nil
-	}
-	return "", nil
+	return response.Id, nil
 }
 
 var fileBoxStreamTypes = helper.ArrayInt{
@@ -627,10 +638,7 @@ func (p *PuppetService) messageSendFileStream(conversationID string, fileBox *fi
 	if err != nil {
 		return "", err
 	}
-	if response.Id != nil {
-		return response.Id.Value, nil
-	}
-	return "", nil
+	return response.Id, nil
 }
 
 func (p *PuppetService) messageSendFileNonStream(conversationID string, fileBox *filebox.FileBox) (string, error) {
@@ -639,69 +647,80 @@ func (p *PuppetService) messageSendFileNonStream(conversationID string, fileBox 
 	if err != nil {
 		return "", err
 	}
-	response, err := p.grpcClient.MessageSendFile(context.Background(), &pbwechaty.MessageSendFileRequest{
+	response, err := p.grpcClient.MessageSendFile(context.Background(), &pbwechatypuppet.MessageSendFileRequest{
 		ConversationId: conversationID,
-		Filebox:        jsonString,
+		FileBox:        jsonString,
 	})
 	if err != nil {
 		return "", err
 	}
-	if response.Id != nil {
-		return response.Id.Value, nil
-	}
-	return "", nil
+	return response.Id, nil
 }
 
 // MessageSendContact ...
 func (p *PuppetService) MessageSendContact(conversationID string, contactID string) (string, error) {
 	log.Printf("PuppetService MessageSendContact(%s, %s)\n", conversationID, contactID)
-	response, err := p.grpcClient.MessageSendContact(context.Background(), &pbwechaty.MessageSendContactRequest{
+	response, err := p.grpcClient.MessageSendContact(context.Background(), &pbwechatypuppet.MessageSendContactRequest{
 		ConversationId: conversationID,
 		ContactId:      contactID,
 	})
 	if err != nil {
 		return "", err
 	}
-	if response.Id != nil {
-		return response.Id.Value, nil
-	}
-	return "", nil
+	return response.Id, nil
 }
 
 // MessageSendURL ...
 func (p *PuppetService) MessageSendURL(conversationID string, urlLinkPayload *schemas.UrlLinkPayload) (string, error) {
-	log.Printf("PuppetService MessageSendURL(%s, %s)\n", conversationID, urlLinkPayload)
-	response, err := p.grpcClient.MessageSendUrl(context.Background(), &pbwechaty.MessageSendUrlRequest{
+	log.Printf("PuppetService MessageSendURL(%s, %+v)\n", conversationID, urlLinkPayload)
+	response, err := p.grpcClient.MessageSendUrl(context.Background(), &pbwechatypuppet.MessageSendUrlRequest{
 		ConversationId: conversationID,
-		UrlLink:        urlLinkPayload.ToJson(),
+		UrlLink: &pbwechatypuppet.UrlLinkPayload{
+			Description:  urlLinkPayload.Description,
+			ThumbnailUrl: urlLinkPayload.ThumbnailUrl,
+			Title:        urlLinkPayload.Title,
+			Url:          urlLinkPayload.Url,
+		},
+
+		// Deprecated: will be removed after Dec 31, 2022
+		UrlLinkDeprecated: urlLinkPayload.ToJson(),
 	})
 	if err != nil {
 		return "", err
 	}
-	if response.Id != nil {
-		return response.Id.Value, nil
-	}
-	return "", nil
+	return response.Id, nil
 }
 
 // MessageURL ...
 func (p *PuppetService) MessageURL(messageID string) (*schemas.UrlLinkPayload, error) {
 	log.Printf("PuppetService MessageURL(%s)\n", messageID)
-	response, err := p.grpcClient.MessageUrl(context.Background(), &pbwechaty.MessageUrlRequest{
+	response, err := p.grpcClient.MessageUrl(context.Background(), &pbwechatypuppet.MessageUrlRequest{
 		Id: messageID,
 	})
 	if err != nil {
 		return nil, err
 	}
-	payload := &schemas.UrlLinkPayload{}
-	p.unMarshal(response.UrlLink, payload)
+
+	if response.UrlLink == nil {
+		// Deprecated: will be removed after Dec 31, 2022
+		payload := &schemas.UrlLinkPayload{}
+		p.unMarshal(response.UrlLinkDeprecated, payload)
+		return payload, nil
+	}
+
+	payload := &schemas.UrlLinkPayload{
+		Description:  response.UrlLink.Description,
+		ThumbnailUrl: response.UrlLink.ThumbnailUrl,
+		Title:        response.UrlLink.Title,
+		Url:          response.UrlLink.Url,
+	}
 	return payload, nil
 }
 
 // RoomRawPayload ...
 func (p *PuppetService) RoomRawPayload(id string) (*schemas.RoomPayload, error) {
 	log.Printf("PuppetService RoomRawPayload(%s)\n", id)
-	response, err := p.grpcClient.RoomPayload(context.Background(), &pbwechaty.RoomPayloadRequest{
+	response, err := p.grpcClient.RoomPayload(context.Background(), &pbwechatypuppet.RoomPayloadRequest{
 		Id: id,
 	})
 	if err != nil {
@@ -720,7 +739,7 @@ func (p *PuppetService) RoomRawPayload(id string) (*schemas.RoomPayload, error) 
 // RoomList ...
 func (p *PuppetService) RoomList() ([]string, error) {
 	log.Printf("PuppetService RoomList()\n")
-	response, err := p.grpcClient.RoomList(context.Background(), &pbwechaty.RoomListRequest{})
+	response, err := p.grpcClient.RoomList(context.Background(), &pbwechatypuppet.RoomListRequest{})
 	if err != nil {
 		return nil, err
 	}
@@ -730,7 +749,7 @@ func (p *PuppetService) RoomList() ([]string, error) {
 // RoomDel ...
 func (p *PuppetService) RoomDel(roomID, contactID string) error {
 	log.Printf("PuppetService roomDel(%s, %s)\n", roomID, contactID)
-	_, err := p.grpcClient.RoomDel(context.Background(), &pbwechaty.RoomDelRequest{
+	_, err := p.grpcClient.RoomDel(context.Background(), &pbwechatypuppet.RoomDelRequest{
 		Id:        roomID,
 		ContactId: contactID,
 	})
@@ -743,19 +762,19 @@ func (p *PuppetService) RoomDel(roomID, contactID string) error {
 // RoomAvatar ...
 func (p *PuppetService) RoomAvatar(roomID string) (*filebox.FileBox, error) {
 	log.Printf("PuppetService RoomAvatar(%s)\n", roomID)
-	response, err := p.grpcClient.RoomAvatar(context.Background(), &pbwechaty.RoomAvatarRequest{
+	response, err := p.grpcClient.RoomAvatar(context.Background(), &pbwechatypuppet.RoomAvatarRequest{
 		Id: roomID,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return filebox.FromJSON(response.Filebox)
+	return filebox.FromJSON(response.FileBox)
 }
 
 // RoomAdd ...
 func (p *PuppetService) RoomAdd(roomID, contactID string) error {
 	log.Printf("PuppetService RoomAdd(%s, %s)\n", roomID, contactID)
-	_, err := p.grpcClient.RoomAdd(context.Background(), &pbwechaty.RoomAddRequest{
+	_, err := p.grpcClient.RoomAdd(context.Background(), &pbwechatypuppet.RoomAddRequest{
 		Id:        roomID,
 		ContactId: contactID,
 	})
@@ -768,34 +787,29 @@ func (p *PuppetService) RoomAdd(roomID, contactID string) error {
 // SetRoomTopic ...
 func (p *PuppetService) SetRoomTopic(roomID string, topic string) error {
 	log.Printf("PuppetService setRoomTopic(%s, %s)\n", roomID, topic)
-	_, err := p.grpcClient.RoomTopic(context.Background(), &pbwechaty.RoomTopicRequest{
-		Id: roomID,
-		Topic: &wrappers.StringValue{
-			Value: topic,
-		},
+	_, err := p.grpcClient.RoomTopic(context.Background(), &pbwechatypuppet.RoomTopicRequest{
+		Id:    roomID,
+		Topic: &topic,
 	})
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // RoomTopic ...
 func (p *PuppetService) RoomTopic(roomID string) (string, error) {
 	log.Printf("PuppetService RoomTopic(%s)\n", roomID)
-	response, err := p.grpcClient.RoomTopic(context.Background(), &pbwechaty.RoomTopicRequest{
+	response, err := p.grpcClient.RoomTopic(context.Background(), &pbwechatypuppet.RoomTopicRequest{
 		Id: roomID,
 	})
 	if err != nil {
 		return "", err
 	}
-	return response.Topic.Value, nil
+	return response.Topic, nil
 }
 
 // RoomCreate ...
 func (p *PuppetService) RoomCreate(contactIDList []string, topic string) (string, error) {
 	log.Printf("PuppetService roomCreate(%s, %s)\n", contactIDList, topic)
-	response, err := p.grpcClient.RoomCreate(context.Background(), &pbwechaty.RoomCreateRequest{
+	response, err := p.grpcClient.RoomCreate(context.Background(), &pbwechatypuppet.RoomCreateRequest{
 		ContactIds: contactIDList,
 		Topic:      topic,
 	})
@@ -808,7 +822,7 @@ func (p *PuppetService) RoomCreate(contactIDList []string, topic string) (string
 // RoomQuit ...
 func (p *PuppetService) RoomQuit(roomID string) error {
 	log.Printf("PuppetService RoomQuit(%s)\n", roomID)
-	_, err := p.grpcClient.RoomQuit(context.Background(), &pbwechaty.RoomQuitRequest{
+	_, err := p.grpcClient.RoomQuit(context.Background(), &pbwechatypuppet.RoomQuitRequest{
 		Id: roomID,
 	})
 	if err != nil {
@@ -820,7 +834,7 @@ func (p *PuppetService) RoomQuit(roomID string) error {
 // RoomQRCode ...
 func (p *PuppetService) RoomQRCode(roomID string) (string, error) {
 	log.Printf("PuppetService RoomQRCode(%s)\n", roomID)
-	response, err := p.grpcClient.RoomQRCode(context.Background(), &pbwechaty.RoomQRCodeRequest{
+	response, err := p.grpcClient.RoomQRCode(context.Background(), &pbwechatypuppet.RoomQRCodeRequest{
 		Id: roomID,
 	})
 	if err != nil {
@@ -832,7 +846,7 @@ func (p *PuppetService) RoomQRCode(roomID string) (string, error) {
 // RoomMemberList ...
 func (p *PuppetService) RoomMemberList(roomID string) ([]string, error) {
 	log.Printf("PuppetService RoomMemberList(%s)\n", roomID)
-	response, err := p.grpcClient.RoomMemberList(context.Background(), &pbwechaty.RoomMemberListRequest{
+	response, err := p.grpcClient.RoomMemberList(context.Background(), &pbwechatypuppet.RoomMemberListRequest{
 		Id: roomID,
 	})
 	if err != nil {
@@ -844,7 +858,7 @@ func (p *PuppetService) RoomMemberList(roomID string) ([]string, error) {
 // RoomMemberRawPayload ...
 func (p *PuppetService) RoomMemberRawPayload(roomID string, contactID string) (*schemas.RoomMemberPayload, error) {
 	log.Printf("PuppetService RoomMemberRawPayload(%s, %s)\n", roomID, contactID)
-	response, err := p.grpcClient.RoomMemberPayload(context.Background(), &pbwechaty.RoomMemberPayloadRequest{
+	response, err := p.grpcClient.RoomMemberPayload(context.Background(), &pbwechatypuppet.RoomMemberPayloadRequest{
 		Id:       roomID,
 		MemberId: contactID,
 	})
@@ -863,9 +877,9 @@ func (p *PuppetService) RoomMemberRawPayload(roomID string, contactID string) (*
 // SetRoomAnnounce ...
 func (p *PuppetService) SetRoomAnnounce(roomID, text string) error {
 	log.Printf("PuppetService SetRoomAnnounce(%s, %s)\n", roomID, text)
-	_, err := p.grpcClient.RoomAnnounce(context.Background(), &pbwechaty.RoomAnnounceRequest{
+	_, err := p.grpcClient.RoomAnnounce(context.Background(), &pbwechatypuppet.RoomAnnounceRequest{
 		Id:   roomID,
-		Text: &wrappers.StringValue{Value: text},
+		Text: &text,
 	})
 	if err != nil {
 		return err
@@ -876,31 +890,28 @@ func (p *PuppetService) SetRoomAnnounce(roomID, text string) error {
 // RoomAnnounce ...
 func (p *PuppetService) RoomAnnounce(roomID string) (string, error) {
 	log.Printf("PuppetService RoomAnnounce(%s)\n", roomID)
-	response, err := p.grpcClient.RoomAnnounce(context.Background(), &pbwechaty.RoomAnnounceRequest{
+	response, err := p.grpcClient.RoomAnnounce(context.Background(), &pbwechatypuppet.RoomAnnounceRequest{
 		Id: roomID,
 	})
 	if err != nil {
 		return "", err
 	}
-	return response.Text.Value, nil
+	return response.Text, nil
 }
 
 // RoomInvitationAccept ...
 func (p *PuppetService) RoomInvitationAccept(roomInvitationID string) error {
 	log.Printf("PuppetService RoomInvitationAccept(%s)\n", roomInvitationID)
-	_, err := p.grpcClient.RoomInvitationAccept(context.Background(), &pbwechaty.RoomInvitationAcceptRequest{
+	_, err := p.grpcClient.RoomInvitationAccept(context.Background(), &pbwechatypuppet.RoomInvitationAcceptRequest{
 		Id: roomInvitationID,
 	})
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // RoomInvitationRawPayload ...
 func (p *PuppetService) RoomInvitationRawPayload(id string) (*schemas.RoomInvitationPayload, error) {
 	log.Printf("PuppetService RoomInvitationRawPayload(%s)\n", id)
-	response, err := p.grpcClient.RoomInvitationPayload(context.Background(), &pbwechaty.RoomInvitationPayloadRequest{
+	response, err := p.grpcClient.RoomInvitationPayload(context.Background(), &pbwechatypuppet.RoomInvitationPayloadRequest{
 		Id: id,
 	})
 	if err != nil {
@@ -914,7 +925,7 @@ func (p *PuppetService) RoomInvitationRawPayload(id string) (*schemas.RoomInvita
 		Invitation:   response.Invitation,
 		MemberCount:  int(response.MemberCount),
 		MemberIdList: response.MemberIds,
-		Timestamp:    int64(response.Timestamp),
+		Timestamp:    response.ReceiveTime.AsTime(),
 		ReceiverId:   response.ReceiverId,
 	}, nil
 }
@@ -922,37 +933,31 @@ func (p *PuppetService) RoomInvitationRawPayload(id string) (*schemas.RoomInvita
 // FriendshipSearchPhone ...
 func (p *PuppetService) FriendshipSearchPhone(phone string) (string, error) {
 	log.Printf("PuppetService FriendshipSearchPhone(%s)\n", phone)
-	response, err := p.grpcClient.FriendshipSearchPhone(context.Background(), &pbwechaty.FriendshipSearchPhoneRequest{
+	response, err := p.grpcClient.FriendshipSearchPhone(context.Background(), &pbwechatypuppet.FriendshipSearchPhoneRequest{
 		Phone: phone,
 	})
 	if err != nil {
 		return "", err
 	}
-	if response.ContactId == nil {
-		return "", nil
-	}
-	return response.ContactId.Value, nil
+	return response.ContactId, nil
 }
 
 // FriendshipSearchWeixin ...
 func (p *PuppetService) FriendshipSearchWeixin(weixin string) (string, error) {
 	log.Printf("PuppetService FriendshipSearchWeixin(%s)\n", weixin)
-	response, err := p.grpcClient.FriendshipSearchWeixin(context.Background(), &pbwechaty.FriendshipSearchWeixinRequest{
+	response, err := p.grpcClient.FriendshipSearchWeixin(context.Background(), &pbwechatypuppet.FriendshipSearchHandleRequest{
 		Weixin: weixin,
 	})
 	if err != nil {
 		return "", err
 	}
-	if response.ContactId == nil {
-		return "", nil
-	}
-	return response.ContactId.Value, nil
+	return response.ContactId, nil
 }
 
 // FriendshipRawPayload ...
 func (p *PuppetService) FriendshipRawPayload(id string) (*schemas.FriendshipPayload, error) {
 	log.Printf("PuppetService FriendshipRawPayload(%s)\n", id)
-	response, err := p.grpcClient.FriendshipPayload(context.Background(), &pbwechaty.FriendshipPayloadRequest{
+	response, err := p.grpcClient.FriendshipPayload(context.Background(), &pbwechatypuppet.FriendshipPayloadRequest{
 		Id: id,
 	})
 	if err != nil {
@@ -976,7 +981,7 @@ func (p *PuppetService) FriendshipRawPayload(id string) (*schemas.FriendshipPayl
 // FriendshipAdd ...
 func (p *PuppetService) FriendshipAdd(contactID, hello string) (err error) {
 	log.Printf("PuppetService FriendshipAdd(%s, %s)\n", contactID, hello)
-	_, err = p.grpcClient.FriendshipAdd(context.Background(), &pbwechaty.FriendshipAddRequest{
+	_, err = p.grpcClient.FriendshipAdd(context.Background(), &pbwechatypuppet.FriendshipAddRequest{
 		ContactId: contactID,
 		Hello:     hello,
 	})
@@ -986,7 +991,7 @@ func (p *PuppetService) FriendshipAdd(contactID, hello string) (err error) {
 // FriendshipAccept ...
 func (p *PuppetService) FriendshipAccept(friendshipID string) (err error) {
 	log.Printf("PuppetService FriendshipAccept(%s)\n", friendshipID)
-	_, err = p.grpcClient.FriendshipAccept(context.Background(), &pbwechaty.FriendshipAcceptRequest{
+	_, err = p.grpcClient.FriendshipAccept(context.Background(), &pbwechatypuppet.FriendshipAcceptRequest{
 		Id: friendshipID,
 	})
 	return err
@@ -995,7 +1000,7 @@ func (p *PuppetService) FriendshipAccept(friendshipID string) (err error) {
 // TagContactAdd ...
 func (p *PuppetService) TagContactAdd(id, contactID string) (err error) {
 	log.Printf("PuppetService TagContactAdd(%s, %s)\n", id, contactID)
-	_, err = p.grpcClient.TagContactAdd(context.Background(), &pbwechaty.TagContactAddRequest{
+	_, err = p.grpcClient.TagContactAdd(context.Background(), &pbwechatypuppet.TagContactAddRequest{
 		Id:        id,
 		ContactId: id,
 	})
@@ -1005,7 +1010,7 @@ func (p *PuppetService) TagContactAdd(id, contactID string) (err error) {
 // TagContactRemove ...
 func (p *PuppetService) TagContactRemove(id, contactID string) (err error) {
 	log.Printf("PuppetService TagContactRemove(%s, %s)\n", id, contactID)
-	_, err = p.grpcClient.TagContactRemove(context.Background(), &pbwechaty.TagContactRemoveRequest{
+	_, err = p.grpcClient.TagContactRemove(context.Background(), &pbwechatypuppet.TagContactRemoveRequest{
 		Id:        id,
 		ContactId: contactID,
 	})
@@ -1015,7 +1020,7 @@ func (p *PuppetService) TagContactRemove(id, contactID string) (err error) {
 // TagContactDelete ...
 func (p *PuppetService) TagContactDelete(id string) (err error) {
 	log.Printf("PuppetService TagContactDelete(%s)\n", id)
-	_, err = p.grpcClient.TagContactDelete(context.Background(), &pbwechaty.TagContactDeleteRequest{
+	_, err = p.grpcClient.TagContactDelete(context.Background(), &pbwechatypuppet.TagContactDeleteRequest{
 		Id: id,
 	})
 	return err
@@ -1024,9 +1029,9 @@ func (p *PuppetService) TagContactDelete(id string) (err error) {
 // TagContactList ...
 func (p *PuppetService) TagContactList(contactID string) ([]string, error) {
 	log.Printf("PuppetService TagContactList(%s)\n", contactID)
-	request := &pbwechaty.TagContactListRequest{}
+	request := &pbwechatypuppet.TagContactListRequest{}
 	if contactID != "" {
-		request.ContactId = &wrappers.StringValue{Value: contactID}
+		request.ContactId = contactID
 	}
 	response, err := p.grpcClient.TagContactList(context.Background(), request)
 	if err != nil {
@@ -1042,8 +1047,8 @@ func (p *PuppetService) DirtyPayload(payloadType schemas.PayloadType, id string)
 	if err != nil {
 		return err
 	}
-	request := &pbwechaty.DirtyPayloadRequest{
-		Type: pbwechaty.PayloadType(payloadType),
+	request := &pbwechatypuppet.DirtyPayloadRequest{
+		Type: pbwechatypuppet.PayloadType(payloadType),
 		Id:   id,
 	}
 	_, err = p.grpcClient.DirtyPayload(context.Background(), request)

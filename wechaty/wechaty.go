@@ -558,6 +558,7 @@ func NewContext() *Context {
 		abort:   false,
 		Context: ctx,
 		cancel:  cancel,
+		data:    map[string]interface{}{},
 	}
 }
 

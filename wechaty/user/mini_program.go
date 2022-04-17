@@ -80,6 +80,24 @@ func (mp *MiniProgram) ThumbKey() string {
 	return mp.payload.ThumbKey
 }
 
+func (mp *MiniProgram) ShareId() string {
+	if mp.payloadIsNil() {
+		return ""
+	}
+	return mp.payload.ShareId
+}
+
+func (mp *MiniProgram) IconUrl() string {
+	if mp.payloadIsNil() {
+		return ""
+	}
+	return mp.payload.IconUrl
+}
+
+func (mp *MiniProgram) Payload() schemas.MiniProgramPayload {
+	return *mp.payload
+}
+
 func (mp *MiniProgram) payloadIsNil() bool {
 	return mp.payload == nil
 }

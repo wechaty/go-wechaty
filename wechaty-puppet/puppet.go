@@ -192,9 +192,14 @@ func (p *Puppet) MessageSearch(query *schemas.MessageQueryFilter) ([]string, err
 
 func (p *Puppet) messageQueryFilterFactory(query *schemas.MessageQueryFilter) schemas.MessagePayloadFilterFunction {
 	var filters []schemas.MessagePayloadFilterFunction
-	if query.FromId != "" {
+
+	// Deprecated FromId compatible
+	if query.FromId != "" && query.TalkerId == "" {
+		query.TalkerId = query.FromId
+	}
+	if query.TalkerId != "" {
 		filters = append(filters, func(payload *schemas.MessagePayload) bool {
-			return query.FromId == payload.FromId
+			return query.TalkerId == payload.TalkerId
 		})
 	}
 	if query.Id != "" {
@@ -217,9 +222,13 @@ func (p *Puppet) messageQueryFilterFactory(query *schemas.MessageQueryFilter) sc
 			return query.TextRegExp.MatchString(payload.Text)
 		})
 	}
-	if query.ToId != "" {
+	// Deprecated ToId compatible
+	if query.ToId != "" && query.ListenerId == "" {
+		query.ListenerId = query.ToId
+	}
+	if query.ListenerId != "" {
 		filters = append(filters, func(payload *schemas.MessagePayload) bool {
-			return query.ToId == payload.ToId
+			return query.ListenerId == payload.ListenerId
 		})
 	}
 	if query.Type != 0 {
