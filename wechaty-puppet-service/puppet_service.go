@@ -264,8 +264,9 @@ func (p *PuppetService) autoReconnectGrpcConn() {
 				}
 			}
 
-			if p.grpcConn.GetState() == connectivity.TransientFailure {
+			if p.grpcConn.GetState() == connectivity.Idle {
 				isClose = true
+				p.grpcConn.Connect()
 				log.Printf("PuppetService.autoReconnectGrpcConn grpc reconnection...")
 			}
 		}
