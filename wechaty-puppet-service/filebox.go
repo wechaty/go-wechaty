@@ -23,7 +23,7 @@ func NewFileBoxFromMessageFileStream(client pbwechaty.Puppet_MessageFileStreamCl
 		return nil, ErrNoName
 	}
 
-	return filebox.FromStream(NewMessageFile(client), name), nil
+	return filebox.FromStream(NewMessageFile(client), filebox.WithName(name)), nil
 }
 
 // MessageFile 把 grpc 流包装到 io.Reader 接口

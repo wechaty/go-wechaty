@@ -92,7 +92,7 @@ func (p *PuppetService) MessageImage(messageID string, imageType schemas.ImageTy
 	if err != nil {
 		return nil, err
 	}
-	return filebox.FromJSON(response.FileBox)
+	return filebox.FromJSON(response.FileBox), nil
 }
 
 // Start ...
@@ -405,7 +405,7 @@ func (p *PuppetService) ContactAvatar(contactID string) (*filebox.FileBox, error
 	if err != nil {
 		return nil, err
 	}
-	return filebox.FromJSON(response.FileBox)
+	return filebox.FromJSON(response.FileBox), nil
 }
 
 // ContactRawPayload ...
@@ -768,7 +768,7 @@ func (p *PuppetService) RoomAvatar(roomID string) (*filebox.FileBox, error) {
 	if err != nil {
 		return nil, err
 	}
-	return filebox.FromJSON(response.FileBox)
+	return filebox.FromJSON(response.FileBox), nil
 }
 
 // RoomAdd ...

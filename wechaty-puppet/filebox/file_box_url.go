@@ -2,7 +2,8 @@ package filebox
 
 import (
 	"bytes"
-	helper_functions "github.com/wechaty/go-wechaty/wechaty-puppet/helper"
+	"fmt"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -17,11 +18,14 @@ func newFileBoxUrl(remoteUrl string, headers http.Header) *fileBoxUrl {
 	return &fileBoxUrl{remoteUrl: remoteUrl, headers: headers}
 }
 
-func (fb *fileBoxUrl) toJSONMap() map[string]interface{} {
+func (fb *fileBoxUrl) toJSONMap() (map[string]interface{}, error) {
+	if fb.remoteUrl == "" {
+		return nil, fmt.Errorf("fileBoxUrl.toJSONMap %w", ErrNoUrl)
+	}
 	return map[string]interface{}{
 		"headers": fb.headers,
 		"url":     fb.remoteUrl,
-	}
+	}, nil
 }
 
 func (fb *fileBoxUrl) toBytes() ([]byte, error) {
@@ -30,7 +34,7 @@ func (fb *fileBoxUrl) toBytes() ([]byte, error) {
 		return nil, err
 	}
 	request.Header = fb.headers
-	response, err := helper_functions.HttpClient.Do(request)
+	response, err := helper.HttpClient.Do(request)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +48,7 @@ func (fb *fileBoxUrl) toReader() (io.Reader, error) {
 		return nil, err
 	}
 	request.Header = fb.headers
-	response, err := helper_functions.HttpClient.Do(request)
+	response, err := helper.HttpClient.Do(request)
 	if err != nil {
 		return nil, err
 	}

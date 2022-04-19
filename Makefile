@@ -30,7 +30,7 @@ install:
 
 .PHONY: gotest
 gotest:
-	go test `go list ./... | grep -v /vendor/` -v -count=1 -coverpkg=./...
+	go test `go list ./... | grep -v /vendor/` -count=1 -coverpkg=./...
 
 .PHONY: test
 test: golint gotest
