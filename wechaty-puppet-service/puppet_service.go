@@ -596,13 +596,12 @@ func (p *PuppetService) MessageRawPayload(id string) (*schemas.MessagePayload, e
 	if err != nil {
 		return nil, err
 	}
-	return &schemas.MessagePayload{
+	payload := &schemas.MessagePayload{
 		MessagePayloadBase: schemas.MessagePayloadBase{
 			Id:            response.Id,
 			MentionIdList: response.MentionIds,
 			FileName:      response.Filename,
 			Text:          response.Text,
-			Timestamp:     response.ReceiveTime.AsTime(),
 			Type:          schemas.MessageType(response.Type),
 		},
 		MessagePayloadRoom: schemas.MessagePayloadRoom{
@@ -610,7 +609,15 @@ func (p *PuppetService) MessageRawPayload(id string) (*schemas.MessagePayload, e
 			RoomId:     response.RoomId,
 			ListenerId: response.ListenerId,
 		},
-	}, nil
+	}
+
+	if response.ReceiveTime != nil {
+		second := response.ReceiveTime.Seconds*1000 + int64(response.ReceiveTime.Nanos)/1000000
+		payload.Timestamp = time.Unix(second, 0)
+	} else {
+		payload.Timestamp = time.Unix(int64(response.TimestampDeprecated), 0)
+	}
+	return payload, nil
 }
 
 // MessageSendText ...
