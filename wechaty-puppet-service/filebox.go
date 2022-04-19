@@ -122,3 +122,46 @@ func ToMessageSendFileWriter(client pbwechaty.Puppet_MessageSendFileStreamClient
 		fileBox: fileBox,
 	}, nil
 }
+
+// DownloadFile 把 grpc download 流包装到 io.Reader 接口
+type DownloadFile struct {
+	client pbwechaty.Puppet_DownloadClient
+	buffer bytes.Buffer
+	done   bool
+}
+
+// Read 把 grpc download 流包装到 io.Reader 接口
+func (m *DownloadFile) Read(p []byte) (n int, err error) {
+	if m.done {
+		return m.buffer.Read(p)
+	}
+
+	for {
+		if m.buffer.Len() >= len(p) {
+			break
+		}
+		recv, err := m.client.Recv()
+		if err == io.EOF {
+			m.done = true
+			err = nil
+			break
+		}
+		if err != nil {
+			return 0, err
+		}
+		_, err = m.buffer.Write(recv.Chunk)
+		if err != nil {
+			return 0, err
+		}
+	}
+	return m.buffer.Read(p)
+}
+
+// NewDownloadFile 把 grpc download 流包装到 io.Reader 接口
+func NewDownloadFile(client pbwechaty.Puppet_DownloadClient) *DownloadFile {
+	return &DownloadFile{
+		client: client,
+		buffer: bytes.Buffer{},
+		done:   false,
+	}
+}

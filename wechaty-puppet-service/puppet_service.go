@@ -108,6 +108,10 @@ func (p *PuppetService) Start() (err error) {
 	if err != nil {
 		return err
 	}
+
+	filebox.SetUuidLoader(p.uuidLoader)
+	filebox.SetUuidSaver(p.uuidSaver)
+
 	err = p.startGrpcStream()
 	if err != nil {
 		return err
@@ -117,6 +121,44 @@ func (p *PuppetService) Start() (err error) {
 		return err
 	}
 	return nil
+}
+
+func (p *PuppetService) uuidSaver(reader io.Reader) (uuid string, err error) {
+	client, err := p.grpcClient.Upload(context.Background())
+	if err != nil {
+		return "", err
+	}
+
+	b := make([]byte, 4000000)
+	for {
+		l, err := reader.Read(b)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return "", err
+		}
+		err = client.Send(&pbwechatypuppet.UploadRequest{Chunk: b[0:l]})
+		if err != nil {
+			return "", err
+		}
+	}
+
+	response, err := client.CloseAndRecv()
+	if err != nil {
+		return "", err
+	}
+	return response.Id, nil
+}
+
+func (p *PuppetService) uuidLoader(uuid string) (io.Reader, error) {
+	client, err := p.grpcClient.Download(context.Background(), &pbwechatypuppet.DownloadRequest{
+		Id: uuid,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return NewDownloadFile(client), nil
 }
 
 // Stop ...
@@ -585,19 +627,14 @@ func (p *PuppetService) MessageSendText(conversationID string, text string, ment
 	return response.Id, nil
 }
 
-var fileBoxStreamTypes = helper.ArrayInt{
-	filebox.TypeBase64,
-	filebox.TypeFile,
-	filebox.TypeStream,
-}
-
 // MessageSendFile ...
 func (p *PuppetService) MessageSendFile(conversationID string, fileBox *filebox.FileBox) (string, error) {
 	log.Printf("PuppetService MessageSendFile(%s)\n", conversationID)
-	if fileBoxStreamTypes.InArray(int(fileBox.Type())) {
-		return p.messageSendFileStream(conversationID, fileBox)
+	if msgID, err := p.messageSendFileNonStream(conversationID, fileBox); err == nil {
+		return msgID, nil
 	}
-	return p.messageSendFileNonStream(conversationID, fileBox)
+
+	return p.messageSendFileStream(conversationID, fileBox)
 }
 
 func (p *PuppetService) messageSendFileStream(conversationID string, fileBox *filebox.FileBox) (string, error) {
@@ -641,15 +678,35 @@ func (p *PuppetService) messageSendFileStream(conversationID string, fileBox *fi
 	return response.Id, nil
 }
 
+var serializableFileBoxTypes = helper.ArrayInt{
+	filebox.TypeBase64,
+	filebox.TypeUrl,
+	filebox.TypeQRCode,
+}
+
 func (p *PuppetService) messageSendFileNonStream(conversationID string, fileBox *filebox.FileBox) (string, error) {
 	log.Printf("PuppetService MessageSendFile(%s)\n", conversationID)
-	jsonString, err := fileBox.ToJSON()
-	if err != nil {
-		return "", err
+	var err error
+
+	jsonText := ""
+	if serializableFileBoxTypes.InArray(int(fileBox.Type())) {
+		jsonText, err = fileBox.ToJSON()
+		if err != nil {
+			return "", err
+		}
+	} else {
+		base64, err := fileBox.ToBase64()
+		if err != nil {
+			return "", err
+		}
+		jsonText, err = filebox.FromBase64(base64, filebox.WithName(fileBox.Name)).ToJSON()
+		if err != nil {
+			return "", err
+		}
 	}
 	response, err := p.grpcClient.MessageSendFile(context.Background(), &pbwechatypuppet.MessageSendFileRequest{
 		ConversationId: conversationID,
-		FileBox:        jsonString,
+		FileBox:        jsonText,
 	})
 	if err != nil {
 		return "", err
