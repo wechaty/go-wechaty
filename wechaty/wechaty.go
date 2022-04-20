@@ -294,7 +294,7 @@ func (w *Wechaty) DaemonStart() {
 	if err := w.Start(); err != nil {
 		panic(err)
 	}
-	var quitSig = make(chan os.Signal)
+	var quitSig = make(chan os.Signal, 1)
 	signal.Notify(quitSig, os.Interrupt, os.Kill)
 
 	select {

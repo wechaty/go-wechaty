@@ -3,8 +3,6 @@ module github.com/wechaty/go-wechaty
 go 1.18
 
 require (
-	github.com/bitly/go-simplejson v0.5.0
-	github.com/golang/protobuf v1.5.2
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/lucsky/cuid v1.0.2
 	github.com/otiai10/opengraph v1.1.1
@@ -15,10 +13,9 @@ require (
 )
 
 require (
-	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.0 // indirect
-	github.com/kr/pretty v0.1.0 // indirect
 	github.com/maruel/rs v0.0.0-20150922171536-2c81c4312fe4 // indirect
 	github.com/willf/bitset v1.1.10 // indirect
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
