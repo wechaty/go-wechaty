@@ -13,6 +13,7 @@ import (
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"io"
 	"log"
 	"time"
@@ -619,12 +620,16 @@ func (p *PuppetService) MessageRawPayload(id string) (*schemas.MessagePayload, e
 	}
 
 	if response.ReceiveTime != nil {
-		second := response.ReceiveTime.Seconds*1000 + int64(response.ReceiveTime.Nanos)/1000000
-		payload.Timestamp = time.Unix(second, 0)
+		payload.Timestamp = grpcTimestampToGoTime(response.ReceiveTime)
 	} else {
 		payload.Timestamp = time.Unix(int64(response.TimestampDeprecated), 0)
 	}
 	return payload, nil
+}
+
+func grpcTimestampToGoTime(t *timestamppb.Timestamp) time.Time {
+	second := t.Seconds*1000 + int64(t.Nanos)/1000000
+	return time.Unix(second, 0)
 }
 
 // MessageSendText ...
@@ -996,7 +1001,7 @@ func (p *PuppetService) RoomInvitationRawPayload(id string) (*schemas.RoomInvita
 		Invitation:   response.Invitation,
 		MemberCount:  int(response.MemberCount),
 		MemberIdList: response.MemberIds,
-		Timestamp:    response.ReceiveTime.AsTime(),
+		Timestamp:    grpcTimestampToGoTime(response.ReceiveTime),
 		ReceiverId:   response.ReceiverId,
 	}, nil
 }
