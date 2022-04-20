@@ -1128,3 +1128,16 @@ func (p *PuppetService) DirtyPayload(payloadType schemas.PayloadType, id string)
 	}
 	return nil
 }
+
+func (p *PuppetService) MessageForward(conversationID string, messageID string) (string, error) {
+	log.Printf("PuppetService MessageForward(%v, %v)\n", conversationID, messageID)
+	request := &pbwechatypuppet.MessageForwardRequest{
+		MessageId:      messageID,
+		ConversationId: conversationID,
+	}
+	response, err := p.grpcClient.MessageForward(context.Background(), request)
+	if err != nil {
+		return "", err
+	}
+	return response.Id, nil
+}

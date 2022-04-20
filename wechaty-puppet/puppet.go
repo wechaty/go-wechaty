@@ -554,32 +554,33 @@ func (p *Puppet) SetRoomInvitationPayload(payload *schemas.RoomInvitationPayload
 
 // MessageForward ...
 func (p *Puppet) MessageForward(conversationID string, messageID string) (string, error) {
-	payload, err := p.MessagePayload(messageID)
-	if err != nil {
-		return "", err
-	}
-	var newMsgID string
-	switch payload.Type {
-	case schemas.MessageTypeAttachment,
-		schemas.MessageTypeVideo,
-		schemas.MessageTypeAudio,
-		schemas.MessageTypeImage:
-		newMsgID, err = p.messageForwardFile(conversationID, messageID)
-	case schemas.MessageTypeText:
-		newMsgID, err = p.puppetImplementation.MessageSendText(conversationID, payload.Text)
-	case schemas.MessageTypeMiniProgram:
-		newMsgID, err = p.messageForwardMiniProgram(conversationID, messageID)
-	case schemas.MessageTypeURL:
-		newMsgID, err = p.messageForwardURL(conversationID, messageID)
-	case schemas.MessageTypeContact:
-		newMsgID, err = p.messageForwardContact(conversationID, messageID)
-	default:
-		return "", fmt.Errorf("unsupported forward message type: %s", payload.Type)
-	}
-	if err != nil {
-		return "", err
-	}
-	return newMsgID, nil
+	return p.puppetImplementation.MessageForward(conversationID, messageID)
+	//payload, err := p.MessagePayload(messageID)
+	//if err != nil {
+	//	return "", err
+	//}
+	//var newMsgID string
+	//switch payload.Type {
+	//case schemas.MessageTypeAttachment,
+	//	schemas.MessageTypeVideo,
+	//	schemas.MessageTypeAudio,
+	//	schemas.MessageTypeImage:
+	//	newMsgID, err = p.messageForwardFile(conversationID, messageID)
+	//case schemas.MessageTypeText:
+	//	newMsgID, err = p.puppetImplementation.MessageSendText(conversationID, payload.Text)
+	//case schemas.MessageTypeMiniProgram:
+	//	newMsgID, err = p.messageForwardMiniProgram(conversationID, messageID)
+	//case schemas.MessageTypeURL:
+	//	newMsgID, err = p.messageForwardURL(conversationID, messageID)
+	//case schemas.MessageTypeContact:
+	//	newMsgID, err = p.messageForwardContact(conversationID, messageID)
+	//default:
+	//	return "", fmt.Errorf("unsupported forward message type: %s", payload.Type)
+	//}
+	//if err != nil {
+	//	return "", err
+	//}
+	//return newMsgID, nil
 }
 
 func (p *Puppet) messageForwardFile(conversationID string, messageID string) (string, error) {
