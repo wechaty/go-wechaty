@@ -6,6 +6,7 @@ import (
 	pbwechaty "github.com/wechaty/go-grpc/wechaty"
 	pbwechatypuppet "github.com/wechaty/go-grpc/wechaty/puppet"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"io"
 )
 
@@ -164,4 +165,58 @@ func NewDownloadFile(client pbwechaty.Puppet_DownloadClient) *DownloadFile {
 		buffer: bytes.Buffer{},
 		done:   false,
 	}
+}
+
+/**
+ *  for testing propose, use 20KB as the threshold
+ *  after stable we should use a value between 64KB to 256KB as the threshold
+ */
+const passThroughThresholdBytes = 20 * 1024 // 20KB
+
+/**
+ * 1. Green:
+ *  Can be serialized directly
+ */
+var greenFileBoxTypes = helper.ArrayInt{
+	filebox.TypeUrl,
+	filebox.TypeUuid,
+	filebox.TypeQRCode,
+}
+
+/**
+ * 2. Yellow:
+ *  Can be serialized directly, if the size is less than a threshold
+ *  if it's bigger than the threshold,
+ *  then it should be convert to a UUID file box before send out
+ */
+var yellowFileBoxTypes = helper.ArrayInt{
+	filebox.TypeBase64,
+}
+
+func serializeFileBox(box *filebox.FileBox) (*filebox.FileBox, error) {
+	if canPassthrough(box) {
+		return box, nil
+	}
+	reader, err := box.ToReader()
+	if err != nil {
+		return nil, err
+	}
+	uuid, err := filebox.FromStream(reader).ToUuid()
+	if err != nil {
+		return nil, err
+	}
+	return filebox.FromUuid(uuid, filebox.WithName(box.Name)), nil
+}
+
+func canPassthrough(box *filebox.FileBox) bool {
+	if greenFileBoxTypes.InArray(int(box.Type())) {
+		return true
+	}
+
+	if !yellowFileBoxTypes.InArray(int(box.Type())) {
+		return false
+	}
+
+	// checksize
+	return true
 }

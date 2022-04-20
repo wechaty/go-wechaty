@@ -361,3 +361,7 @@ func (fb *FileBox) setErr(err error) *FileBox {
 	fb.err = err
 	return fb
 }
+
+func (fb *FileBox) Size() {
+
+}

@@ -8,4 +8,5 @@ type IWechaty interface {
 	Tag() ITagFactory
 	Friendship() IFriendshipFactory
 	Image() IImageFactory
+	UserSelf() IContactSelf
 }

@@ -56,7 +56,7 @@ type OptionsBase64 struct {
 
 // OptionsUrl url
 type OptionsUrl struct {
-	RemoteUrl string      `json:"remoteUrl"`
+	RemoteUrl string      `json:"url"`
 	Headers   http.Header `json:"headers"`
 }
 

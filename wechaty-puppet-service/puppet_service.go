@@ -425,16 +425,22 @@ func (p *PuppetService) ContactQRCode(contactID string) (string, error) {
 // SetContactAvatar ...
 func (p *PuppetService) SetContactAvatar(contactID string, fileBox *filebox.FileBox) error {
 	log.Printf("PuppetService SetContactAvatar(%s)\n", contactID)
+
+	var err error
+	fileBox, err = serializeFileBox(fileBox)
+	if err != nil {
+		return fmt.Errorf("serializeFileBox %w", err)
+	}
 	jsonString, err := fileBox.ToJSON()
 	if err != nil {
-		return err
+		return fmt.Errorf("fileBox.ToJSON() %w", err)
 	}
 	_, err = p.grpcClient.ContactAvatar(context.Background(), &pbwechatypuppet.ContactAvatarRequest{
 		Id:      contactID,
 		FileBox: &jsonString,
 	})
 	if err != nil {
-		return nil
+		return err
 	}
 	return nil
 }
