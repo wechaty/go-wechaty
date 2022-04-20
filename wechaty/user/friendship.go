@@ -51,7 +51,7 @@ func (f *Friendship) String() string {
 	return fmt.Sprintf("Friendship#%s<%s>", f.payload.Type, f.payload.ContactId)
 }
 
-// Accept accept friend request
+// Accept friend request
 func (f *Friendship) Accept() error {
 	if f.payload.Type != schemas.FriendshipTypeReceive {
 		return fmt.Errorf("accept() need type to be FriendshipType.Receive, but it got a %s", f.payload.Type)

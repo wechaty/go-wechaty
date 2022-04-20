@@ -102,14 +102,7 @@ func (c *ContactFactory) FindAll(query interface{}) []_interface.IContact {
 	return contacts
 }
 
-// NewTagFactory ...
-func NewTagFactory(accessory _interface.IAccessory) *TagFactory {
-	return &TagFactory{
-		IAccessory: accessory,
-		pool:       &sync.Map{},
-	}
-}
-
+// Tags get tags for all contact
 func (c *ContactFactory) Tags() []_interface.ITag {
 	tagIDList, err := c.GetPuppet().TagContactList("")
 	if err != nil {
