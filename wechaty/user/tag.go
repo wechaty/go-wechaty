@@ -21,7 +21,12 @@
 
 package user
 
-import _interface "github.com/wechaty/go-wechaty/wechaty/interface"
+import (
+	"fmt"
+	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
+)
+
+var ErrTagNil = fmt.Errorf("ErrTagNil")
 
 type Tag struct {
 	_interface.IAccessory
@@ -34,15 +39,24 @@ func NewTag(id string, accessory _interface.IAccessory) *Tag {
 }
 
 func (t *Tag) ID() string {
+	if t == nil {
+		return ""
+	}
 	return t.id
 }
 
 // Add tag for contact
 func (t *Tag) Add(to _interface.IContact) error {
+	if t == nil {
+		return ErrTagNil
+	}
 	return t.GetPuppet().TagContactAdd(t.id, to.ID())
 }
 
 // Remove this tag from Contact
 func (t *Tag) Remove(from _interface.IContact) error {
+	if t == nil {
+		return ErrTagNil
+	}
 	return t.GetPuppet().TagContactRemove(t.id, from.ID())
 }

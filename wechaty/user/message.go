@@ -15,6 +15,8 @@ import (
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
+var ErrMessageNil = fmt.Errorf("ErrMessageNil")
+
 type Message struct {
 	_interface.IAccessory
 
@@ -31,6 +33,10 @@ func NewMessage(id string, accessory _interface.IAccessory) _interface.IMessage 
 }
 
 func (m *Message) Ready() (err error) {
+	if m == nil {
+		return ErrMessageNil
+	}
+
 	if m.IsReady() {
 		return nil
 	}
@@ -66,11 +72,17 @@ func (m *Message) Ready() (err error) {
 }
 
 func (m *Message) IsReady() bool {
+	if m == nil {
+		return false
+	}
 	return m.payload != nil
 }
 
 // String() message to print string
 func (m *Message) String() string {
+	if m == nil || m.payload == nil {
+		return ErrMessageNil.Error()
+	}
 	talkerStr := ""
 	roomStr := ""
 	talker := m.Talker()
@@ -95,6 +107,9 @@ func (m *Message) String() string {
 
 // Room get the room from the message.
 func (m *Message) Room() _interface.IRoom {
+	if m == nil || m.payload == nil {
+		return nil
+	}
 	roomId := m.payload.RoomId
 	if roomId == "" {
 		return nil
@@ -104,6 +119,9 @@ func (m *Message) Room() _interface.IRoom {
 
 // Type get the type from the message.
 func (m *Message) Type() schemas.MessageType {
+	if m == nil || m.payload == nil {
+		return schemas.MessageTypeUnknown
+	}
 	return m.payload.Type
 }
 
@@ -115,6 +133,9 @@ func (m *Message) From() _interface.IContact {
 
 // Talker Get the talker of a message.
 func (m *Message) Talker() _interface.IContact {
+	if m == nil || m.payload == nil {
+		return nil
+	}
 	if m.payload.TalkerId == "" {
 		return nil
 	}
@@ -123,6 +144,9 @@ func (m *Message) Talker() _interface.IContact {
 
 // Text get the text content of the message
 func (m *Message) Text() string {
+	if m == nil || m.payload == nil {
+		return ""
+	}
 	return m.payload.Text
 }
 
@@ -139,6 +163,9 @@ func (m *Message) Age() time.Duration {
 
 // Date sent date
 func (m *Message) Date() time.Time {
+	if m == nil || m.payload == nil {
+		return time.Time{}
+	}
 	return m.payload.Timestamp
 }
 
@@ -200,6 +227,9 @@ listener() will return nil if a message is in a room
 use Room() to get the room.
 */
 func (m *Message) Listener() _interface.IContact {
+	if m == nil || m.payload == nil {
+		return nil
+	}
 	if m.payload.ListenerId == "" {
 		return nil
 	}
@@ -225,6 +255,9 @@ func (m *Message) ToRecalled() (_interface.IMessage, error) {
 
 // Recall recall a message
 func (m *Message) Recall() (bool, error) {
+	if m == nil {
+		return false, ErrMessageNil
+	}
 	recall, err := m.GetPuppet().MessageRecall(m.id)
 	if err != nil {
 		return false, err
@@ -234,6 +267,9 @@ func (m *Message) Recall() (bool, error) {
 
 // MentionList get message mentioned contactList.
 func (m *Message) MentionList() []_interface.IContact {
+	if m == nil || m.payload == nil {
+		return nil
+	}
 	room := m.Room()
 	if m.Type() != schemas.MessageTypeText || room == nil {
 		return nil
@@ -356,12 +392,18 @@ func (m *Message) MentionSelf() bool {
 
 // Forward Forward the received message.
 func (m *Message) Forward(contactOrRoomId string) error {
+	if m == nil {
+		return ErrMessageNil
+	}
 	_, err := m.GetPuppet().MessageForward(contactOrRoomId, m.id)
 	return err
 }
 
 // ToFileBox extract the Media File from the Message, and put it into the FileBox.
 func (m *Message) ToFileBox() (*filebox.FileBox, error) {
+	if m == nil {
+		return nil, ErrMessageNil
+	}
 	if m.Type() == schemas.MessageTypeText {
 		return nil, errors.New("text message no file")
 	}
@@ -370,6 +412,9 @@ func (m *Message) ToFileBox() (*filebox.FileBox, error) {
 
 // ToImage extract the Image File from the Message, so that we can use different image sizes.
 func (m *Message) ToImage() (_interface.IImage, error) {
+	if m == nil {
+		return nil, ErrMessageNil
+	}
 	if m.Type() != schemas.MessageTypeImage {
 		return nil, errors.New("not a image type message")
 	}
@@ -379,6 +424,9 @@ func (m *Message) ToImage() (_interface.IImage, error) {
 // ToContact Get Share Card of the Message
 // Extract the Contact Card from the Message, and encapsulate it into Contact class
 func (m *Message) ToContact() (_interface.IContact, error) {
+	if m == nil {
+		return nil, ErrMessageNil
+	}
 	if m.Type() != schemas.MessageTypeContact {
 		return nil, errors.New("message not a ShareCard")
 	}
@@ -395,6 +443,9 @@ func (m *Message) ToContact() (_interface.IContact, error) {
 }
 
 func (m *Message) ToUrlLink() (*UrlLink, error) {
+	if m == nil {
+		return nil, ErrMessageNil
+	}
 	if m.Type() != schemas.MessageTypeURL {
 		return nil, errors.New("message not a Url Link")
 	}
@@ -406,6 +457,9 @@ func (m *Message) ToUrlLink() (*UrlLink, error) {
 }
 
 func (m *Message) ToMiniProgram() (*MiniProgram, error) {
+	if m == nil {
+		return nil, ErrMessageNil
+	}
 	if m.Type() != schemas.MessageTypeMiniProgram {
 		return nil, errors.New("message not a MiniProgram")
 	}
@@ -418,5 +472,8 @@ func (m *Message) ToMiniProgram() (*MiniProgram, error) {
 
 // ID message id
 func (m *Message) ID() string {
+	if m == nil {
+		return ""
+	}
 	return m.id
 }

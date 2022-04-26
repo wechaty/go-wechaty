@@ -12,6 +12,8 @@ import (
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
+var ErrRoomNil = fmt.Errorf("ErrRoomNil")
+
 type Room struct {
 	id      string
 	payLoad *schemas.RoomPayload
@@ -28,6 +30,9 @@ func NewRoom(id string, accessory _interface.IAccessory) *Room {
 
 // Ready is For FrameWork ONLY!
 func (r *Room) Ready(forceSync bool) (err error) {
+	if r == nil {
+		return ErrRoomNil
+	}
 	if !forceSync && r.IsReady() {
 		return nil
 	}
@@ -68,6 +73,9 @@ func (r *Room) IsReady() bool {
 }
 
 func (r *Room) String() string {
+	if r == nil || r.payLoad == nil {
+		return ErrRoomNil.Error()
+	}
 	str := "loading"
 	if r.payLoad.Topic != "" {
 		str = r.payLoad.Topic
@@ -76,12 +84,18 @@ func (r *Room) String() string {
 }
 
 func (r *Room) ID() string {
+	if r == nil {
+		return ""
+	}
 	return r.id
 }
 
-// Find all contacts in a room
+// MemberAll all contacts in a room
 // params nil or string or RoomMemberQueryFilter
 func (r *Room) MemberAll(query interface{}) ([]_interface.IContact, error) {
+	if r == nil {
+		return nil, ErrMessageNil
+	}
 	if query == nil {
 		return r.memberList()
 	}
@@ -115,6 +129,9 @@ func (r *Room) Member(query interface{}) (_interface.IContact, error) {
 
 // get all room member from the room
 func (r *Room) memberList() ([]_interface.IContact, error) {
+	if r == nil {
+		return nil, ErrRoomNil
+	}
 	memberIDList, err := r.GetPuppet().RoomMemberList(r.id)
 	if err != nil {
 		return nil, err
@@ -131,6 +148,9 @@ func (r *Room) memberList() ([]_interface.IContact, error) {
 
 // Alias return contact's roomAlias in the room
 func (r *Room) Alias(contact _interface.IContact) (string, error) {
+	if r == nil {
+		return "", ErrRoomNil
+	}
 	memberPayload, err := r.GetPuppet().RoomMemberPayload(r.id, contact.ID())
 	if err != nil {
 		return "", err
@@ -146,6 +166,9 @@ func (r *Room) Sync() error {
 // Say something params {(string | Contact | FileBox | UrlLink | MiniProgram )}
 // mentionList @ contact list
 func (r *Room) Say(something interface{}, mentionList ..._interface.IContact) (msg _interface.IMessage, err error) {
+	if r == nil {
+		return nil, ErrRoomNil
+	}
 	var msgID string
 	switch v := something.(type) {
 	case string:
@@ -169,6 +192,9 @@ func (r *Room) Say(something interface{}, mentionList ..._interface.IContact) (m
 }
 
 func (r *Room) sayText(text string, mentionList ..._interface.IContact) (string, error) {
+	if r == nil {
+		return "", ErrRoomNil
+	}
 	var mentionIDList []string
 	if len(mentionList) > 0 {
 		mentionAlias := make([]string, 0, len(mentionList))
@@ -189,22 +215,34 @@ func (r *Room) sayText(text string, mentionList ..._interface.IContact) (string,
 
 // Add contact in a room
 func (r *Room) Add(contact _interface.IContact) error {
+	if r == nil {
+		return ErrRoomNil
+	}
 	return r.GetPuppet().RoomAdd(r.id, contact.ID())
 }
 
 // Del delete a contact from the room
 // it works only when the bot is the owner of the room
 func (r *Room) Del(contact _interface.IContact) error {
+	if r == nil {
+		return ErrRoomNil
+	}
 	return r.GetPuppet().RoomDel(r.id, contact.ID())
 }
 
 // Quit the room itself
 func (r *Room) Quit() error {
+	if r == nil {
+		return ErrRoomNil
+	}
 	return r.GetPuppet().RoomQuit(r.id)
 }
 
 // Topic get topic from the room
 func (r *Room) Topic() string {
+	if r == nil || r.payLoad == nil {
+		return ""
+	}
 	if r.payLoad.Topic != "" {
 		return r.payLoad.Topic
 	}
@@ -230,27 +268,42 @@ func (r *Room) Topic() string {
 
 // SetTopic set topic from the room
 func (r *Room) SetTopic(topic string) error {
+	if r == nil {
+		return ErrRoomNil
+	}
 	return r.GetPuppet().SetRoomTopic(r.id, topic)
 }
 
 // Announce get announce from the room
 func (r *Room) Announce() (string, error) {
+	if r == nil {
+		return "", ErrRoomNil
+	}
 	return r.GetPuppet().RoomAnnounce(r.id)
 }
 
 // SetAnnounce set announce from the room
 // It only works when bot is the owner of the room.
 func (r *Room) SetAnnounce(text string) error {
+	if r == nil {
+		return ErrRoomNil
+	}
 	return r.GetPuppet().SetRoomAnnounce(r.id, text)
 }
 
 // QrCode Get QR Code Value of the Room from the room, which can be used as scan and join the room.
 func (r *Room) QrCode() (string, error) {
+	if r == nil {
+		return "", ErrRoomNil
+	}
 	return r.GetPuppet().RoomQRCode(r.id)
 }
 
 // Has check if the room has member `contact`
 func (r *Room) Has(contact _interface.IContact) (bool, error) {
+	if r == nil {
+		return false, ErrRoomNil
+	}
 	memberIDList, err := r.GetPuppet().RoomMemberList(r.id)
 	if err != nil {
 		return false, err
@@ -265,6 +318,9 @@ func (r *Room) Has(contact _interface.IContact) (bool, error) {
 
 // Owner get room's owner from the room.
 func (r *Room) Owner() _interface.IContact {
+	if r == nil || r.payLoad == nil {
+		return nil
+	}
 	if r.payLoad.OwnerId == "" {
 		return nil
 	}
@@ -273,5 +329,8 @@ func (r *Room) Owner() _interface.IContact {
 
 // Avatar get avatar from the room.
 func (r *Room) Avatar() (*filebox.FileBox, error) {
+	if r == nil {
+		return nil, ErrRoomNil
+	}
 	return r.GetPuppet().RoomAvatar(r.id)
 }

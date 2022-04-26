@@ -40,28 +40,28 @@ func (ul *UrlLink) String() string {
 }
 
 func (ul *UrlLink) Url() string {
-	if ul.payload == nil {
+	if ul == nil || ul.payload == nil {
 		return ""
 	}
 	return ul.payload.Url
 }
 
 func (ul *UrlLink) Title() string {
-	if ul.payload == nil {
+	if ul == nil || ul.payload == nil {
 		return ""
 	}
 	return ul.payload.Title
 }
 
 func (ul *UrlLink) ThumbnailUrl() string {
-	if ul.payload == nil {
+	if ul == nil || ul.payload == nil {
 		return ""
 	}
 	return ul.payload.ThumbnailUrl
 }
 
 func (ul *UrlLink) Description() string {
-	if ul.payload == nil {
+	if ul == nil || ul.payload == nil {
 		return ""
 	}
 	return ul.payload.Description
@@ -69,5 +69,8 @@ func (ul *UrlLink) Description() string {
 
 // Payload UrlLink payload
 func (ul *UrlLink) Payload() schemas.UrlLinkPayload {
+	if ul == nil {
+		return schemas.UrlLinkPayload{}
+	}
 	return *ul.payload
 }

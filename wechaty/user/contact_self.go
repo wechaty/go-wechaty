@@ -2,10 +2,13 @@ package user
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
+
+var ErrContactSelfNil = fmt.Errorf("ErrContactSelfNil")
 
 type ContactSelf struct {
 	*Contact
@@ -21,6 +24,9 @@ func NewContactSelf(id string, accessory _interface.IAccessory) *ContactSelf {
 
 // SetAvatar SET the avatar for a bot
 func (c *ContactSelf) SetAvatar(box *filebox.FileBox) error {
+	if c == nil {
+		return ErrContactSelfNil
+	}
 	if c.Id != c.GetPuppet().SelfID() {
 		return errors.New("set avatar only available for user self")
 	}
@@ -29,6 +35,9 @@ func (c *ContactSelf) SetAvatar(box *filebox.FileBox) error {
 
 // QRCode get bot qrcode
 func (c *ContactSelf) QRCode() (string, error) {
+	if c == nil {
+		return "", ErrContactSelfNil
+	}
 	puppetId := c.GetPuppet().SelfID()
 	if puppetId == "" {
 		return "", errors.New("can not get qrcode, user might be either not logged in or already logged out")
@@ -45,6 +54,9 @@ func (c *ContactSelf) QRCode() (string, error) {
 
 // SetName change bot name
 func (c *ContactSelf) SetName(name string) error {
+	if c == nil {
+		return ErrContactSelfNil
+	}
 	puppetId := c.GetPuppet().SelfID()
 	if puppetId == "" {
 		return errors.New("can not set name for user self, user might be either not logged in or already logged out")
@@ -62,6 +74,9 @@ func (c *ContactSelf) SetName(name string) error {
 
 // Signature change bot signature
 func (c *ContactSelf) Signature(signature string) error {
+	if c == nil {
+		return ErrContactSelfNil
+	}
 	puppetId := c.GetPuppet().SelfID()
 	if puppetId == "" {
 		return errors.New("can not set signature for user self, user might be either not logged in or already logged out")

@@ -99,5 +99,8 @@ func (mp *MiniProgram) Payload() schemas.MiniProgramPayload {
 }
 
 func (mp *MiniProgram) payloadIsNil() bool {
+	if mp == nil {
+		return false
+	}
 	return mp.payload == nil
 }

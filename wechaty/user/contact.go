@@ -22,6 +22,7 @@
 package user
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
@@ -30,6 +31,8 @@ import (
 	"github.com/wechaty/go-wechaty/wechaty/config"
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
+
+var ErrContactNil = errors.New("ErrContactNil")
 
 type Contact struct {
 	_interface.IAccessory
@@ -48,6 +51,10 @@ func NewContact(id string, accessory _interface.IAccessory) *Contact {
 
 // Ready is For FrameWork ONLY!
 func (c *Contact) Ready(forceSync bool) (err error) {
+	if c == nil {
+		return ErrContactNil
+	}
+
 	if !forceSync && c.IsReady() {
 		return nil
 	}
@@ -67,6 +74,9 @@ func (c *Contact) Ready(forceSync bool) (err error) {
 }
 
 func (c *Contact) IsReady() bool {
+	if c == nil {
+		return false
+	}
 	return c.payload != nil
 }
 
@@ -81,6 +91,10 @@ func (c *Contact) String() string {
 
 func (c *Contact) identity() string {
 	identity := "loading..."
+	if c == nil || c.payload == nil {
+		return fmt.Sprintf("contact nil: %#v", c)
+	}
+
 	if c.payload.Alias != "" {
 		identity = c.payload.Alias
 	} else if c.payload.Name != "" {
@@ -92,11 +106,14 @@ func (c *Contact) identity() string {
 }
 
 func (c *Contact) ID() string {
+	if c == nil {
+		return ""
+	}
 	return c.Id
 }
 
 func (c *Contact) Name() string {
-	if c.payload == nil {
+	if c == nil || c.payload == nil {
 		return ""
 	}
 	return c.payload.Name
@@ -104,6 +121,9 @@ func (c *Contact) Name() string {
 
 // Say something params {(string | Contact | FileBox | UrlLink | MiniProgram)}
 func (c *Contact) Say(something interface{}) (msg _interface.IMessage, err error) {
+	if c == nil {
+		return nil, ErrContactNil
+	}
 	var msgID string
 	switch v := something.(type) {
 	case string:
@@ -128,36 +148,57 @@ func (c *Contact) Say(something interface{}) (msg _interface.IMessage, err error
 
 // Friend true for friend of the bot, false for not friend of the bot
 func (c *Contact) Friend() bool {
+	if c == nil || c.payload == nil {
+		return false
+	}
 	return c.payload.Friend
 }
 
 // Type contact type
 func (c *Contact) Type() schemas.ContactType {
+	if c == nil || c.payload == nil {
+		return schemas.ContactTypeUnknown
+	}
 	return c.payload.Type
 }
 
 // Star check if the contact is star contact
 func (c *Contact) Star() bool {
+	if c == nil || c.payload == nil {
+		return false
+	}
 	return c.payload.Star
 }
 
 // Gender gender
 func (c *Contact) Gender() schemas.ContactGender {
+	if c == nil || c.payload == nil {
+		return schemas.ContactGenderUnknown
+	}
 	return c.payload.Gender
 }
 
 // Province Get the region 'province' from a contact
 func (c *Contact) Province() string {
+	if c == nil || c.payload == nil {
+		return ""
+	}
 	return c.payload.Province
 }
 
 // City Get the region 'city' from a contact
 func (c *Contact) City() string {
+	if c == nil || c.payload == nil {
+		return ""
+	}
 	return c.payload.City
 }
 
 // Avatar get avatar picture file stream
 func (c *Contact) Avatar() *filebox.FileBox {
+	if c == nil {
+		return config.QRCodeForChatie()
+	}
 	avatar, err := c.GetPuppet().ContactAvatar(c.Id)
 	if err != nil {
 		log.Printf("Contact Avatar() exception: %s\n", err)
@@ -168,22 +209,35 @@ func (c *Contact) Avatar() *filebox.FileBox {
 
 // Self Check if contact is self
 func (c *Contact) Self() bool {
+	if c == nil {
+		return false
+	}
 	return c.GetPuppet().SelfID() == c.Id
 }
 
 // Weixin get the weixin number from a contact
 // Sometimes cannot get weixin number due to weixin security mechanism, not recommend.
 func (c *Contact) Weixin() string {
+	if c == nil || c.payload == nil {
+		return ""
+	}
 	return c.payload.WeiXin
 }
 
 // Alias get alias
 func (c *Contact) Alias() string {
+	if c == nil || c.payload == nil {
+		return ""
+	}
 	return c.payload.Alias
 }
 
 // SetAlias set alias
 func (c *Contact) SetAlias(newAlias string) {
+	if c == nil || c.payload == nil {
+		return
+	}
+
 	var err error
 	defer func() {
 		if err != nil {

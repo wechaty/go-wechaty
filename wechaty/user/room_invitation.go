@@ -9,6 +9,8 @@ import (
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
+var ErrRoomInvitationNil = fmt.Errorf("ErrRoomInvitationNil")
+
 type RoomInvitation struct {
 	_interface.IAccessory
 	id string
@@ -23,6 +25,9 @@ func NewRoomInvitation(id string, accessory _interface.IAccessory) *RoomInvitati
 }
 
 func (ri *RoomInvitation) String() string {
+	if ri == nil {
+		return ErrRoomInvitationNil.Error()
+	}
 	id := "loading"
 	if ri.id != "" {
 		id = ri.id
@@ -31,6 +36,9 @@ func (ri *RoomInvitation) String() string {
 }
 
 func (ri *RoomInvitation) ToStringAsync() (string, error) {
+	if ri == nil {
+		return "", ErrRoomInvitationNil
+	}
 	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
 	if err != nil {
 		return "", err
@@ -40,6 +48,9 @@ func (ri *RoomInvitation) ToStringAsync() (string, error) {
 
 // Accept Room Invitation
 func (ri *RoomInvitation) Accept() error {
+	if ri == nil {
+		return ErrRoomInvitationNil
+	}
 	err := ri.GetPuppet().RoomInvitationAccept(ri.id)
 	if err != nil {
 		return err
@@ -58,6 +69,9 @@ func (ri *RoomInvitation) Accept() error {
 
 // Inviter get the inviter from room invitation
 func (ri *RoomInvitation) Inviter() (_interface.IContact, error) {
+	if ri == nil {
+		return nil, ErrRoomInvitationNil
+	}
 	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
 	if err != nil {
 		return nil, err
@@ -67,6 +81,9 @@ func (ri *RoomInvitation) Inviter() (_interface.IContact, error) {
 
 // Topic get the room topic from room invitation
 func (ri *RoomInvitation) Topic() (string, error) {
+	if ri == nil {
+		return "", ErrRoomInvitationNil
+	}
 	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
 	if err != nil {
 		return "", err
@@ -75,6 +92,9 @@ func (ri *RoomInvitation) Topic() (string, error) {
 }
 
 func (ri *RoomInvitation) MemberCount() (int, error) {
+	if ri == nil {
+		return 0, ErrRoomInvitationNil
+	}
 	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
 	if err != nil {
 		return 0, err
@@ -84,6 +104,9 @@ func (ri *RoomInvitation) MemberCount() (int, error) {
 
 // MemberList list of Room Members that you known(is friend)
 func (ri *RoomInvitation) MemberList() ([]_interface.IContact, error) {
+	if ri == nil {
+		return nil, ErrRoomInvitationNil
+	}
 	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
 	if err != nil {
 		return nil, err
@@ -101,6 +124,9 @@ func (ri *RoomInvitation) MemberList() ([]_interface.IContact, error) {
 
 // Date get the invitation time
 func (ri *RoomInvitation) Date() (time.Time, error) {
+	if ri == nil {
+		return time.Time{}, ErrRoomInvitationNil
+	}
 	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
 	if err != nil {
 		return time.Time{}, err
@@ -118,6 +144,9 @@ func (ri *RoomInvitation) Age() (time.Duration, error) {
 }
 
 func (ri *RoomInvitation) ToJson() (string, error) {
+	if ri == nil {
+		return "", ErrRoomInvitationNil
+	}
 	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
 	if err != nil {
 		return "", err

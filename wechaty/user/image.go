@@ -1,13 +1,13 @@
 package user
 
 import (
-  "github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
-  "github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-  "github.com/wechaty/go-wechaty/wechaty/interface"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+	"github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 type Images struct {
-  _interface.IAccessory
+	_interface.IAccessory
 	ImageId string
 }
 
