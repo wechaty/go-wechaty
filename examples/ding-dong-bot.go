@@ -61,6 +61,7 @@ func onMessage(ctx *wechaty.Context, message *user.Message) {
 		log.Println(err)
 		return
 	}
+
 	log.Printf("REPLY with image: %s\n", fileBox)
 
 	// 3. reply url link
