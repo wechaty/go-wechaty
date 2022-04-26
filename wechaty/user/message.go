@@ -41,9 +41,9 @@ func (m *Message) Ready() (err error) {
 		return err
 	}
 
-	fromId := m.payload.FromId
+	talkerId := m.payload.TalkerId
 	roomId := m.payload.RoomId
-	toId := m.payload.ToId
+	listenerId := m.payload.ListenerId
 
 	if roomId != "" {
 		if err := m.GetWechaty().Room().Load(roomId).Ready(false); err != nil {
@@ -51,14 +51,14 @@ func (m *Message) Ready() (err error) {
 		}
 	}
 
-	if fromId != "" {
-		if err := m.GetWechaty().Contact().Load(fromId).Ready(false); err != nil {
+	if talkerId != "" {
+		if err := m.GetWechaty().Contact().Load(talkerId).Ready(false); err != nil {
 			return err
 		}
 	}
 
-	if toId != "" {
-		if err := m.GetWechaty().Contact().Load(toId).Ready(false); err != nil {
+	if listenerId != "" {
+		if err := m.GetWechaty().Contact().Load(listenerId).Ready(false); err != nil {
 			return err
 		}
 	}
@@ -71,17 +71,17 @@ func (m *Message) IsReady() bool {
 
 // String() message to print string
 func (m *Message) String() string {
-	fromStr := ""
+	talkerStr := ""
 	roomStr := ""
-	from := m.From()
-	if from != nil {
-		fromStr = "🗣" + from.String()
+	talker := m.Talker()
+	if talker != nil {
+		talkerStr = "🗣" + talker.String()
 	}
 	room := m.Room()
 	if room != nil {
 		roomStr = "@👥'" + room.String()
 	}
-	str := fmt.Sprintf("Message#%s[%s%s]", m.Type(), fromStr, roomStr)
+	str := fmt.Sprintf("Message#%s[%s%s]", m.Type(), talkerStr, roomStr)
 	switch m.Type() {
 	case schemas.MessageTypeText, schemas.MessageTypeUnknown:
 		r := []rune(m.Text())
@@ -108,11 +108,17 @@ func (m *Message) Type() schemas.MessageType {
 }
 
 // From get the sender from a message
+// Deprecated: please use Talker()
 func (m *Message) From() _interface.IContact {
-	if m.payload.FromId == "" {
+	return m.Talker()
+}
+
+// Talker Get the talker of a message.
+func (m *Message) Talker() _interface.IContact {
+	if m.payload.TalkerId == "" {
 		return nil
 	}
-	return m.GetWechaty().Contact().Load(m.payload.FromId)
+	return m.GetWechaty().Contact().Load(m.payload.TalkerId)
 }
 
 // Text get the text content of the message
@@ -123,17 +129,17 @@ func (m *Message) Text() string {
 // Self check if a message is sent by self
 func (m *Message) Self() bool {
 	userID := m.GetPuppet().SelfID()
-	from := m.From()
-	return userID == from.ID()
+	talker := m.Talker()
+	return userID == talker.ID()
 }
 
 func (m *Message) Age() time.Duration {
 	return time.Now().Sub(m.Date())
 }
 
-// Message sent date
+// Date sent date
 func (m *Message) Date() time.Time {
-	return time.Unix(int64(m.payload.Timestamp), 0)
+	return m.payload.Timestamp
 }
 
 // Say reply a Text or Media File message to the sender.
@@ -175,19 +181,29 @@ func (m *Message) sayId() (string, error) {
 	if room != nil {
 		return room.ID(), nil
 	}
-	from := m.From()
-	if from != nil {
-		return from.ID(), nil
+	talker := m.Talker()
+	if talker != nil {
+		return talker.ID(), nil
 	}
-	return "", errors.New("neither room nor from? ")
+	return "", errors.New("neither room nor talker? ")
 }
 
 // To get the destination of the message
+// Deprecated: please use Listener()
 func (m *Message) To() _interface.IContact {
-	if m.payload.ToId == "" {
+	return m.Listener()
+}
+
+/*
+Listener Get the destination of the message.
+listener() will return nil if a message is in a room
+use Room() to get the room.
+*/
+func (m *Message) Listener() _interface.IContact {
+	if m.payload.ListenerId == "" {
 		return nil
 	}
-	return m.GetWechaty().Contact().Load(m.payload.ToId)
+	return m.GetWechaty().Contact().Load(m.payload.ListenerId)
 }
 
 // ToRecalled get the recalled message

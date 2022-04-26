@@ -11,6 +11,14 @@ type TagFactory struct {
 	pool *sync.Map
 }
 
+// NewTagFactory ...
+func NewTagFactory(accessory _interface.IAccessory) *TagFactory {
+	return &TagFactory{
+		IAccessory: accessory,
+		pool:       &sync.Map{},
+	}
+}
+
 func (r *TagFactory) Load(id string) _interface.ITag {
 	load, ok := r.pool.Load(id)
 	if ok {

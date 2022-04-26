@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+var _ fileImplInterface = &fileBoxFile{}
+
 type fileBoxFile struct {
 	path string
 }
@@ -15,8 +17,8 @@ func newFileBoxFile(path string) *fileBoxFile {
 	return &fileBoxFile{path: path}
 }
 
-func (fb *fileBoxFile) toJSONMap() map[string]interface{} {
-	return nil
+func (fb *fileBoxFile) toJSONMap() (map[string]interface{}, error) {
+	return nil, nil
 }
 
 func (fb *fileBoxFile) toBytes() ([]byte, error) {

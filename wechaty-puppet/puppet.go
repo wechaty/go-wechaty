@@ -192,9 +192,14 @@ func (p *Puppet) MessageSearch(query *schemas.MessageQueryFilter) ([]string, err
 
 func (p *Puppet) messageQueryFilterFactory(query *schemas.MessageQueryFilter) schemas.MessagePayloadFilterFunction {
 	var filters []schemas.MessagePayloadFilterFunction
-	if query.FromId != "" {
+
+	// Deprecated FromId compatible
+	if query.FromId != "" && query.TalkerId == "" {
+		query.TalkerId = query.FromId
+	}
+	if query.TalkerId != "" {
 		filters = append(filters, func(payload *schemas.MessagePayload) bool {
-			return query.FromId == payload.FromId
+			return query.TalkerId == payload.TalkerId
 		})
 	}
 	if query.Id != "" {
@@ -217,9 +222,13 @@ func (p *Puppet) messageQueryFilterFactory(query *schemas.MessageQueryFilter) sc
 			return query.TextRegExp.MatchString(payload.Text)
 		})
 	}
-	if query.ToId != "" {
+	// Deprecated ToId compatible
+	if query.ToId != "" && query.ListenerId == "" {
+		query.ListenerId = query.ToId
+	}
+	if query.ListenerId != "" {
 		filters = append(filters, func(payload *schemas.MessagePayload) bool {
-			return query.ToId == payload.ToId
+			return query.ListenerId == payload.ListenerId
 		})
 	}
 	if query.Type != 0 {
@@ -545,32 +554,33 @@ func (p *Puppet) SetRoomInvitationPayload(payload *schemas.RoomInvitationPayload
 
 // MessageForward ...
 func (p *Puppet) MessageForward(conversationID string, messageID string) (string, error) {
-	payload, err := p.MessagePayload(messageID)
-	if err != nil {
-		return "", err
-	}
-	var newMsgID string
-	switch payload.Type {
-	case schemas.MessageTypeAttachment,
-		schemas.MessageTypeVideo,
-		schemas.MessageTypeAudio,
-		schemas.MessageTypeImage:
-		newMsgID, err = p.messageForwardFile(conversationID, messageID)
-	case schemas.MessageTypeText:
-		newMsgID, err = p.puppetImplementation.MessageSendText(conversationID, payload.Text)
-	case schemas.MessageTypeMiniProgram:
-		newMsgID, err = p.messageForwardMiniProgram(conversationID, messageID)
-	case schemas.MessageTypeURL:
-		newMsgID, err = p.messageForwardURL(conversationID, messageID)
-	case schemas.MessageTypeContact:
-		newMsgID, err = p.messageForwardContact(conversationID, messageID)
-	default:
-		return "", fmt.Errorf("unsupported forward message type: %s", payload.Type)
-	}
-	if err != nil {
-		return "", err
-	}
-	return newMsgID, nil
+	return p.puppetImplementation.MessageForward(conversationID, messageID)
+	//payload, err := p.MessagePayload(messageID)
+	//if err != nil {
+	//	return "", err
+	//}
+	//var newMsgID string
+	//switch payload.Type {
+	//case schemas.MessageTypeAttachment,
+	//	schemas.MessageTypeVideo,
+	//	schemas.MessageTypeAudio,
+	//	schemas.MessageTypeImage:
+	//	newMsgID, err = p.messageForwardFile(conversationID, messageID)
+	//case schemas.MessageTypeText:
+	//	newMsgID, err = p.puppetImplementation.MessageSendText(conversationID, payload.Text)
+	//case schemas.MessageTypeMiniProgram:
+	//	newMsgID, err = p.messageForwardMiniProgram(conversationID, messageID)
+	//case schemas.MessageTypeURL:
+	//	newMsgID, err = p.messageForwardURL(conversationID, messageID)
+	//case schemas.MessageTypeContact:
+	//	newMsgID, err = p.messageForwardContact(conversationID, messageID)
+	//default:
+	//	return "", fmt.Errorf("unsupported forward message type: %s", payload.Type)
+	//}
+	//if err != nil {
+	//	return "", err
+	//}
+	//return newMsgID, nil
 }
 
 func (p *Puppet) messageForwardFile(conversationID string, messageID string) (string, error) {

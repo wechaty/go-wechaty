@@ -1,6 +1,6 @@
 package schemas
 
-import pbwechaty "github.com/wechaty/go-grpc/wechaty"
+import pbwechaty "github.com/wechaty/go-grpc/wechaty/puppet"
 
 type PuppetOptions struct {
 	endpoint string

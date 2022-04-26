@@ -4,6 +4,8 @@ import (
 	"io"
 )
 
+var _ fileImplInterface = &fileBoxStream{}
+
 type fileBoxStream struct {
 	Reader io.Reader
 }
@@ -12,8 +14,8 @@ func newFileBoxStream(reader io.Reader) *fileBoxStream {
 	return &fileBoxStream{Reader: reader}
 }
 
-func (fb *fileBoxStream) toJSONMap() map[string]interface{} {
-	return nil
+func (fb *fileBoxStream) toJSONMap() (map[string]interface{}, error) {
+	return nil, nil
 }
 
 func (fb *fileBoxStream) toBytes() ([]byte, error) {

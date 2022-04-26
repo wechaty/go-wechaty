@@ -17,17 +17,17 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
-    - name: Get dependencies
-      run: |
-        go mod tidy
-        go vet ./...
-
     - name: Install dependencies
       run: make install
+
+    - name: Go Vet
+      run: |
+        go mod download
+        go vet ./...
 
     - name: Go Test
       run: make test
 
     - name: Build
       run: go build -o ding-dong -v ./examples/ding-dong-bot.go
-      
+

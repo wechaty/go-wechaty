@@ -1,6 +1,9 @@
 package schemas
 
-import "regexp"
+import (
+	"regexp"
+	"time"
+)
 
 //go:generate stringer -type=MessageType
 type MessageType uint8
@@ -85,7 +88,7 @@ type MessagePayloadBase struct {
 
 	FileName  string
 	Text      string
-	Timestamp uint64
+	Timestamp time.Time
 	Type      MessageType
 
 	// 小程序有些消息类型，wechaty服务端解析不处理，框架端解析。 xml type 36 是小程序
@@ -93,9 +96,9 @@ type MessagePayloadBase struct {
 }
 
 type MessagePayloadRoom struct {
-	FromId string
-	RoomId string
-	ToId   string
+	TalkerId   string
+	RoomId     string
+	ListenerId string
 }
 
 type MessagePayloadTo = MessagePayloadRoom
@@ -106,12 +109,16 @@ type MessagePayload struct {
 }
 
 type MessageQueryFilter struct {
+	TalkerId string
+	// Deprecated: please use TalkerId
 	FromId     string
 	Id         string
 	RoomId     string
 	Text       string
 	TextRegExp *regexp.Regexp
+	// Deprecated: please use ListenerId
 	ToId       string
+	ListenerId string
 	Type       MessageType
 }
 

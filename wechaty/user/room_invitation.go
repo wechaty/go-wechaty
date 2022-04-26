@@ -105,7 +105,7 @@ func (ri *RoomInvitation) Date() (time.Time, error) {
 	if err != nil {
 		return time.Time{}, err
 	}
-	return time.Unix(payload.Timestamp, 0), nil
+	return payload.Timestamp, nil
 }
 
 // Age returns the room invitation age in seconds

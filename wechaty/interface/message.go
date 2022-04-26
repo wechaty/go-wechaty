@@ -21,15 +21,23 @@ type IMessage interface {
 	Room() IRoom
 	// Type get the type from the message.
 	Type() schemas.MessageType
+	// Deprecated: please use Talker()
 	From() IContact
+	// Talker Get the talker of a message.
+	Talker() IContact
 	Text() string
 	// Self check if a message is sent by self
 	Self() bool
 	Age() time.Duration
-	// Message sent date
+	// Date sent date
 	Date() time.Time
+	// Deprecated: please use Listener()
 	To() IContact
-	// Get the recalled message
+	// Listener Get the destination of the message
+	// listener() will return nil if a message is in a room
+	// use Room() to get the room.
+	Listener() IContact
+	// ToRecalled Get the recalled message
 	ToRecalled() (IMessage, error)
 	// Say reply a Text or Media File message to the sender.
 	Say(textOrContactOrFileOrUrlOrMini interface{}) (IMessage, error)

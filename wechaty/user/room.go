@@ -228,7 +228,7 @@ func (r *Room) Topic() string {
 	return strings.TrimRight(defaultTopic, ",")
 }
 
-// Topic set topic from the room
+// SetTopic set topic from the room
 func (r *Room) SetTopic(topic string) error {
 	return r.GetPuppet().SetRoomTopic(r.id, topic)
 }
@@ -238,7 +238,7 @@ func (r *Room) Announce() (string, error) {
 	return r.GetPuppet().RoomAnnounce(r.id)
 }
 
-// Announce set announce from the room
+// SetAnnounce set announce from the room
 // It only works when bot is the owner of the room.
 func (r *Room) SetAnnounce(text string) error {
 	return r.GetPuppet().SetRoomAnnounce(r.id, text)
