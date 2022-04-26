@@ -18,7 +18,9 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Get dependencies
-      run: go vet ./...
+      run: |
+        go mod tidy
+        go vet ./...
 
     - name: Install dependencies
       run: make install
