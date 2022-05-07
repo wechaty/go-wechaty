@@ -38,6 +38,8 @@ type PuppetService struct {
 	grpcConn    *grpc.ClientConn
 	grpcClient  pbwechaty.PuppetClient
 	eventStream pbwechaty.Puppet_EventClient
+
+	stop chan struct{}
 }
 
 // NewPuppetService new PuppetService struct
@@ -54,6 +56,7 @@ func NewPuppetService(o wechatyPuppet.Option) (*PuppetService, error) {
 	}
 	puppetService := &PuppetService{
 		Puppet: puppetAbstract,
+		stop:   make(chan struct{}, 1),
 	}
 	puppetAbstract.SetPuppetImplementation(puppetService)
 	return puppetService, nil
@@ -164,6 +167,7 @@ func (p *PuppetService) uuidLoader(uuid string) (io.Reader, error) {
 
 // Stop ...
 func (p *PuppetService) Stop() {
+	p.stop <- struct{}{}
 	var err error
 	defer func() {
 		if err != nil {
@@ -270,6 +274,8 @@ func (p *PuppetService) autoReconnectGrpcConn() {
 				p.grpcConn.Connect()
 				log.Printf("PuppetService.autoReconnectGrpcConn grpc reconnection...")
 			}
+		case <-p.stop:
+			return
 		}
 	}
 }
