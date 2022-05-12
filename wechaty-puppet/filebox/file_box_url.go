@@ -28,7 +28,7 @@ func (fb *fileBoxUrl) toJSONMap() (map[string]interface{}, error) {
 	}, nil
 }
 
-func (fb *fileBoxUrl) toBytes() ([]byte, error) {
+func (fb *fileBoxUrl) toBytes() ([]byte, error) { //nolint:unused
 	request, err := http.NewRequest(http.MethodGet, fb.remoteUrl, nil)
 	if err != nil {
 		return nil, err

@@ -9,11 +9,14 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[ImageTypeUnknown-0]
+	_ = x[ImageTypeThumbnail-1]
+	_ = x[ImageTypeHD-2]
+	_ = x[ImageTypeArtwork-3]
 }
 
-const _ImageType_name = "ImageTypeUnknown"
+const _ImageType_name = "ImageTypeUnknownImageTypeThumbnailImageTypeHDImageTypeArtwork"
 
-var _ImageType_index = [...]uint8{0, 16}
+var _ImageType_index = [...]uint8{0, 16, 34, 45, 61}
 
 func (i ImageType) String() string {
 	if i >= ImageType(len(_ImageType_index)-1) {

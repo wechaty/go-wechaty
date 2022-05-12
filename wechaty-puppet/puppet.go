@@ -194,6 +194,7 @@ func (p *Puppet) messageQueryFilterFactory(query *schemas.MessageQueryFilter) sc
 	var filters []schemas.MessagePayloadFilterFunction
 
 	// Deprecated FromId compatible
+	//nolint:staticcheck
 	if query.FromId != "" && query.TalkerId == "" {
 		query.TalkerId = query.FromId
 	}
@@ -223,6 +224,7 @@ func (p *Puppet) messageQueryFilterFactory(query *schemas.MessageQueryFilter) sc
 		})
 	}
 	// Deprecated ToId compatible
+	//nolint:staticcheck
 	if query.ToId != "" && query.ListenerId == "" {
 		query.ListenerId = query.ToId
 	}
@@ -583,7 +585,7 @@ func (p *Puppet) MessageForward(conversationID string, messageID string) (string
 	//return newMsgID, nil
 }
 
-func (p *Puppet) messageForwardFile(conversationID string, messageID string) (string, error) {
+func (p *Puppet) messageForwardFile(conversationID string, messageID string) (string, error) { //nolint:unused
 	file, err := p.puppetImplementation.MessageFile(messageID)
 	if err != nil {
 		return "", err
@@ -595,7 +597,7 @@ func (p *Puppet) messageForwardFile(conversationID string, messageID string) (st
 	return newMsgID, nil
 }
 
-func (p *Puppet) messageForwardMiniProgram(conversationID string, messageID string) (string, error) {
+func (p *Puppet) messageForwardMiniProgram(conversationID string, messageID string) (string, error) { //nolint:unused
 	payload, err := p.puppetImplementation.MessageMiniProgram(messageID)
 	if err != nil {
 		return "", err
@@ -607,7 +609,7 @@ func (p *Puppet) messageForwardMiniProgram(conversationID string, messageID stri
 	return newMsgID, nil
 }
 
-func (p *Puppet) messageForwardURL(conversationID string, messageID string) (string, error) {
+func (p *Puppet) messageForwardURL(conversationID string, messageID string) (string, error) { //nolint:unused
 	payload, err := p.puppetImplementation.MessageURL(messageID)
 	if err != nil {
 		return "", err
@@ -619,7 +621,7 @@ func (p *Puppet) messageForwardURL(conversationID string, messageID string) (str
 	return newMsgID, nil
 }
 
-func (p *Puppet) messageForwardContact(conversationID string, messageID string) (string, error) {
+func (p *Puppet) messageForwardContact(conversationID string, messageID string) (string, error) { //nolint:unused
 	payload, err := p.puppetImplementation.MessageContact(messageID)
 	if err != nil {
 		return "", err

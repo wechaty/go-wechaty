@@ -76,7 +76,7 @@ type (
 
 // CopyTo copies the event listeners to an EventEmitter
 func (e Events) CopyTo(emitter EventEmitter) {
-  if e != nil && len(e) > 0 {
+  if len(e) > 0 {
     // register the events to/with their listeners
     for evt, listeners := range e {
       if len(listeners) > 0 {
@@ -143,7 +143,7 @@ func (e *emitter) Emit(evt EventName, data ...interface{}) {
   if e.evtListeners == nil {
     return // has no listeners to emit/speak yet
   }
-  if listeners := e.evtListeners[evt]; listeners != nil && len(listeners) > 0 { // len() should be just fine, but for any case on future...
+  if listeners := e.evtListeners[evt]; len(listeners) > 0 { // len() should be just fine, but for any case on future...
     for i := range listeners {
       l := listeners[i]
       if l != nil {
@@ -164,7 +164,7 @@ func (e *emitter) EventNames() []EventName {
     return nil
   }
 
-  names := make([]EventName, e.Len(), e.Len())
+  names := make([]EventName, e.Len())
   i := 0
   for k := range e.evtListeners {
     names[i] = k

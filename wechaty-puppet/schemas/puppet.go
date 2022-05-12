@@ -2,12 +2,6 @@ package schemas
 
 import pbwechaty "github.com/wechaty/go-grpc/wechaty/puppet"
 
-type PuppetOptions struct {
-	endpoint string
-	timeout  int64
-	token    string
-}
-
 //go:generate stringer -type=PuppetEventName
 type PuppetEventName uint8
 

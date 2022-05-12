@@ -27,7 +27,7 @@ func (fb *fileBoxBase64) toJSONMap() (map[string]interface{}, error) {
 	}, nil
 }
 
-func (fb *fileBoxBase64) toBytes() ([]byte, error) {
+func (fb *fileBoxBase64) toBytes() ([]byte, error) { //nolint:unused
 	dec, err := base64.StdEncoding.DecodeString(fb.base64Data)
 	if err != nil {
 		return nil, err

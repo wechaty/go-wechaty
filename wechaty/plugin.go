@@ -62,7 +62,7 @@ func (p *Plugin) registerPluginEvent(wechaty *Wechaty) {
 			}
 			// check whether the plugin can be used.
 			if values[0].Interface().(*Context).IsActive(p) &&
-				values[0].Interface().(*Context).abort != true {
+				!values[0].Interface().(*Context).abort {
 				_ = reflect.ValueOf(pluginEvent.f).Call(values)
 			}
 		}

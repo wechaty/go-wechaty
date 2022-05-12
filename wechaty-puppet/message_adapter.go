@@ -32,9 +32,7 @@ func NewMsgAdapter(msgType schemas.MessageType) MsgAdapter {
 type RawMsgAdapter struct{}
 
 // Handle ~
-func (r RawMsgAdapter) Handle(msg *schemas.MessagePayload) {
-	return
-}
+func (r RawMsgAdapter) Handle(msg *schemas.MessagePayload) {}
 
 // UnknownMsgAdapter Unknown 类型的消息适配器
 type UnknownMsgAdapter struct{}

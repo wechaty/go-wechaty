@@ -134,7 +134,7 @@ func (m *Message) Self() bool {
 }
 
 func (m *Message) Age() time.Duration {
-	return time.Now().Sub(m.Date())
+	return time.Since(m.Date())
 }
 
 // Date sent date

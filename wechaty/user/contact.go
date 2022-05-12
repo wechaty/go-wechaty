@@ -119,6 +119,9 @@ func (c *Contact) Say(something interface{}) (msg _interface.IMessage, err error
 	default:
 		return nil, fmt.Errorf("unsupported arg: %v", something)
 	}
+	if err != nil {
+		return nil, err
+	}
 	if msgID == "" {
 		return nil, nil
 	}
@@ -206,5 +209,4 @@ func (c *Contact) SetAlias(newAlias string) {
 	if c.payload.Alias != newAlias {
 		log.Printf("Contact SetAlias(%s) sync with server fail: set(%s) is not equal to get(%s)\n", newAlias, newAlias, c.payload.Alias)
 	}
-	return
 }

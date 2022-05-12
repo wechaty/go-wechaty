@@ -295,12 +295,10 @@ func (w *Wechaty) DaemonStart() {
 		panic(err)
 	}
 	var quitSig = make(chan os.Signal, 1)
-	signal.Notify(quitSig, os.Interrupt, os.Kill)
+	signal.Notify(quitSig, os.Interrupt)
 
-	select {
-	case <-quitSig:
-		log.Fatal("exit.by.signal")
-	}
+	<-quitSig
+	log.Fatal("exit.by.signal")
 }
 
 func (w *Wechaty) initPuppetEventBridge() {
@@ -564,7 +562,7 @@ func NewContext() *Context {
 
 // IsActive returns whether the plugin is active now.
 func (c *Context) IsActive(plugin *Plugin) bool {
-	if plugin.IsEnable() == false {
+	if !plugin.IsEnable() {
 		return false
 	}
 	for _, p := range c.disableOncePlugins {

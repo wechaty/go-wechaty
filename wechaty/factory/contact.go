@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"fmt"
 	"log"
 	"sync"
 
@@ -30,11 +31,13 @@ func (c *ContactFactory) Load(id string) _interface.IContact {
 		c.pool.Store(id, contact)
 		return contact
 	}
-	switch load.(type) {
+	switch v := load.(type) {
 	case *user.ContactSelf:
-		return load.(*user.ContactSelf).Contact
+		return v.Contact
+	case *user.Contact:
+		return v
 	default:
-		return load.(*user.Contact)
+		panic(fmt.Sprintf("ContactFactory Load unknow type: %#v", v))
 	}
 }
 
@@ -46,11 +49,13 @@ func (c *ContactFactory) LoadSelf(id string) _interface.IContactSelf {
 		c.pool.Store(id, contact)
 		return contact
 	}
-	switch load.(type) {
+	switch v := load.(type) {
 	case *user.ContactSelf:
-		return load.(*user.ContactSelf)
+		return v
+	case *user.Contact:
+		return &user.ContactSelf{Contact: v}
 	default:
-		return &user.ContactSelf{Contact: load.(*user.Contact)}
+		panic(fmt.Sprintf("ContactFactory LoadSelf unknow type: %#v", v))
 	}
 }
 

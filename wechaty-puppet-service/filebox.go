@@ -47,7 +47,6 @@ func (m *MessageFile) Read(p []byte) (n int, err error) {
 		recv, err := m.client.Recv()
 		if err == io.EOF {
 			m.done = true
-			err = nil
 			break
 		}
 		if err != nil {
@@ -144,7 +143,6 @@ func (m *DownloadFile) Read(p []byte) (n int, err error) {
 		recv, err := m.client.Recv()
 		if err == io.EOF {
 			m.done = true
-			err = nil
 			break
 		}
 		if err != nil {
@@ -171,7 +169,7 @@ func NewDownloadFile(client pbwechaty.Puppet_DownloadClient) *DownloadFile {
  *  for testing propose, use 20KB as the threshold
  *  after stable we should use a value between 64KB to 256KB as the threshold
  */
-const passThroughThresholdBytes = 20 * 1024 // 20KB
+const passThroughThresholdBytes = 20 * 1024 //nolint:unused, deadcode, varcheck  // TODO 未来会被用到
 
 /**
  * 1. Green:

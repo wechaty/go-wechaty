@@ -161,6 +161,9 @@ func (r *Room) Say(something interface{}, mentionList ..._interface.IContact) (m
 	default:
 		return nil, fmt.Errorf("unsupported arg: %v", something)
 	}
+	if err != nil {
+		return nil, err
+	}
 	if msgID == "" {
 		return nil, nil
 	}
