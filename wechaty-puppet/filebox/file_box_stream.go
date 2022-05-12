@@ -18,7 +18,7 @@ func (fb *fileBoxStream) toJSONMap() (map[string]interface{}, error) {
 	return nil, nil
 }
 
-func (fb *fileBoxStream) toBytes() ([]byte, error) {
+func (fb *fileBoxStream) toBytes() ([]byte, error) { // nolint:unused
 	panic("im")
 }
 

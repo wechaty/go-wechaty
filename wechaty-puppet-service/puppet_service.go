@@ -13,6 +13,7 @@ import (
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"io"
 	"log"
@@ -237,7 +238,9 @@ func (p *PuppetService) startGrpcClient() error {
 		}
 		endpoint = serviceEndPoint.Target()
 	}
-	conn, err := grpc.Dial(endpoint, grpc.WithInsecure(), grpc.WithAuthority(p.Token))
+
+	// TODO 支持 tls
+	conn, err := grpc.Dial(endpoint, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithAuthority(p.Token))
 	if err != nil {
 		return err
 	}
@@ -628,7 +631,7 @@ func (p *PuppetService) MessageRawPayload(id string) (*schemas.MessagePayload, e
 	if response.ReceiveTime != nil {
 		payload.Timestamp = grpcTimestampToGoTime(response.ReceiveTime)
 	} else {
-		payload.Timestamp = time.Unix(int64(response.TimestampDeprecated), 0)
+		payload.Timestamp = time.Unix(int64(response.TimestampDeprecated), 0) //nolint:staticcheck
 	}
 	return payload, nil
 }
@@ -786,7 +789,7 @@ func (p *PuppetService) MessageURL(messageID string) (*schemas.UrlLinkPayload, e
 	if response.UrlLink == nil {
 		// Deprecated: will be removed after Dec 31, 2022
 		payload := &schemas.UrlLinkPayload{}
-		p.unMarshal(response.UrlLinkDeprecated, payload)
+		p.unMarshal(response.UrlLinkDeprecated, payload) //nolint:staticcheck
 		return payload, nil
 	}
 

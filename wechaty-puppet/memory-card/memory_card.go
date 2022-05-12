@@ -38,13 +38,12 @@ type MemoryCard struct {
 }
 
 func (mc *MemoryCard) GetInt64(key string) int64 {
-  raw := mc.get(key)
-  switch raw.(type) {
+  switch raw := mc.get(key).(type) {
   case json.Number:
-    value, _ := raw.(json.Number).Int64()
+    value, _ := raw.Int64()
     return value
   case int64:
-    return raw.(int64)
+    return raw
   default:
     return 0
   }

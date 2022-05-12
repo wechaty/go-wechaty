@@ -9,11 +9,16 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[PayloadTypeUnknown-0]
+	_ = x[PayloadTypeMessage-1]
+	_ = x[PayloadTypeContact-2]
+	_ = x[PayloadTypeRoom-3]
+	_ = x[PayloadTypeRoomMember-4]
+	_ = x[PayloadTypeFriendship-5]
 }
 
-const _PayloadType_name = "PayloadTypeUnknown"
+const _PayloadType_name = "PayloadTypeUnknownPayloadTypeMessagePayloadTypeContactPayloadTypeRoomPayloadTypeRoomMemberPayloadTypeFriendship"
 
-var _PayloadType_index = [...]uint8{0, 18}
+var _PayloadType_index = [...]uint8{0, 18, 36, 54, 69, 90, 111}
 
 func (i PayloadType) String() string {
 	if i < 0 || i >= PayloadType(len(_PayloadType_index)-1) {

@@ -114,7 +114,7 @@ func (ri *RoomInvitation) Age() (time.Duration, error) {
 	if err != nil {
 		return 0, err
 	}
-	return date.Sub(time.Now()), nil
+	return time.Since(date), nil
 }
 
 func (ri *RoomInvitation) ToJson() (string, error) {

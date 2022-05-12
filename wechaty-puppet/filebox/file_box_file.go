@@ -21,7 +21,7 @@ func (fb *fileBoxFile) toJSONMap() (map[string]interface{}, error) {
 	return nil, nil
 }
 
-func (fb *fileBoxFile) toBytes() ([]byte, error) {
+func (fb *fileBoxFile) toBytes() ([]byte, error) { //nolint:unused
 	file, err := ioutil.ReadFile(fb.path)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (fb *fileBoxFile) toBytes() ([]byte, error) {
 	return file, nil
 }
 
-func (fb *fileBoxFile) toBase64() (string, error) {
+func (fb *fileBoxFile) toBase64() (string, error) { //nolint:unused
 	file, err := fb.toBytes()
 	if err != nil {
 		return "", err
