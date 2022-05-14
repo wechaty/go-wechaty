@@ -16,6 +16,7 @@ func main() {
 	var bot = wechaty.NewWechaty(wechaty.WithPuppetOption(wp.Option{
 		Token: "",
 	}))
+	bot.Puppet()
 
 	bot.OnScan(func(ctx *wechaty.Context, qrCode string, status schemas.ScanStatus, data string) {
 		fmt.Printf("Scan QR Code to login: %v\nhttps://wechaty.github.io/qrcode/%s\n", status, qrCode)

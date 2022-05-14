@@ -9,6 +9,8 @@ type Option struct {
 	Endpoint              string
 	Timeout               time.Duration
 	Token                 string
+
+	// Deprecated: move to wechaty-puppet-service
 	GrpcReconnectInterval time.Duration
 }
 
