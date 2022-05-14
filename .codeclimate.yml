@@ -13,7 +13,7 @@ checks:
       threshold: 1000
   method-complexity:    # 函数和方法的逻辑复杂度
     config:
-      threshold: 12
+      threshold: 14
   method-count:         # 结构体的方法限制
     config:
       threshold: 60
