@@ -13,9 +13,7 @@ import (
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"io"
 	"log"
@@ -44,7 +42,7 @@ type PuppetService struct {
 	eventStream pbwechaty.Puppet_EventClient
 	opts        Options
 
-	disableTls bool
+	disableTLS bool
 	serverName string
 	endpoint   string
 	token      string
@@ -75,18 +73,18 @@ func NewNewPuppetService(opts Options) (*PuppetService, error) {
 			envAuthority(opts.Authority), token)
 	}
 
-	disableTls := envNoTlsInsecureClient(opts.Tls.Disable)
+	disableTls := envNoTLSInsecureClient(opts.TLS.Disable)
 
-	serverNameIndication := envTlsServerName(opts.Tls.ServerName)
+	serverNameIndication := envTLSServerName(opts.TLS.ServerName)
 	if serverNameIndication == "" {
 		serverNameIndication = sni(token)
 	}
 	if serverNameIndication == "" {
 		return nil, fmt.Errorf(
-			`Wechaty Puppet Service requires a SNI as prefix of the token from version 0.30 and later.
+			`wechaty Puppet Service requires a SNI as prefix of the token.
 You can add the "%s_" prefix to your token
 like: "%s_%s
-and try again..`, TlsInsecureServerCertCommonName, TlsInsecureServerCertCommonName, token)
+and try again..`, TLSInsecureServerCertCommonName, TLSInsecureServerCertCommonName, token)
 	}
 
 	// TODO puppet is poorly designed, consider refactoring
@@ -96,11 +94,11 @@ and try again..`, TlsInsecureServerCertCommonName, TlsInsecureServerCertCommonNa
 	}
 	puppetService := &PuppetService{
 		Puppet:     puppetAbstract,
-		disableTls: disableTls,
+		disableTLS: disableTls,
 		serverName: serverNameIndication,
 		endpoint:   endpoint,
 		token:      token,
-		caCert:     envTlsCaCert(opts.Tls.CaCert),
+		caCert:     envTLSCaCert(opts.TLS.CaCert),
 		opts:       opts,
 		stop:       make(chan struct{}, 1),
 		started:    make(chan struct{}, 1),
@@ -257,82 +255,12 @@ func (p *PuppetService) logonoff() bool {
 	return p.SelfID() != ""
 }
 
-func (p *PuppetService) startGrpcClient() error {
-	var err error
-	var creds credentials.TransportCredentials
-	var callOptions []grpc.CallOption
-	if p.disableTls {
-		log.Println("PuppetService.startGrpcClient TLS: disabled (INSECURE)")
-		creds = insecure.NewCredentials()
-	} else {
-		callOptions = append(callOptions, grpc.PerRPCCredentials(callCredToken{token: p.token}))
-		creds, err = p.createCred()
-		if err != nil {
-			return err
-		}
-	}
-
-	dialOptions := []grpc.DialOption{
-		grpc.WithTransportCredentials(creds),
-		grpc.WithDefaultCallOptions(callOptions...),
-		grpc.WithResolvers(wechatyResolver()),
-	}
-
-	if p.disableTls {
-		// Deprecated: this block will be removed after Dec 21, 2022.
-		dialOptions = append(dialOptions, grpc.WithAuthority(p.token))
-	}
-
-	conn, err := grpc.Dial(p.endpoint, dialOptions...)
-	if err != nil {
-		return err
-	}
-	p.grpcConn = conn
-
-	go p.autoReconnectGrpcConn()
-
-	p.grpcClient = pbwechaty.NewPuppetClient(conn)
-	return nil
-}
-
 func (p *PuppetService) createCred() (credentials.TransportCredentials, error) {
 	pool := x509.NewCertPool()
 	if ok := pool.AppendCertsFromPEM([]byte(p.caCert)); !ok {
 		return nil, fmt.Errorf("PuppetService.createCred failed to parse root certificate")
 	}
 	return credentials.NewClientTLSFromCert(pool, p.serverName), nil
-}
-
-func (p *PuppetService) autoReconnectGrpcConn() {
-	<-p.started
-	interval := 2 * time.Second
-	if p.opts.GrpcReconnectInterval > 0 {
-		interval = p.opts.GrpcReconnectInterval
-	}
-	ticker := time.NewTicker(interval)
-	isClose := false
-	for {
-		select {
-		case <-ticker.C:
-			connState := p.grpcConn.GetState()
-			// 重新连接成功
-			if isClose && connectivity.Ready == connState {
-				isClose = false
-				log.Printf("PuppetService.autoReconnectGrpcConn grpc reconnection successful")
-				if err := p.startGrpcStream(); err != nil {
-					log.Printf("PuppetService.autoReconnectGrpcConn startGrpcStream err:%s", err.Error())
-				}
-			}
-
-			if p.grpcConn.GetState() == connectivity.Idle {
-				isClose = true
-				p.grpcConn.Connect()
-				log.Printf("PuppetService.autoReconnectGrpcConn grpc reconnection...")
-			}
-		case <-p.stop:
-			return
-		}
-	}
 }
 
 func (p *PuppetService) startGrpcStream() (err error) {

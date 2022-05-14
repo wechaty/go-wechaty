@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// ErrTokenNotFound err token not found
 var ErrTokenNotFound = errors.New("wechaty-puppet-service: WECHATY_PUPPET_SERVICE_TOKEN not found")
 
 func envServiceToken(token string) (string, error) {
@@ -60,11 +61,11 @@ func envAuthority(authority string) string {
 	return "api.chatie.io"
 }
 
-func envNoTlsInsecureClient(disable bool) bool {
+func envNoTLSInsecureClient(disable bool) bool {
 	return disable || os.Getenv("WECHATY_PUPPET_SERVICE_NO_TLS_INSECURE_CLIENT") == "true"
 }
 
-func envTlsServerName(serverName string) string {
+func envTLSServerName(serverName string) string {
 	if serverName != "" {
 		return serverName
 	}
@@ -72,7 +73,7 @@ func envTlsServerName(serverName string) string {
 	return os.Getenv("WECHATY_PUPPET_SERVICE_TLS_SERVER_NAME")
 }
 
-func envTlsCaCert(caCert string) string {
+func envTLSCaCert(caCert string) string {
 	if caCert != "" {
 		return caCert
 	}
@@ -80,5 +81,5 @@ func envTlsCaCert(caCert string) string {
 	if caCert != "" {
 		return caCert
 	}
-	return TlsCaCert
+	return TLSCaCert
 }

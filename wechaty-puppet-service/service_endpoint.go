@@ -1,4 +1,3 @@
-// Deprecated:
 package puppetservice
 
 import (

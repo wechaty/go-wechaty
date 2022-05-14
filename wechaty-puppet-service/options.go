@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// TlsConfig tls config
-type TlsConfig struct {
+// TLSConfig tls config
+type TLSConfig struct {
 	CaCert     string
 	ServerName string
 
@@ -18,6 +18,6 @@ type Options struct {
 	wechatypuppet.Option
 
 	GrpcReconnectInterval time.Duration
-	Authority             string
-	Tls                   TlsConfig
+	Authority string
+	TLS       TLSConfig
 }

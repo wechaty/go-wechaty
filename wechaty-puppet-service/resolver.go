@@ -22,7 +22,7 @@ func resolverBuildCallBack(target resolver.Target, conn resolver.ClientConn, opt
 	// target.URL.Path `__token__` in `wechaty://api.chatie.io/__token__`
 	log.Println("resolverBuildCallBack()")
 	uri := fmt.Sprintf("https://%s/v0/hosties%s", target.URL.Host, target.URL.Path)
-	address, err := discoverApi(uri)
+	address, err := discoverAPI(uri)
 	if err != nil {
 		conn.ReportError(err)
 		return
@@ -47,10 +47,10 @@ type serviceAddress struct {
 	Port int
 }
 
-func discoverApi(uri string) (*serviceAddress, error) {
+func discoverAPI(uri string) (*serviceAddress, error) {
 	response, err := http.Get(uri)
 	if err != nil {
-		return nil, fmt.Errorf("discoverApi http.Get() %w", err)
+		return nil, fmt.Errorf("discoverAPI http.Get() %w", err)
 	}
 	defer response.Body.Close()
 
@@ -61,16 +61,16 @@ func discoverApi(uri string) (*serviceAddress, error) {
 
 	// 2xx
 	if response.StatusCode < 200 || response.StatusCode >= 300 {
-		return nil, fmt.Errorf("discoverApi http.Get() status:%s %w", response.Status, err)
+		return nil, fmt.Errorf("discoverAPI http.Get() status:%s %w", response.Status, err)
 	}
 	data, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return nil, fmt.Errorf("discoverApi ioutil.ReadAll %w", err)
+		return nil, fmt.Errorf("discoverAPI ioutil.ReadAll %w", err)
 	}
 
 	r := &serviceAddress{}
 	if err := json.Unmarshal(data, r); err != nil {
-		return nil, fmt.Errorf("discoverApi json.Unmarshal %w", err)
+		return nil, fmt.Errorf("discoverAPI json.Unmarshal %w", err)
 	}
 	return r, nil
 }
