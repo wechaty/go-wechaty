@@ -18,6 +18,6 @@ type Options struct {
 	wechatypuppet.Option
 
 	GrpcReconnectInterval time.Duration
-	Authority string
-	TLS       TLSConfig
+	Authority             string
+	TLS                   TLSConfig
 }

@@ -50,12 +50,9 @@ func (p *PuppetService) startGrpcClient() error {
 
 func (p *PuppetService) autoReconnectGrpcConn() {
 	<-p.started
-	interval := 2 * time.Second
-	if p.opts.GrpcReconnectInterval > 0 {
-		interval = p.opts.GrpcReconnectInterval
-	}
-	ticker := time.NewTicker(interval)
 	isClose := false
+	ticker := p.newGrpcReconnectTicket()
+	defer ticker.Stop()
 	for {
 		select {
 		case <-ticker.C:
@@ -78,4 +75,12 @@ func (p *PuppetService) autoReconnectGrpcConn() {
 			return
 		}
 	}
+}
+
+func (p *PuppetService) newGrpcReconnectTicket() *time.Ticker {
+	interval := 2 * time.Second
+	if p.opts.GrpcReconnectInterval > 0 {
+		interval = p.opts.GrpcReconnectInterval
+	}
+	return time.NewTicker(interval)
 }

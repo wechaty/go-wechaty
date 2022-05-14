@@ -73,7 +73,7 @@ func NewNewPuppetService(opts Options) (*PuppetService, error) {
 			envAuthority(opts.Authority), token)
 	}
 
-	disableTls := envNoTLSInsecureClient(opts.TLS.Disable)
+	disableTLS := envNoTLSInsecureClient(opts.TLS.Disable)
 
 	serverNameIndication := envTLSServerName(opts.TLS.ServerName)
 	if serverNameIndication == "" {
@@ -84,7 +84,7 @@ func NewNewPuppetService(opts Options) (*PuppetService, error) {
 			`wechaty Puppet Service requires a SNI as prefix of the token.
 You can add the "%s_" prefix to your token
 like: "%s_%s
-and try again..`, TLSInsecureServerCertCommonName, TLSInsecureServerCertCommonName, token)
+and try again`, TLSInsecureServerCertCommonName, TLSInsecureServerCertCommonName, token)
 	}
 
 	// TODO puppet is poorly designed, consider refactoring
@@ -94,7 +94,7 @@ and try again..`, TLSInsecureServerCertCommonName, TLSInsecureServerCertCommonNa
 	}
 	puppetService := &PuppetService{
 		Puppet:     puppetAbstract,
-		disableTLS: disableTls,
+		disableTLS: disableTLS,
 		serverName: serverNameIndication,
 		endpoint:   endpoint,
 		token:      token,
