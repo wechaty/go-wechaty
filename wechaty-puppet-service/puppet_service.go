@@ -1128,7 +1128,7 @@ func (p *PuppetService) TagContactList(contactID string) ([]string, error) {
 // DirtyPayload ...
 func (p *PuppetService) DirtyPayload(payloadType schemas.PayloadType, id string) error {
 	log.Printf("PuppetService DirtyPayload(%v, %v)\n", payloadType, id)
-	err := p.Puppet.DirtyPayload(payloadType, id)
+	err := p.Puppet.OnDirty(payloadType, id)
 	if err != nil {
 		return err
 	}
