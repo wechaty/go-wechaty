@@ -770,3 +770,7 @@ func (p *Puppet) MessageMiniProgram(messageID string) (*schemas.MiniProgramPaylo
 	}
 	return miniapp, nil
 }
+
+func (p *Puppet) DirtyPayload(payloadType schemas.PayloadType, id string) error {
+	return p.OnDirty(payloadType, id)
+}
