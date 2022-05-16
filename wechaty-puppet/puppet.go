@@ -132,7 +132,8 @@ func NewPuppet(option Option) (*Puppet, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Puppet{
+
+	p := &Puppet{
 		Option:                     option,
 		EventEmitter:               events.New(),
 		cacheMessagePayload:        cacheMessage,
@@ -141,7 +142,16 @@ func NewPuppet(option Option) (*Puppet, error) {
 		cacheRoomPayload:           cacheRoomPayload,
 		cacheRoomMemberPayload:     cacheRoomMemberPayload,
 		cacheContactPayload:        cacheContactPayload,
-	}, nil
+	}
+
+	p.On(schemas.PuppetEventNameDirty, func(i ...interface{}) {
+		payload, ok := i[0].(*schemas.EventDirtyPayload)
+		if !ok {
+			return
+		}
+		_ = p.OnDirty(payload.PayloadType, payload.PayloadId)
+	})
+	return p, nil
 }
 
 // MessageList message list
@@ -725,8 +735,8 @@ func (p *Puppet) dirtyPayloadFriendship(friendshipID string) {
 	p.cacheFriendshipPayload.Remove(friendshipID)
 }
 
-// DirtyPayload ...
-func (p *Puppet) DirtyPayload(payloadType schemas.PayloadType, id string) error {
+// OnDirty clean cache
+func (p *Puppet) OnDirty(payloadType schemas.PayloadType, id string) error {
 	switch payloadType {
 	case schemas.PayloadTypeMessage:
 		p.dirtyPayloadMessage(id)
@@ -759,4 +769,9 @@ func (p *Puppet) MessageMiniProgram(messageID string) (*schemas.MiniProgramPaylo
 		return nil, err
 	}
 	return miniapp, nil
+}
+
+// DirtyPayload base clean cache
+func (p *Puppet) DirtyPayload(payloadType schemas.PayloadType, id string) error {
+	return p.OnDirty(payloadType, id)
 }

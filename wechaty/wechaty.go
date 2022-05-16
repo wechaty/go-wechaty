@@ -458,14 +458,14 @@ func (w *Wechaty) initPuppetEventBridge() {
 				switch payload.PayloadType {
 				case schemas.PayloadTypeRoomMember,
 					schemas.PayloadTypeContact:
-					if err := w.contact.Load(payload.PayloadId).Sync(); err != nil {
-						log.Printf("emit dirty contact.Sync() err: %s\n", err.Error())
+					if err := w.contact.Load(payload.PayloadId).Ready(true); err != nil {
+						log.Printf("emit dirty contact.Ready() err: %s\n", err.Error())
 						w.emit(schemas.PuppetEventNameError, NewContext(), err)
 						return
 					}
 				case schemas.PayloadTypeRoom:
-					if err := w.room.Load(payload.PayloadId).Sync(); err != nil {
-						log.Printf("emit dirty room.Sync() err: %s\n", err.Error())
+					if err := w.room.Load(payload.PayloadId).Ready(true); err != nil {
+						log.Printf("emit dirty room.Ready() err: %s\n", err.Error())
 						w.emit(schemas.PuppetEventNameError, NewContext(), err)
 						return
 					}

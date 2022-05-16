@@ -52,13 +52,6 @@ func (c *Contact) Ready(forceSync bool) (err error) {
 		return nil
 	}
 
-	if forceSync {
-		err := c.GetPuppet().DirtyPayload(schemas.PayloadTypeContact, c.Id)
-		if err != nil {
-			return err
-		}
-	}
-
 	c.payload, err = c.GetPuppet().ContactPayload(c.Id)
 	if err != nil {
 		return err
@@ -72,6 +65,10 @@ func (c *Contact) IsReady() bool {
 
 // Sync force reload data for Contact, sync data from lowlevel API again.
 func (c *Contact) Sync() error {
+	err := c.GetPuppet().DirtyPayload(schemas.PayloadTypeContact, c.Id)
+	if err != nil {
+		return err
+	}
 	return c.Ready(true)
 }
 

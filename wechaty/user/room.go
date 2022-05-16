@@ -32,15 +32,6 @@ func (r *Room) Ready(forceSync bool) (err error) {
 		return nil
 	}
 
-	if forceSync {
-		if err := r.GetPuppet().DirtyPayload(schemas.PayloadTypeRoom, r.id); err != nil {
-			return err
-		}
-		if err := r.GetPuppet().DirtyPayload(schemas.PayloadTypeRoomMember, r.id); err != nil {
-			return err
-		}
-	}
-
 	r.payLoad, err = r.GetPuppet().RoomPayload(r.id)
 	if err != nil {
 		return err
@@ -140,6 +131,12 @@ func (r *Room) Alias(contact _interface.IContact) (string, error) {
 
 // Sync Force reload data for Room, Sync data from puppet API again.
 func (r *Room) Sync() error {
+	if err := r.GetPuppet().DirtyPayload(schemas.PayloadTypeRoom, r.id); err != nil {
+		return err
+	}
+	if err := r.GetPuppet().DirtyPayload(schemas.PayloadTypeRoomMember, r.id); err != nil {
+		return err
+	}
 	return r.Ready(true)
 }
 
