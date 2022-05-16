@@ -145,7 +145,7 @@ func NewPuppet(option Option) (*Puppet, error) {
 	}
 
 	p.On(schemas.PuppetEventNameDirty, func(i ...interface{}) {
-		payload, ok  := i[0].(*schemas.EventDirtyPayload)
+		payload, ok := i[0].(*schemas.EventDirtyPayload)
 		if !ok {
 			return
 		}
@@ -771,6 +771,7 @@ func (p *Puppet) MessageMiniProgram(messageID string) (*schemas.MiniProgramPaylo
 	return miniapp, nil
 }
 
+// DirtyPayload base clean cache
 func (p *Puppet) DirtyPayload(payloadType schemas.PayloadType, id string) error {
 	return p.OnDirty(payloadType, id)
 }
