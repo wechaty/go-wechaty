@@ -530,7 +530,14 @@ func (p *PuppetService) MessageRawMiniProgramPayload(messageID string) (*schemas
 	if err != nil {
 		return nil, err
 	}
-
+	if response.MiniProgram == nil {
+		payload := &schemas.MiniProgramPayload{}
+		err = json.Unmarshal([]byte(response.MiniProgramDeprecated), payload)
+		if err != nil {
+			return nil, err
+		}
+		return payload, nil
+	}
 	payload := &schemas.MiniProgramPayload{
 		Appid:       response.MiniProgram.Appid,
 		Description: response.MiniProgram.Description,
