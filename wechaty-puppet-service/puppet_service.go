@@ -531,6 +531,14 @@ func (p *PuppetService) MessageRawMiniProgramPayload(messageID string) (*schemas
 		return nil, err
 	}
 
+	// Deprecated: will be removed after Dec 31, 2022
+	//nolint:staticcheck
+	if response.MiniProgram == nil {
+		payload := &schemas.MiniProgramPayload{}
+		p.unMarshal(response.MiniProgramDeprecated, payload)
+		return payload, nil
+	}
+
 	payload := &schemas.MiniProgramPayload{
 		Appid:       response.MiniProgram.Appid,
 		Description: response.MiniProgram.Description,
@@ -573,6 +581,8 @@ func (p *PuppetService) MessageSendMiniProgram(conversationID string, miniProgra
 			Username:    miniProgramPayload.Username,
 			ThumbKey:    miniProgramPayload.ThumbKey,
 		},
+		// Deprecated: will be removed after Dec 31, 2022
+		MiniProgramDeprecated: miniProgramPayload.ToJson(),
 	})
 	if err != nil {
 		return "", err
