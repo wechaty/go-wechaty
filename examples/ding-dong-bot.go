@@ -3,8 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/url"
+	"os"
 	"time"
 
+	"github.com/mdp/qrterminal/v3"
 	"github.com/wechaty/go-wechaty/wechaty"
 	wp "github.com/wechaty/go-wechaty/wechaty-puppet"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
@@ -17,9 +20,7 @@ func main() {
 		Token: "",
 	}))
 
-	bot.OnScan(func(ctx *wechaty.Context, qrCode string, status schemas.ScanStatus, data string) {
-		fmt.Printf("Scan QR Code to login: %v\nhttps://wechaty.github.io/qrcode/%s\n", status, qrCode)
-	}).OnLogin(func(ctx *wechaty.Context, user *user.ContactSelf) {
+	bot.OnScan(onScan).OnLogin(func(ctx *wechaty.Context, user *user.ContactSelf) {
 		fmt.Printf("User %s logined\n", user.Name())
 	}).OnMessage(onMessage).OnLogout(func(ctx *wechaty.Context, user *user.ContactSelf, reason string) {
 		fmt.Printf("User %s logouted: %s\n", user, reason)
@@ -77,4 +78,15 @@ func onMessage(ctx *wechaty.Context, message *user.Message) {
 		return
 	}
 	log.Printf("REPLY with urlLink: %s\n", urlLink)
+}
+
+func onScan(ctx *wechaty.Context, qrCode string, status schemas.ScanStatus, data string)  {
+	if status == schemas.ScanStatusWaiting || status == schemas.ScanStatusTimeout {
+		qrterminal.GenerateHalfBlock(qrCode, qrterminal.L, os.Stdout)
+
+		qrcodeImageUrl := fmt.Sprintf("https://wechaty.js.org/qrcode/%s",url.QueryEscape(qrCode))
+		fmt.Printf("onScan: %s - %s\n", status, qrcodeImageUrl)
+		return
+	}
+	fmt.Printf("onScan: %s\n", status)
 }
