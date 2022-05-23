@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/lucsky/cuid v1.0.2
+	github.com/mdp/qrterminal/v3 v3.0.0
 	github.com/otiai10/opengraph v1.1.1
 	github.com/skip2/go-qrcode v0.0.0-20191027152451-9434209cb086
 	github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
@@ -23,4 +24,5 @@ require (
 	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20220317150908-0efb43f6373e // indirect
+	rsc.io/qr v0.2.0 // indirect
 )
