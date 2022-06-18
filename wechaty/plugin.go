@@ -53,7 +53,7 @@ func (p *Plugin) registerPluginEvent(wechaty *Wechaty) {
 				if err := recover(); err != nil {
 					log.Println("panic: ", err)
 					log.Println(string(debug.Stack()))
-					wechaty.events.Emit(schemas.PuppetEventNameError, fmt.Errorf("panic: event %s %v", pluginEvent.name, err))
+					wechaty.events.Emit(schemas.PuppetEventNameError, NewContext(), fmt.Errorf("panic: event %s %v", pluginEvent.name, err))
 				}
 			}()
 			values := make([]reflect.Value, 0, len(data))
