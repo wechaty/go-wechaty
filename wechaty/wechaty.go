@@ -365,6 +365,10 @@ func (w *Wechaty) initPuppetEventBridge() {
 				}
 				w.emit(name, NewContext(), friendship)
 			})
+		case schemas.PuppetEventNameReady:
+			w.puppet.On(name, func(i ...interface{}) {
+				w.emit(name, NewContext())
+			})
 		case schemas.PuppetEventNameRoomInvite:
 			w.puppet.On(name, func(i ...interface{}) {
 				roomInvitation := w.roomInvitation.Load(i[0].(*schemas.EventRoomInvitePayload).RoomInvitationId)
