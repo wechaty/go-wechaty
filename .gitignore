@@ -15,6 +15,7 @@
 # vendor/
 .idea/
 .vscode
+.DS_Store
 
 coverage.out
 report.json
