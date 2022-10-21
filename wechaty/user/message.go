@@ -257,7 +257,7 @@ func (m *Message) MentionList() []_interface.IContact {
 		return contactList
 	}
 
-	atList := strings.Split(m.Text(), config.AtSepratorRegex)
+	atList := config.AtSeparatorRegex.Split(m.Text(), -1)
 	if len(atList) == 0 {
 		return nil
 	}
