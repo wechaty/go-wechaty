@@ -14,6 +14,7 @@ const AtSeparatorRegexStr = "[\u2005\u0020]"
 
 const FourPerEmSpace = string(rune(8197))
 
+// AtSeparatorRegex regular expression split '@'
 var AtSeparatorRegex = regexp.MustCompile(AtSeparatorRegexStr)
 
 func QRCodeForChatie() *filebox.FileBox {
