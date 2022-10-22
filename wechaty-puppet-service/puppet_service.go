@@ -2,6 +2,7 @@ package puppetservice
 
 import (
 	"context"
+	"crypto/x509"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,11 +13,11 @@ import (
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/connectivity"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"io"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -39,52 +40,79 @@ type PuppetService struct {
 	grpcConn    *grpc.ClientConn
 	grpcClient  pbwechaty.PuppetClient
 	eventStream pbwechaty.Puppet_EventClient
+	opts        Options
 
-	stop chan struct{}
+	disableTLS bool
+	serverName string
+	endpoint   string
+	token      string
+	caCert     string
+
+	started chan struct{}
+	stop    chan struct{}
 }
 
 // NewPuppetService new PuppetService struct
+// Deprecated: please use NewNewPuppetService
 func NewPuppetService(o wechatyPuppet.Option) (*PuppetService, error) {
-	if o.Token == "" {
-		o.Token = getPuppetServiceTokenFromEnv()
+	return NewNewPuppetService(Options{
+		Option:                o,
+		GrpcReconnectInterval: o.GrpcReconnectInterval, //nolint:staticcheck
+	})
+}
+
+// NewNewPuppetService create puppet service
+func NewNewPuppetService(opts Options) (*PuppetService, error) {
+	token, err := envServiceToken(opts.Token)
+	if err != nil {
+		return nil, err
 	}
-	if o.Endpoint == "" {
-		o.Endpoint = getPuppetServiceEndpointFromEnv()
+	endpoint := envEndpoint(opts.Endpoint)
+	if endpoint == "" {
+		endpoint = fmt.Sprintf("wechaty://%s/%s",
+			envAuthority(opts.Authority), token)
 	}
-	puppetAbstract, err := wechatyPuppet.NewPuppet(o)
+
+	disableTLS := envNoTLSInsecureClient(opts.TLS.Disable)
+
+	serverNameIndication := envTLSServerName(opts.TLS.ServerName)
+	if serverNameIndication == "" {
+		serverNameIndication = sni(token)
+	}
+	if serverNameIndication == "" {
+		return nil, fmt.Errorf(
+			`wechaty Puppet Service requires a SNI as prefix of the token.
+You can add the "%s_" prefix to your token
+like: "%s_%s
+and try again`, TLSInsecureServerCertCommonName, TLSInsecureServerCertCommonName, token)
+	}
+
+	// TODO puppet is poorly designed, consider refactoring
+	puppetAbstract, err := wechatyPuppet.NewPuppet(opts.Option)
 	if err != nil {
 		return nil, err
 	}
 	puppetService := &PuppetService{
-		Puppet: puppetAbstract,
-		stop:   make(chan struct{}, 1),
+		Puppet:     puppetAbstract,
+		disableTLS: disableTLS,
+		serverName: serverNameIndication,
+		endpoint:   endpoint,
+		token:      token,
+		caCert:     envTLSCaCert(opts.TLS.CaCert),
+		opts:       opts,
+		stop:       make(chan struct{}, 1),
+		started:    make(chan struct{}, 1),
 	}
 	puppetAbstract.SetPuppetImplementation(puppetService)
 	return puppetService, nil
 }
 
-func getPuppetServiceTokenFromEnv() string {
-	if WechatyPuppetServiceToken != "" {
-		return WechatyPuppetServiceToken
+func sni(token string) string {
+	underscoreIndex := strings.LastIndex(token, "_")
+	if underscoreIndex == -1 {
+		return ""
 	}
-	if WechatyPuppetHostieToken != "" {
-		log.Println(`warn: WECHATY_PUPPET_HOSTIE_TOKEN environment be deprecated
-please use new environment name<WECHATY_PUPPET_SERVICE_TOKEN> to avoid unnecessary bugs`)
-		return WechatyPuppetHostieToken
-	}
-	return ""
-}
-
-func getPuppetServiceEndpointFromEnv() string {
-	if WechatyPuppetServiceEndpoint != "" {
-		return WechatyPuppetServiceEndpoint
-	}
-	if WechatyPuppetServiceEndpoint != "" {
-		log.Println(`warn: WECHATY_PUPPET_HOSTIE_ENDPOINT environment be deprecated
-please use new environment name<WECHATY_PUPPET_SERVICE_ENDPOINT> to avoid unnecessary bugs`)
-		return WechatyPuppetServiceEndpoint
-	}
-	return ""
+	return strings.ToLower(token[0:underscoreIndex])
 }
 
 // MessageImage ...
@@ -125,6 +153,7 @@ func (p *PuppetService) Start() (err error) {
 	if err != nil {
 		return err
 	}
+	p.started <- struct{}{}
 	return nil
 }
 
@@ -226,61 +255,12 @@ func (p *PuppetService) logonoff() bool {
 	return p.SelfID() != ""
 }
 
-func (p *PuppetService) startGrpcClient() error {
-	endpoint := p.Endpoint
-	if endpoint == "" {
-		serviceEndPoint, err := p.discoverServiceEndPoint()
-		if err != nil {
-			return err
-		}
-		if !serviceEndPoint.IsValid() {
-			return ErrNoEndpoint
-		}
-		endpoint = serviceEndPoint.Target()
+func (p *PuppetService) createCred() (credentials.TransportCredentials, error) {
+	pool := x509.NewCertPool()
+	if ok := pool.AppendCertsFromPEM([]byte(p.caCert)); !ok {
+		return nil, fmt.Errorf("PuppetService.createCred failed to parse root certificate")
 	}
-
-	// TODO 支持 tls
-	conn, err := grpc.Dial(endpoint, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithAuthority(p.Token))
-	if err != nil {
-		return err
-	}
-	p.grpcConn = conn
-
-	go p.autoReconnectGrpcConn()
-
-	p.grpcClient = pbwechaty.NewPuppetClient(conn)
-	return nil
-}
-
-func (p *PuppetService) autoReconnectGrpcConn() {
-	interval := 2 * time.Second
-	if p.Option.GrpcReconnectInterval > 0 {
-		interval = p.Option.GrpcReconnectInterval
-	}
-	ticker := time.NewTicker(interval)
-	isClose := false
-	for {
-		select {
-		case <-ticker.C:
-			connState := p.grpcConn.GetState()
-			// 重新连接成功
-			if isClose && connectivity.Ready == connState {
-				isClose = false
-				log.Printf("PuppetService.autoReconnectGrpcConn grpc reconnection successful")
-				if err := p.startGrpcStream(); err != nil {
-					log.Printf("PuppetService.autoReconnectGrpcConn startGrpcStream err:%s", err.Error())
-				}
-			}
-
-			if p.grpcConn.GetState() == connectivity.Idle {
-				isClose = true
-				p.grpcConn.Connect()
-				log.Printf("PuppetService.autoReconnectGrpcConn grpc reconnection...")
-			}
-		case <-p.stop:
-			return
-		}
-	}
+	return credentials.NewClientTLSFromCert(pool, p.serverName), nil
 }
 
 func (p *PuppetService) startGrpcStream() (err error) {
