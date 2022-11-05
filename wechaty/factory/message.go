@@ -5,7 +5,6 @@ import (
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 	"github.com/wechaty/go-wechaty/wechaty/user"
-	"log"
 )
 
 type MessageFactory struct {
@@ -25,15 +24,17 @@ func (m *MessageFactory) Find(query interface{}) _interface.IMessage {
 	case *schemas.MessageQueryFilter:
 		q = v
 	default:
-		log.Println("not support query type")
+		log.Error("not support query type")
+		// TODO 返回 err 更好
 		return nil
 	}
 	messages := m.FindAll(q)
 	if len(messages) < 1 {
+		// TODO 返回 err 更好
 		return nil
 	}
 	if len(messages) > 1 {
-		log.Printf("Message FindAll() got more than one(%d) result\n", len(messages))
+		log.Errorf("Message FindAll() got more than one(%d) result\n", len(messages))
 	}
 	return messages[0]
 }
@@ -43,7 +44,7 @@ func (m *MessageFactory) FindAll(query *schemas.MessageQueryFilter) []_interface
 	var err error
 	defer func() {
 		if err != nil {
-			log.Printf("MessageFactory FindAll rejected: %s\n", err)
+			log.Errorf("MessageFactory FindAll rejected: %s\n", err)
 		}
 	}()
 	messageIDs, err := m.GetPuppet().MessageSearch(query)

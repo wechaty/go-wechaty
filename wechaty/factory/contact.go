@@ -2,7 +2,6 @@ package factory
 
 import (
 	"fmt"
-	"log"
 	"sync"
 
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
@@ -66,7 +65,7 @@ func (c *ContactFactory) Find(query interface{}) _interface.IContact {
 		return nil
 	}
 	if len(contacts) > 1 {
-		log.Printf("Contact Find() got more than one(%d) result\n", len(contacts))
+		log.Warnf("Contact Find() got more than one(%d) result\n", len(contacts))
 	}
 	for _, v := range contacts {
 		if c.GetPuppet().ContactValidate(v.ID()) {
@@ -80,7 +79,7 @@ func (c *ContactFactory) Find(query interface{}) _interface.IContact {
 func (c *ContactFactory) FindAll(query interface{}) []_interface.IContact {
 	contactIds, err := c.GetPuppet().ContactSearch(query, nil)
 	if err != nil {
-		log.Printf("Contact c.GetPuppet().ContactSearch() rejected: %s\n", err)
+		log.Errorf("Contact c.GetPuppet().ContactSearch() rejected: %s\n", err)
 		return nil
 	}
 
@@ -111,7 +110,7 @@ func (c *ContactFactory) FindAll(query interface{}) []_interface.IContact {
 func (c *ContactFactory) Tags() []_interface.ITag {
 	tagIDList, err := c.GetPuppet().TagContactList("")
 	if err != nil {
-		log.Printf("ContactFactory Tags() exception: %s\n", err)
+		log.Errorf("ContactFactory Tags() exception: %s\n", err)
 		return nil
 	}
 	tagList := make([]_interface.ITag, 0, len(tagIDList))

@@ -2,7 +2,6 @@ package user
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
@@ -210,7 +209,7 @@ func (r *Room) Topic() string {
 	}
 	memberList, err := r.memberList()
 	if err != nil {
-		log.Println("Room Topic err: ", err)
+		log.Error("Room Topic err: ", err)
 		return ""
 	}
 	i := 1

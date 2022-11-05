@@ -3,9 +3,11 @@ package helper
 import (
 	"encoding/xml"
 	"fmt"
+	logger "github.com/wechaty/go-wechaty/wechaty-puppet/log"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-	"log"
 )
+
+var log = logger.L.WithField("module", "wechaty-puppet/helper")
 
 // FixUnknownMessage 修复wechaty服务端不能解析的消息，尝试服务端去解析
 func FixUnknownMessage(payload *schemas.MessagePayload) {
@@ -15,7 +17,7 @@ func FixUnknownMessage(payload *schemas.MessagePayload) {
 	msg := &Msg{}
 	err := xml.Unmarshal([]byte(payload.Text), msg)
 	if err != nil {
-		log.Printf("FixUnknownMessage raw:%s || err: %s", payload.Text, err)
+		log.Errorf("FixUnknownMessage raw:%s || err: %s", payload.Text, err)
 		return
 	}
 	if msg.Appmsg.Type.Text == "36" {

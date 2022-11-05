@@ -2,7 +2,6 @@ package factory
 
 import (
 	"errors"
-	"log"
 	"sync"
 
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
@@ -44,7 +43,7 @@ func (r *RoomFactory) Create(contactList []_interface.IContact, topic string) (_
 func (r *RoomFactory) FindAll(query *schemas.RoomQueryFilter) []_interface.IRoom {
 	roomIDList, err := r.GetPuppet().RoomSearch(query)
 	if err != nil {
-		log.Println("RoomFactory err: ", err)
+		log.Error("RoomFactory err: ", err)
 		return nil
 	}
 	if len(roomIDList) == 0 {
@@ -77,7 +76,8 @@ func (r *RoomFactory) Find(query interface{}) _interface.IRoom {
 	case *schemas.RoomQueryFilter:
 		q = v
 	default:
-		log.Printf("not support query type %T\n", query)
+		log.Errorf("not support query type %T\n", query)
+		// TODO 应该返回 err
 		return nil
 	}
 	roomList := r.FindAll(q)
@@ -89,6 +89,7 @@ func (r *RoomFactory) Find(query interface{}) _interface.IRoom {
 			return room
 		}
 	}
+	// TODO 应该返回 err
 	return nil
 }
 

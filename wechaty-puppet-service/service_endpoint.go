@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -63,7 +62,7 @@ func (p *PuppetService) discoverServiceEndPoint() (endPoint ServiceEndPoint, err
 		return endPoint, nil
 	}
 	if resp.StatusCode == http.StatusNotFound {
-		log.Printf("discoverServiceEndPoint() err: http.Status:%s\n", resp.Status)
+		log.Errorf("discoverServiceEndPoint() err: http.Status:%s\n", resp.Status)
 		return endPoint, nil
 	}
 	return endPoint, fmt.Errorf("discoverServiceEndPoint() err: http.Status:%s", resp.Status)
