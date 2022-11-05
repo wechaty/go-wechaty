@@ -1,6 +1,9 @@
 package puppetservice
 
-import "os"
+import (
+	logger "github.com/wechaty/go-wechaty/wechaty-puppet/log"
+	"os"
+)
 
 var (
 	// WechatyPuppetHostieToken ...
@@ -17,6 +20,8 @@ var (
 	// WechatyPuppetServiceEndpoint ...
 	WechatyPuppetServiceEndpoint string
 )
+
+var log = logger.L.WithField("module", "wechaty-puppet-service")
 
 func init() {
 	WechatyPuppetHostieToken, _ = os.LookupEnv("WECHATY_PUPPET_HOSTIE_TOKEN")

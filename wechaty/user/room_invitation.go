@@ -3,7 +3,6 @@ package user
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"time"
 
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
@@ -52,7 +51,7 @@ func (ri *RoomInvitation) Accept() error {
 	if err != nil {
 		return err
 	}
-	log.Printf("RoomInvitation accept() with room(%s) & inviter(%s) ready()", topic, inviter)
+	log.Tracef("RoomInvitation accept() with room(%s) & inviter(%s) ready()", topic, inviter)
 	return inviter.Ready(false)
 }
 

@@ -23,8 +23,6 @@ package user
 
 import (
 	"fmt"
-	"log"
-
 	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"github.com/wechaty/go-wechaty/wechaty/config"
@@ -160,7 +158,7 @@ func (c *Contact) City() string {
 func (c *Contact) Avatar() *filebox.FileBox {
 	avatar, err := c.GetPuppet().ContactAvatar(c.Id)
 	if err != nil {
-		log.Printf("Contact Avatar() exception: %s\n", err)
+		log.Errorf("Contact Avatar() exception: %s\n", err)
 		return config.QRCodeForChatie()
 	}
 	return avatar
@@ -187,7 +185,7 @@ func (c *Contact) SetAlias(newAlias string) {
 	var err error
 	defer func() {
 		if err != nil {
-			log.Printf("Contact SetAlias(%s) rejected: %s\n", newAlias, err)
+			log.Errorf("Contact SetAlias(%s) rejected: %s\n", newAlias, err)
 		}
 	}()
 	err = c.GetPuppet().SetContactAlias(c.Id, newAlias)
@@ -196,14 +194,14 @@ func (c *Contact) SetAlias(newAlias string) {
 	}
 	err = c.GetPuppet().DirtyPayload(schemas.PayloadTypeContact, c.Id)
 	if err != nil {
-		log.Println("SetAlias DirtyPayload err:", err)
+		log.Error("SetAlias DirtyPayload err:", err)
 	}
 	c.payload, err = c.GetPuppet().ContactPayload(c.Id)
 	if err != nil {
-		log.Println("SetAlias ContactPayload err:", err)
+		log.Error("SetAlias ContactPayload err:", err)
 		return
 	}
 	if c.payload.Alias != newAlias {
-		log.Printf("Contact SetAlias(%s) sync with server fail: set(%s) is not equal to get(%s)\n", newAlias, newAlias, c.payload.Alias)
+		log.Errorf("Contact SetAlias(%s) sync with server fail: set(%s) is not equal to get(%s)\n", newAlias, newAlias, c.payload.Alias)
 	}
 }

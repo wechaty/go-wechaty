@@ -80,11 +80,11 @@ func onMessage(ctx *wechaty.Context, message *user.Message) {
 	log.Printf("REPLY with urlLink: %s\n", urlLink)
 }
 
-func onScan(ctx *wechaty.Context, qrCode string, status schemas.ScanStatus, data string)  {
+func onScan(ctx *wechaty.Context, qrCode string, status schemas.ScanStatus, data string) {
 	if status == schemas.ScanStatusWaiting || status == schemas.ScanStatusTimeout {
 		qrterminal.GenerateHalfBlock(qrCode, qrterminal.L, os.Stdout)
 
-		qrcodeImageUrl := fmt.Sprintf("https://wechaty.js.org/qrcode/%s",url.QueryEscape(qrCode))
+		qrcodeImageUrl := fmt.Sprintf("https://wechaty.js.org/qrcode/%s", url.QueryEscape(qrCode))
 		fmt.Printf("onScan: %s - %s\n", status, qrcodeImageUrl)
 		return
 	}
