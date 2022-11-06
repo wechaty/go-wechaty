@@ -20,3 +20,4 @@
 coverage.out
 report.json
 tests_report.xml
+*.memory-card.json

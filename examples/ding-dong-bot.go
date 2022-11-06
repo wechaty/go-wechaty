@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	puppet_openwechat "github.com/wechaty/go-wechaty/puppet-openwechat"
 	"log"
 	"net/url"
 	"os"
@@ -9,16 +10,21 @@ import (
 
 	"github.com/mdp/qrterminal/v3"
 	"github.com/wechaty/go-wechaty/wechaty"
-	wp "github.com/wechaty/go-wechaty/wechaty-puppet"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"github.com/wechaty/go-wechaty/wechaty/user"
 )
 
 func main() {
-	var bot = wechaty.NewWechaty(wechaty.WithPuppetOption(wp.Option{
-		Token: "",
-	}))
+	//var bot = wechaty.NewWechaty(wechaty.WithPuppetOption(wp.Option{
+	//	Token: "",
+	//}))
+
+	puppetOpenWechaty, err := puppet_openwechat.NewPuppetOpenWechat()
+	if err != nil {
+		panic(err)
+	}
+	var bot = wechaty.NewWechaty(wechaty.WithPuppet(puppetOpenWechaty))
 
 	bot.OnScan(onScan).OnLogin(func(ctx *wechaty.Context, user *user.ContactSelf) {
 		fmt.Printf("User %s logined\n", user.Name())
