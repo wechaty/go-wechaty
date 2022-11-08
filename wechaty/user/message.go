@@ -130,6 +130,7 @@ func (m *Message) Text() string {
 func (m *Message) Self() bool {
 	userID := m.GetPuppet().SelfID()
 	talker := m.Talker()
+	// talkeId 可能为空
 	return userID == talker.ID()
 }
 

@@ -27,6 +27,7 @@ func main() {
 	var bot = wechaty.NewWechaty(wechaty.WithPuppet(puppetOpenWechaty))
 
 	bot.OnScan(onScan).OnLogin(func(ctx *wechaty.Context, user *user.ContactSelf) {
+		fmt.Println(user.Id)
 		fmt.Printf("User %s logined\n", user.Name())
 	}).OnMessage(onMessage).OnLogout(func(ctx *wechaty.Context, user *user.ContactSelf, reason string) {
 		fmt.Printf("User %s logouted: %s\n", user, reason)
@@ -94,5 +95,5 @@ func onScan(ctx *wechaty.Context, qrCode string, status schemas.ScanStatus, data
 		fmt.Printf("onScan: %s - %s\n", status, qrcodeImageUrl)
 		return
 	}
-	fmt.Printf("onScan: %s\n", status)
+	fmt.Printf("onScan: %s, data: %s\n", status, data)
 }

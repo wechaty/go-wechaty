@@ -30,3 +30,7 @@ require (
 	google.golang.org/genproto v0.0.0-20220317150908-0efb43f6373e // indirect
 	rsc.io/qr v0.2.0 // indirect
 )
+
+replace (
+	github.com/eatmoreapple/openwechat => /Users/dingchaofei/work/github/openwechat
+)

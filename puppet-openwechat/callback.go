@@ -26,3 +26,15 @@ func (p PuppetOpenWechat) onScan() {
 		})
 	}
 }
+
+func (p PuppetOpenWechat) onMsg() {
+	p.bot.MessageOnSuccess(func(msg *openwechat.Message) {
+		payload, err := rawMsgToPayload(msg)
+		if err != nil {
+			log.Errorf("PuppetOpenWechat onMsg err: %s", err.Error())
+			return
+		}
+		p.Puppet.AddMessagePayloadToCache(msg.MsgId, payload)
+		p.Emit(schemas.PuppetEventNameMessage, &schemas.EventMessagePayload{MessageId: msg.MsgId})
+	})
+}

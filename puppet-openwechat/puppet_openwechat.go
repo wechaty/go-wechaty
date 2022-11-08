@@ -15,12 +15,14 @@ var log = logger.L.WithField("module", "puppet-openwechat")
 type PuppetOpenWechat struct {
 	*wechatyPuppet.Puppet
 
-	bot *openwechat.Bot
+	bot  *openwechat.Bot
+	self *openwechat.Self
 }
 
 func NewPuppetOpenWechat() (*PuppetOpenWechat, error) {
 	puppet := &PuppetOpenWechat{}
 	puppetBase, err := wechatyPuppet.NewPuppet(wechatyPuppet.Option{})
+	puppetBase.SetPuppetImplementation(puppet)
 	if err != nil {
 		return nil, err
 	}
@@ -34,16 +36,11 @@ func NewPuppetOpenWechat() (*PuppetOpenWechat, error) {
 }
 
 func (p PuppetOpenWechat) initCallback() {
-	openwechat.DefaultBot()
 	p.onScan()
+	p.onMsg()
 }
 
 func (p PuppetOpenWechat) MessageSearch(query *schemas.MessageQueryFilter) ([]string, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (p PuppetOpenWechat) MessagePayload(messageID string) (payload *schemas.MessagePayload, err error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -54,11 +51,6 @@ func (p PuppetOpenWechat) FriendshipPayload(friendshipID string) (*schemas.Frien
 }
 
 func (p PuppetOpenWechat) SetFriendshipPayload(friendshipID string, newPayload *schemas.FriendshipPayload) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (p PuppetOpenWechat) RoomPayload(roomID string) (payload *schemas.RoomPayload, err error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -95,25 +87,24 @@ func (p PuppetOpenWechat) FriendshipSearch(query *schemas.FriendshipSearchCondit
 	panic("implement me")
 }
 
-func (p PuppetOpenWechat) SelfID() string {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (p PuppetOpenWechat) MessageImage(messageID string, imageType schemas.ImageType) (*filebox.FileBox, error) {
 	panic("implement me")
 }
 
-func (p PuppetOpenWechat) Start() (err error) {
+func (p *PuppetOpenWechat) Start() (err error) {
 	log.Trace("PuppetOpenWechat.Start")
 
-	if err := p.bot.HotLogin(openwechat.NewJsonFileHotReloadStorage("puppet-open-wechat.memory-card.json"), true); err != nil {
+	//if err := p.bot.HotLogin(openwechat.NewJsonFileHotReloadStorage("puppet-open-wechat.memory-card.json"), true); err != nil {
+	//	return errors.Wrap(err, "PuppetOpenWechat.Start HotLogin")
+	//}
+	if err := p.bot.HotLogin(openwechat.NewJsonFileHotReloadStorage("/Users/dingchaofei/work/github/go-wechaty/puppet-open-wechat.memory-card.json"), true); err != nil {
 		return errors.Wrap(err, "PuppetOpenWechat.Start HotLogin")
 	}
 	self, err := p.bot.GetCurrentUser()
 	if err != nil {
 		return errors.Wrap(err, "PuppetOpenWechat.Start GetCurrentUser")
 	}
+	p.self = self
 	go p.Emit(schemas.PuppetEventNameLogin, &schemas.EventLoginPayload{
 		ContactId: self.UserName,
 	})
@@ -206,8 +197,7 @@ func (p PuppetOpenWechat) MessageFile(id string) (*filebox.FileBox, error) {
 }
 
 func (p PuppetOpenWechat) MessageRawPayload(id string) (*schemas.MessagePayload, error) {
-	//TODO implement me
-	panic("implement me")
+	return nil, fmt.Errorf("PuppetOpenWechat not implement MessageRawPayload method")
 }
 
 func (p PuppetOpenWechat) MessageSendText(conversationID string, text string, mentionIDList ...string) (string, error) {
@@ -236,8 +226,28 @@ func (p PuppetOpenWechat) MessageURL(messageID string) (*schemas.UrlLinkPayload,
 }
 
 func (p PuppetOpenWechat) RoomRawPayload(id string) (*schemas.RoomPayload, error) {
-	//TODO implement me
-	panic("implement me")
+	groups, err := p.self.Groups()
+	if err != nil {
+		return nil, err
+	}
+	rawRoom := groups.GetByUsername(id)
+	if rawRoom == nil {
+		return nil, fmt.Errorf("PuppetOpenWechat RoomRawPayload not found room id=[%s]", id)
+	}
+
+	payload := &schemas.RoomPayload{
+		Id:           rawRoom.UserName,
+		Topic:        rawRoom.NickName,
+		Avatar:       "", // TODO 群头像？
+		MemberIdList: nil,
+		OwnerId:      "",
+		AdminIdList:  nil,
+	}
+
+	for _, v := range rawRoom.MemberList {
+		payload.MemberIdList = append(payload.MemberIdList, v.UserName)
+	}
+	return payload, nil
 }
 
 func (p PuppetOpenWechat) RoomList() ([]string, error) {
@@ -286,8 +296,20 @@ func (p PuppetOpenWechat) RoomQRCode(roomID string) (string, error) {
 }
 
 func (p PuppetOpenWechat) RoomMemberList(roomID string) ([]string, error) {
-	//TODO implement me
-	panic("implement me")
+	log.Tracef("RoomMemberList(%s)", roomID)
+	group, err := p.self.Groups()
+	if err != nil {
+		return nil, err
+	}
+	room := group.GetByUsername(roomID)
+	if room == nil {
+		return nil, fmt.Errorf("PuppetOpenWechat.RoomMemberList not found room id=[%s]", roomID)
+	}
+	memberIds := make([]string, 0, len(group))
+	for _, v := range room.MemberList {
+		memberIds = append(memberIds, v.UserName)
+	}
+	return memberIds, nil
 }
 
 func (p PuppetOpenWechat) RoomMemberRawPayload(roomID string, contactID string) (*schemas.RoomMemberPayload, error) {

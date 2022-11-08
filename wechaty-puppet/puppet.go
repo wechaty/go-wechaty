@@ -269,11 +269,16 @@ func (p *Puppet) MessagePayload(messageID string) (*schemas.MessagePayload, erro
 		return nil, err
 	}
 
+	p.AddMessagePayloadToCache(messageID, payload)
+	return payload, nil
+}
+
+// AddMessagePayloadToCache 缓存消息
+func (p *Puppet) AddMessagePayloadToCache(messageID string, payload *schemas.MessagePayload) {
 	// 对 puppet 实现方返回的消息做统一处理
 	NewMsgAdapter(payload.Type).Handle(payload)
-
 	p.cacheMessagePayload.Add(messageID, payload)
-	return payload, nil
+	return
 }
 
 // FriendshipPayload ...
