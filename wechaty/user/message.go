@@ -130,6 +130,11 @@ func (m *Message) Text() string {
 func (m *Message) Self() bool {
 	userID := m.GetPuppet().SelfID()
 	talker := m.Talker()
+
+	//TODO talker 为 nil 的情况，群公告消息
+	if talker == nil {
+		return false
+	}
 	return userID == talker.ID()
 }
 
