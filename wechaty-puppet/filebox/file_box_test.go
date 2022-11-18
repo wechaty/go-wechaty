@@ -108,7 +108,7 @@ func TestFileBox_ToJSON(t *testing.T) {
 	t.Run("ToJSON success", func(t *testing.T) {
 		const base64Encode = "RmlsZUJveEJhc2U2NAo="
 		const base64Filename = "test.txt"
-		const want = `{"base64":"RmlsZUJveEJhc2U2NAo=","boxType":1,"md5":"","metadata":null,"name":"test.txt","size":14,"type":1}`
+		const want = `{"base64":"RmlsZUJveEJhc2U2NAo=","boxType":1,"md5":"","mediaType":"text/plain; charset=utf-8","metadata":{},"name":"test.txt","size":14,"type":1}`
 		jsonString, err := FromBase64(base64Encode, WithName(base64Filename)).ToJSON()
 		if err != nil {
 			t.Error(err)

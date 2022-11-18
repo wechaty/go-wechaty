@@ -736,7 +736,7 @@ func (p *PuppetService) messageSendFileNonStream(conversationID string, fileBox 
 		if err != nil {
 			return "", err
 		}
-		jsonText, err = filebox.FromBase64(base64, filebox.WithName(fileBox.Name)).ToJSON()
+		jsonText, err = filebox.FromBase64(base64, filebox.WithName(fileBox.Name), filebox.WithMetadata(fileBox.MetaData())).ToJSON()
 		if err != nil {
 			return "", err
 		}
