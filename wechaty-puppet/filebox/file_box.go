@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/tuotoo/qrcode"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
+	logger "github.com/wechaty/go-wechaty/wechaty-puppet/log"
 	"io"
 	"io/ioutil"
 	"mime"
@@ -33,6 +34,8 @@ var (
 	ErrNoUuid = errors.New("no uuid")
 )
 
+var log = logger.L.WithField("module", "filebox")
+
 type fileImplInterface interface {
 	toJSONMap() (map[string]interface{}, error)
 	toReader() (io.Reader, error)
@@ -40,26 +43,57 @@ type fileImplInterface interface {
 
 // FileBox struct
 type FileBox struct {
-	fileImpl fileImplInterface
-	Name     string
-	metadata map[string]interface{}
-	boxType  Type
-	mimeType string
-	size     int64
-	md5      string
+	fileImpl  fileImplInterface
+	Name      string
+	metadata  map[string]interface{}
+	boxType   Type
+	mediaType string
+	size      int64
+	md5       string
 
 	err error
 }
 
 func newFileBox(boxType Type, fileImpl fileImplInterface, options Options) *FileBox {
-	return &FileBox{
+	fb := &FileBox{
 		fileImpl: fileImpl,
 		Name:     options.Name,
 		metadata: options.Metadata,
 		boxType:  boxType,
 		size:     options.Size,
 		md5:      options.Md5,
-		mimeType: mime.TypeByExtension(filepath.Ext(options.Name)),
+	}
+	if fb.metadata == nil {
+		fb.metadata = make(map[string]interface{})
+	}
+	fb.correctName()
+	fb.guessMediaType()
+	return fb
+}
+
+func (fb *FileBox) correctName() {
+	if strings.HasSuffix(fb.Name, ".silk") || strings.HasSuffix(fb.Name, ".slk") {
+		log.Warn("detect that you want to send voice file which should be <name>.sil pattern. So we help you rename it.")
+		if strings.HasSuffix(fb.Name, ".silk") {
+			fb.Name = strings.ReplaceAll(fb.Name, ".silk", ".sil")
+		}
+		if strings.HasSuffix(fb.Name, ".slk") {
+			fb.Name = strings.ReplaceAll(fb.Name, ".slk", ".sil")
+		}
+	}
+}
+
+func (fb *FileBox) guessMediaType() {
+	if strings.HasSuffix(fb.Name, ".sil") {
+		fb.mediaType = "audio/silk"
+		if _, ok := fb.metadata["voiceLength"]; !ok {
+			log.Warn("detect that you want to send voice file, but no voiceLength setting, " +
+				`so use the default setting: 1000,` +
+				`you should set it manually: filebox.WithMetadata(map[string]interface{}{"voiceLength": 2000})`)
+			fb.metadata["voiceLength"] = 1000
+		}
+	} else {
+		fb.mediaType = mime.TypeByExtension(filepath.Ext(fb.Name))
 	}
 }
 
@@ -192,12 +226,13 @@ func (fb *FileBox) ToJSON() (string, error) {
 	}
 
 	jsonMap := map[string]interface{}{
-		"name":     fb.Name,
-		"metadata": fb.metadata,
-		"type":     fb.boxType,
-		"boxType":  fb.boxType, //Deprecated
-		"size":     fb.size,
-		"md5":      fb.md5,
+		"name":      fb.Name,
+		"metadata":  fb.metadata,
+		"type":      fb.boxType,
+		"boxType":   fb.boxType, //Deprecated
+		"size":      fb.size,
+		"md5":       fb.md5,
+		"mediaType": fb.mediaType,
 	}
 
 	switch fb.boxType {
@@ -291,7 +326,7 @@ func (fb *FileBox) ToDataURL() (string, error) {
 	if err != nil {
 		return "", nil
 	}
-	return fmt.Sprintf("data:%s;base64,%s", fb.mimeType, toBase64), nil
+	return fmt.Sprintf("data:%s;base64,%s", fb.mediaType, toBase64), nil
 }
 
 // ToQRCode to QRCode
@@ -350,6 +385,12 @@ func (fb *FileBox) ToReader() (io.Reader, error) {
 // Type get type
 func (fb *FileBox) Type() Type {
 	return fb.boxType
+}
+
+// MetaData get metadata
+func (fb *FileBox) MetaData() map[string]interface{} {
+	// TODO deep copy?
+	return fb.metadata
 }
 
 // Error ret err
