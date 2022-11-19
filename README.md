@@ -42,7 +42,7 @@ Wechaty is used in many ChatBot projects by thousands of developers. If you want
 
 Scan now, because other Wechaty Go developers want to talk with you too! (secret code: _go wechaty_)
 
-## The World's Shortest Go ChatBot: 7 lines of Code
+## Usage
 
 ```go
 package main
@@ -68,168 +68,9 @@ func main() {
 }
 ```
 
-## Go Wechaty Developing Plan
-
-We already have Wechaty in TypeScript, It will be not too hard to translate the TypeScript(TS) to Go because [wechaty](https://github.com/wechaty/wechaty) has only 3,000 lines of the TS code, they are well designed and de-coupled by the [wechaty-puppet](https://github.com/wechaty/wechaty-puppet/) abstraction. So after we have translated those 3,000 lines of TypeScript code, we will almost be done.
-
-As we have already a ecosystem of Wechaty in TypeScript, so we will not have to implement everything in Go, especially, in the Feb 2020, we have finished the [@chatie/grpc](https://github.com/chatie/grpc) service abstracting module with the [wechaty-puppet-service](https://github.com/wechaty/wechaty-puppet-service) implmentation.
-
-The following diagram shows out that we can reuse almost everything in TypeScript, and what we need to do is only the block located at the top right of the diagram: `Wechaty (Go)`.
-
-```ascii
-  +--------------------------+ +--------------------------+
-  |                          | |                          |
-  |   Wechaty (TypeScript)   | |      Wechaty (Go)        |
-  |                          | |                          |
-  +--------------------------+ +--------------------------+
-
-  +-------------------------------------------------------+
-  |                 Wechaty Puppet Service                |
-  |                                                       |
-  |                (wechaty-puppet-service)               |
-  +-------------------------------------------------------+
-
-+---------------------  @chatie/grpc  ----------------------+
-
-  +-------------------------------------------------------+
-  |                Wechaty Puppet Abstract                |
-  |                                                       |
-  |                   (wechaty-puppet)                    |
-  +-------------------------------------------------------+
-
-  +--------------------------+ +--------------------------+
-  |      Pad Protocol        | |      Web Protocol        |
-  |                          | |                          |
-  | wechaty-puppet-padplus   | |(wechaty-puppet-puppeteer)|
-  +--------------------------+ +--------------------------+
-  +--------------------------+ +--------------------------+
-  |    Windows Protocol      | |       Mac Protocol       |
-  |                          | |                          |
-  | (wechaty-puppet-windows) | | (wechaty-puppet-macpro)  |
-  +--------------------------+ +--------------------------+
-```
-
-## Example: How to Translate TypeScript to Go
-
-There's a 100 lines class named `Image` in charge of downloading the WeChat image to different sizes.
-
-It is a great example for demonstrating how do we translate the TypeScript to Go in Wechaty Way:
-
-### Image Class Source Code
-
-- TypeScript: <https://github.com/wechaty/wechaty/blob/master/src/user/image.ts>
-- Go: <https://github.com/wechaty/go-wechaty/blob/master/src/wechaty/user/image.go>
-
-If you are interested in the translation and want to look at how it works, it will be a good start from reading and comparing those two `Image` class files in TypeScript and Go at the same time.
-
-## To-do List
-
-- TS: TypeScript
-- SLOC: Source Lines Of Code
-
-### Wechaty Internal Modules
-
-1. [ ] Class Wechaty
-    - TS SLOC(1160): <https://github.com/wechaty/wechaty/blob/master/src/wechaty.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class Contact
-    - TS SLOC(804): <https://github.com/wechaty/wechaty/blob/master/src/user/contact.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class ContactSelf
-    - TS SLOC(199): <https://github.com/wechaty/wechaty/blob/master/src/user/contact-self.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class Message
-    - TS SLOC(1054): <https://github.com/wechaty/wechaty/blob/master/src/user/message.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class Room
-    - TS SLOC(1194): <https://github.com/wechaty/wechaty/blob/master/src/user/room.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class Image
-    - TS SLOC(60): <https://github.com/wechaty/wechaty/blob/master/src/user/image.ts>
-    - [X] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class Accessory
-    - TS SLOC(179): <https://github.com/wechaty/wechaty/blob/master/src/accessory.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class Config
-    - TS SLOC(187): <https://github.com/wechaty/wechaty/blob/master/src/config.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class Favorite
-    - TS SLOC(52): <https://github.com/wechaty/wechaty/blob/master/src/user/favorite.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class Friendship
-    - TS SLOC(417): <https://github.com/wechaty/wechaty/blob/master/src/user/friendship.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class MiniProgram
-    - TS SLOC(70): <https://github.com/wechaty/wechaty/blob/master/src/user/mini-program.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class RoomInvitation
-    - TS SLOC(317): <https://github.com/wechaty/wechaty/blob/master/src/user/room-invitation.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class Tag
-    - TS SLOC(190): <https://github.com/wechaty/wechaty/blob/master/src/user/tag.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class UrlLink
-    - TS SLOC(107): <https://github.com/wechaty/wechaty/blob/master/src/user/url-link.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-
-### Wechaty External Modules
-
-1. [ ] Class FileBox
-    - TS SLOC(638): <https://github.com/huan/file-box/blob/master/src/file-box.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class MemoryCard
-    - TS SLOC(376): <https://github.com/huan/memory-card/blob/master/src/memory-card.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class WechatyPuppet
-    - TS SLOC(1115): <https://github.com/wechaty/wechaty-puppet/blob/master/src/puppet.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-1. [ ] Class WechatyPuppetService
-    - TS SLOC(909): <https://github.com/wechaty/wechaty-puppet-service/blob/master/src/client/puppet-service.ts>
-    - [ ] Code
-    - [ ] Unit Tests
-    - [ ] Documentation
-
-## Usage
-
-WIP...
-
 ## Requirements
 
-1. Go 1.14+
+1. Go 1.18+
 
 ## Install
 
