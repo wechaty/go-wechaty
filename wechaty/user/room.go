@@ -69,8 +69,8 @@ func (r *Room) ID() string {
 	return r.id
 }
 
-// Find all contacts in a room
-// params nil or string or RoomMemberQueryFilter
+// MemberAll all contacts in a room
+// params nil or string or *schemas.RoomMemberQueryFilter
 func (r *Room) MemberAll(query interface{}) ([]_interface.IContact, error) {
 	if query == nil {
 		return r.memberList()

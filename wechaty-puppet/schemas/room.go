@@ -9,8 +9,11 @@ type RoomMemberQueryFilter struct {
 }
 
 type RoomQueryFilter struct {
-	Id          string
-	Topic       string
+	// 使用 room id 过滤
+	Id string
+	// 使用群名称过滤
+	Topic string
+	// 群名称正则过滤
 	TopicRegexp *regexp.Regexp
 }
 

@@ -22,12 +22,17 @@ const (
 
 // ContactQueryFilter use the first non-empty parameter of all parameters to search
 type ContactQueryFilter struct {
-	Alias       string
+	// 别名过滤
+	Alias string
+	// 别名正则表达式过滤
 	AliasRegexp *regexp.Regexp
-	Id          string
-	Name        string
-	NameRegexp  *regexp.Regexp
-	WeiXin      string
+	// id 过滤
+	Id string
+	// 昵称过滤
+	Name string
+	// 昵称正则表达式过滤
+	NameRegexp *regexp.Regexp
+	WeiXin     string
 }
 
 type ContactPayload struct {
