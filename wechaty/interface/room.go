@@ -10,6 +10,7 @@ type IRoomFactory interface {
 	Create(contactList []IContact, topic string) (IRoom, error)
 	FindAll(query *schemas.RoomQueryFilter) []IRoom
 	// Find query params is string or *schemas.RoomQueryFilter
+	// when the parameter is a string type, the room name search is used by default
 	Find(query interface{}) IRoom
 	Load(id string) IRoom
 }
@@ -20,11 +21,11 @@ type IRoom interface {
 	IsReady() bool
 	String() string
 	ID() string
-	// Find all contacts in a room
-	// params nil or string or RoomMemberQueryFilter
+	// MemberAll all contacts in a room
+	// params nil or string or *schemas.RoomMemberQueryFilter
 	MemberAll(query interface{}) ([]IContact, error)
 	// Member Find all contacts in a room, if get many, return the first one.
-	// query params string or RoomMemberQueryFilter
+	// query params string or *schemas.RoomMemberQueryFilter
 	Member(query interface{}) (IContact, error)
 	// Alias return contact's roomAlias in the room
 	Alias(contact IContact) (string, error)

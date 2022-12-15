@@ -9,8 +9,10 @@ type IContactFactory interface {
 	Load(id string) IContact
 	LoadSelf(id string) IContactSelf
 	// Find query params is string or *schemas.ContactQueryFilter
+	// when the parameter is a string type, the name search is used by default
 	Find(query interface{}) IContact
 	// FindAll query params is string or *schemas.ContactQueryFilter
+	// when the parameter is a string type, the name search is used by default
 	FindAll(query interface{}) []IContact
 	// Tags get tags for all contact
 	Tags() []ITag
