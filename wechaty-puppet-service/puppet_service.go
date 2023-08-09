@@ -14,7 +14,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"io"
 	"time"
 )
@@ -643,11 +642,6 @@ func (p *PuppetService) MessageRawPayload(id string) (*schemas.MessagePayload, e
 		payload.Timestamp = time.Unix(int64(response.TimestampDeprecated), 0) //nolint:staticcheck
 	}
 	return payload, nil
-}
-
-func grpcTimestampToGoTime(t *timestamppb.Timestamp) time.Time {
-	second := t.Seconds*1000 + int64(t.Nanos)/1000000
-	return time.Unix(second, 0)
 }
 
 // MessageSendText ...
