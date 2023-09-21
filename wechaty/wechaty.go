@@ -218,7 +218,16 @@ func (w *Wechaty) initPuppet() error {
 	// TODO: set puppet memory
 
 	if w.Option.puppet == nil {
-		puppet, err := puppetservice.NewPuppetService(w.puppetOption)
+		// 之前是 puppet.Option 现在改为了 puppetservice.Options 需要兼容处理
+		puppetServiceOption := w.Option.puppetServiceOptions
+		if w.puppetOption.Token != "" {
+			puppetServiceOption.Option = w.puppetOption
+		}
+		//nolint:staticcheck
+		if w.puppetOption.GrpcReconnectInterval != 0 {
+			puppetServiceOption.GrpcReconnectInterval = w.puppetOption.GrpcReconnectInterval
+		}
+		puppet, err := puppetservice.NewNewPuppetService(puppetServiceOption)
 		if err != nil {
 			return err
 		}
@@ -271,7 +280,7 @@ func (w *Wechaty) Start() error {
 
 	err = w.initPuppet()
 	if err != nil {
-		log.Error("memory card load err: ", err)
+		log.Error("w.initPuppet err: ", err)
 		return err
 	}
 

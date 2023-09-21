@@ -15,9 +15,11 @@ var (
 	WechatyPuppetHostieEndpoint string
 
 	// WechatyPuppetServiceToken ...
+	// Deprecated
 	WechatyPuppetServiceToken string
 
 	// WechatyPuppetServiceEndpoint ...
+	// Deprecated
 	WechatyPuppetServiceEndpoint string
 )
 
