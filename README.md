@@ -89,7 +89,7 @@ make test
 
 ## QA
 - wechaty-puppet-service: WECHATY_PUPPET_SERVICE_TOKEN not found ? 
-  - go-wechaty is the go language implementation of wechaty (TypeScript). Puppet is required to start wechaty, but it is currently known that puppets are written in TypeScript language. In order to enable go-wechaty to use these puppets, we can use wechaty-gateway to convert puppets into grpc service, let go-wechaty connect to the grpc service, go-wechaty -> wechaty-gateway -> puppet, document: https://wechaty.js.org/docs/puppet-services/diy/
+  - go-wechaty is the go language implementation of [wechaty](https://github.com/wechaty/wechaty) (TypeScript). Puppet is required to start wechaty, but it is currently known that puppets are written in TypeScript language. In order to enable go-wechaty to use these puppets, we can use wechaty-gateway to convert puppets into grpc service, let go-wechaty connect to the grpc service, go-wechaty -> wechaty-gateway -> puppet, document: https://wechaty.js.org/docs/puppet-services/diy/
   - puppet list: https://wechaty.js.org/docs/puppet-providers/  
 
 ## See Also
