@@ -18,13 +18,6 @@ func envServiceToken(token string) (string, error) {
 		return token, nil
 	}
 
-	token = os.Getenv("WECHATY_PUPPET_HOSTIE_TOKEN")
-	if token != "" {
-		log.Trace("WECHATY_PUPPET_HOSTIE_TOKEN has been deprecated," +
-			"please use WECHATY_PUPPET_SERVICE_TOKEN instead.")
-		return token, nil
-	}
-
 	return "", ErrTokenNotFound
 }
 
@@ -38,12 +31,6 @@ func envEndpoint(endpoint string) string {
 		return endpoint
 	}
 
-	endpoint = os.Getenv("WECHATY_PUPPET_HOSTIE_ENDPOINT")
-	if endpoint != "" {
-		log.Println("WECHATY_PUPPET_HOSTIE_ENDPOINT has been deprecated," +
-			"please use WECHATY_PUPPET_SERVICE_ENDPOINT instead.")
-		return endpoint
-	}
 	return ""
 }
 
