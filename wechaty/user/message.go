@@ -148,13 +148,20 @@ func (m *Message) Date() time.Time {
 }
 
 // Say reply a Text or Media File message to the sender.
-func (m *Message) Say(textOrContactOrFileOrUrlOrMini interface{}) (_interface.IMessage, error) {
+// Support msg:
+// string
+// Contact
+// filebox.FileBox
+// UrlLink
+// MiniProgram
+// Location
+func (m *Message) Say(sayable interface{}) (_interface.IMessage, error) {
 	conversationId, err := m.sayId()
 	if err != nil {
 		return nil, err
 	}
 	var messageID string
-	switch v := textOrContactOrFileOrUrlOrMini.(type) {
+	switch v := sayable.(type) {
 	case string:
 		messageID, err = m.GetPuppet().MessageSendText(conversationId, v)
 	case *Contact:
@@ -165,8 +172,10 @@ func (m *Message) Say(textOrContactOrFileOrUrlOrMini interface{}) (_interface.IM
 		messageID, err = m.GetPuppet().MessageSendURL(conversationId, v.payload)
 	case *MiniProgram:
 		messageID, err = m.GetPuppet().MessageSendMiniProgram(conversationId, v.payload)
+	case *Location:
+		messageID, err = m.GetPuppet().MessageSendLocation(conversationId, v.payload)
 	default:
-		return nil, fmt.Errorf("unknown msg: %v", textOrContactOrFileOrUrlOrMini)
+		return nil, fmt.Errorf("unknown msg: %v", sayable)
 	}
 	if err != nil {
 		return nil, err
@@ -419,6 +428,18 @@ func (m *Message) ToMiniProgram() (*MiniProgram, error) {
 		return nil, err
 	}
 	return NewMiniProgram(miniProgramPayload), nil
+}
+
+func (m *Message) ToLocation() (*Location, error) {
+	if m.Type() != schemas.MessageTypeLocation {
+		return nil, errors.New("message not a Location")
+	}
+
+	payload, err := m.GetPuppet().MessageLocation(m.id)
+	if err != nil {
+		return nil, err
+	}
+	return NewLocation(payload), nil
 }
 
 // ID message id

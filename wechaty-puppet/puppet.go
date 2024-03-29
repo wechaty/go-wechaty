@@ -31,6 +31,8 @@ type iPuppet interface {
 	MessageSendMiniProgram(conversationID string, miniProgramPayload *schemas.MiniProgramPayload) (string, error)
 	MessageRecall(messageID string) (bool, error)
 	MessageFile(id string) (*filebox.FileBox, error)
+	MessageLocation(messageID string) (*schemas.LocationPayload, error)
+	MessageSendLocation(conversationID string, payload *schemas.LocationPayload) (string, error)
 	MessageRawPayload(id string) (*schemas.MessagePayload, error)
 	MessageSendText(conversationID string, text string, mentionIDList ...string) (string, error)
 	MessageSendFile(conversationID string, fileBox *filebox.FileBox) (string, error)
