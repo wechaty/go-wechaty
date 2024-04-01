@@ -594,6 +594,52 @@ func (p *PuppetService) MessageFile(id string) (*filebox.FileBox, error) {
 	return NewFileBoxFromMessageFileStream(response)
 }
 
+// MessageLocation get location payload
+func (p *PuppetService) MessageLocation(messageID string) (*schemas.LocationPayload, error) {
+	log.Tracef("PuppetService MessageLocation(%s)\n", messageID)
+
+	response, err := p.grpcClient.MessageLocation(context.Background(), &pbwechatypuppet.MessageLocationRequest{
+		Id: messageID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if response.Location == nil {
+		return &schemas.LocationPayload{
+			Address: "NOADDRESS",
+			Name:    "NONAME",
+		}, nil
+	}
+	return &schemas.LocationPayload{
+		Accuracy:  response.Location.Accuracy,
+		Address:   response.Location.Address,
+		Latitude:  response.Location.Latitude,
+		Longitude: response.Location.Longitude,
+		Name:      response.Location.Name,
+	}, nil
+}
+
+// MessageSendLocation send location
+func (p *PuppetService) MessageSendLocation(conversationID string, payload *schemas.LocationPayload) (string, error) {
+	log.Tracef("PuppetService MessageSendLocation(%s, %+v)\n", conversationID, payload)
+
+	response, err := p.grpcClient.MessageSendLocation(context.Background(), &pbwechatypuppet.MessageSendLocationRequest{
+		ConversationId: conversationID,
+		Location: &pbwechatypuppet.LocationPayload{
+			Accuracy:  payload.Accuracy,
+			Address:   payload.Address,
+			Latitude:  payload.Latitude,
+			Longitude: payload.Longitude,
+			Name:      payload.Name,
+		},
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return response.Id, nil
+}
+
 // MessageRawPayload ...
 func (p *PuppetService) MessageRawPayload(id string) (*schemas.MessagePayload, error) {
 	log.Tracef("PuppetService MessagePayload(%s)\n", id)

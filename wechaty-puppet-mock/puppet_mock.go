@@ -12,6 +12,16 @@ type PuppetMock struct {
 	*wechatyPuppet.Puppet
 }
 
+func (p *PuppetMock) MessageLocation(messageID string) (*schemas.LocationPayload, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p *PuppetMock) MessageSendLocation(conversationID string, payload *schemas.LocationPayload) (string, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func NewPuppetMock(option wechatyPuppet.Option) (*PuppetMock, error) {
 	puppetAbstract, err := wechatyPuppet.NewPuppet(option)
 	if err != nil {
