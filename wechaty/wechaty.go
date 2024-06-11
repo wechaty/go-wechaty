@@ -357,7 +357,7 @@ func (w *Wechaty) initPuppetEventBridge() {
 				messageID := i[0].(*schemas.EventMessagePayload).MessageId
 				message := w.message.Load(messageID)
 				if err := message.Ready(); err != nil {
-					log.Errorf("emit message message.Ready() err: %s\n", err.Error())
+					log.Errorf("emit message message.Ready(%s) err: %s\n", messageID, err.Error())
 					w.emit(schemas.PuppetEventNameError, NewContext(), err)
 					return
 				}
