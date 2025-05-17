@@ -147,6 +147,10 @@ func (m *Message) Date() time.Time {
 	return m.payload.Timestamp
 }
 
+func (m *Message) ReferMessage() *schemas.ReferMessagePayload {
+	return &(*m.payload.ReferMessage) // 不希望能被修改原数据
+}
+
 // Say reply a Text or Media File message to the sender.
 // Support msg:
 // string

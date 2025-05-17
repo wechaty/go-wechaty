@@ -93,6 +93,18 @@ type MessagePayloadBase struct {
 
 	// 小程序有些消息类型，wechaty服务端解析不处理，框架端解析。 xml type 36 是小程序
 	FixMiniApp bool
+
+	ReferMessage *ReferMessagePayload
+}
+
+type ReferMessagePayload struct {
+	Type        MessageType // TODO： 确认是否和 MessageType 一致
+	SourceMsgId string
+	TalkerId    string
+	RoomId      string
+	DisplayName string
+	Content     string
+	Timestamp   time.Time
 }
 
 type MessagePayloadRoom struct {

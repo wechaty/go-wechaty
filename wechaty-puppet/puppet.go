@@ -3,7 +3,9 @@ package wechatypuppet
 import (
 	"errors"
 	"fmt"
+
 	lru "github.com/hashicorp/golang-lru"
+
 	"github.com/wechaty/go-wechaty/wechaty-puppet/events"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/filebox"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/helper"
