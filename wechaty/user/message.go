@@ -147,6 +147,16 @@ func (m *Message) Date() time.Time {
 	return m.payload.Timestamp
 }
 
+// ReferMessage get the refer message
+func (m *Message) ReferMessage() *schemas.ReferMessagePayload {
+	if m.payload.ReferMessage == nil {
+		return nil
+	}
+	
+	copy := *m.payload.ReferMessage
+	return &copy
+}
+
 // Say reply a Text or Media File message to the sender.
 // Support msg:
 // string
