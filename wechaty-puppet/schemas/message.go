@@ -97,9 +97,10 @@ type MessagePayloadBase struct {
 	ReferMessage *ReferMessagePayload
 }
 
+// ReferMessagePayload refer message payload
 type ReferMessagePayload struct {
 	Type        MessageType // TODO： 确认是否和 MessageType 一致
-	SourceMsgId string
+	SourceMsgID string
 	TalkerId    string
 	RoomId      string
 	DisplayName string
