@@ -26,19 +26,21 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"os/signal"
+	"reflect"
+	"runtime/debug"
+	"time"
+
 	"github.com/lucsky/cuid"
+
 	wp "github.com/wechaty/go-wechaty/wechaty-puppet"
 	puppetservice "github.com/wechaty/go-wechaty/wechaty-puppet-service"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/events"
 	mc "github.com/wechaty/go-wechaty/wechaty-puppet/memory-card"
 	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"github.com/wechaty/go-wechaty/wechaty/factory"
-	"github.com/wechaty/go-wechaty/wechaty/interface"
-	"os"
-	"os/signal"
-	"reflect"
-	"runtime/debug"
-	"time"
+	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
 // Wechaty ...
@@ -380,6 +382,18 @@ func (w *Wechaty) initPuppetEventBridge() {
 		case schemas.PuppetEventNameRoomInvite:
 			w.puppet.On(name, func(i ...interface{}) {
 				roomInvitation := w.roomInvitation.Load(i[0].(*schemas.EventRoomInvitePayload).RoomInvitationId)
+				room, err := roomInvitation.Room()
+				if err != nil {
+					log.Errorf("emit roominvite room.Room() err: %s\n", err.Error())
+					w.emit(schemas.PuppetEventNameError, NewContext(), err)
+					return
+				}
+				if err := room.Ready(false); err != nil {
+					log.Errorf("emit roominvite room.Ready() err: %s\n", err.Error())
+					w.emit(schemas.PuppetEventNameError, NewContext(), err)
+					return
+				}
+
 				w.emit(name, NewContext(), roomInvitation)
 			})
 		case schemas.PuppetEventNameRoomJoin:

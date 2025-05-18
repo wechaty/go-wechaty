@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	_interface "github.com/wechaty/go-wechaty/wechaty/interface"
 )
 
@@ -98,6 +99,15 @@ func (ri *RoomInvitation) MemberList() ([]_interface.IContact, error) {
 	return contactList, nil
 }
 
+// Room get the room from room invitation
+func (ri *RoomInvitation) Room() (_interface.IRoom, error) {
+	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
+	if err != nil {
+		return nil, err
+	}
+	return ri.GetWechaty().Room().Load(payload.RoomId), nil
+}
+
 // Date get the invitation time
 func (ri *RoomInvitation) Date() (time.Time, error) {
 	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
@@ -123,4 +133,13 @@ func (ri *RoomInvitation) ToJson() (string, error) {
 	}
 	marshal, err := json.Marshal(payload)
 	return string(marshal), err
+}
+
+func (ri *RoomInvitation) RawPayload() (schemas.RoomInvitationPayload, error) {
+	payload, err := ri.GetPuppet().RoomInvitationPayload(ri.id)
+	if err != nil {
+		return schemas.RoomInvitationPayload{}, err
+	}
+	
+	return *payload, nil
 }

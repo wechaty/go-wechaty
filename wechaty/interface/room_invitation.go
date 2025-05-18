@@ -1,8 +1,9 @@
 package _interface
 
 import (
-	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 	"time"
+
+	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
 )
 
 type IRoomInvitationFactory interface {
@@ -16,10 +17,12 @@ type IRoomInvitation interface {
 	ToStringAsync() (string, error)
 	Accept() error
 	Inviter() (IContact, error)
+	Room() (IRoom, error)
 	Topic() (string, error)
 	MemberCount() (int, error)
 	MemberList() ([]IContact, error)
 	Date() (time.Time, error)
 	Age() (time.Duration, error)
 	ToJson() (string, error)
+	RawPayload() (schemas.RoomInvitationPayload, error)
 }

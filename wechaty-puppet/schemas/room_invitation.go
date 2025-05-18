@@ -5,6 +5,7 @@ import "time"
 type RoomInvitationPayload struct {
 	Id           string    `json:"id"`
 	InviterId    string    `json:"inviterId"`
+	RoomId       string    `json:"roomId"`
 	Topic        string    `json:"topic"`
 	Avatar       string    `json:"avatar"`
 	Invitation   string    `json:"invitation"`
